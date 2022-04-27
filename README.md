@@ -1,6 +1,6 @@
 # Advent-of-Code-Rust
 
-Solutions to the advent of code problems, written in rust.
+Solutions to the advent of code problems, written in rust. (Probably not the best solutions)
 
 ## Solutions
 | Year | Finished |
