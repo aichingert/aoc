@@ -2,7 +2,11 @@
 
 Solutions of the advent of code problems in rust.
 
-## Year 2017 (/2017)
-| Day | Solution |
+## Solutions
+| Year | Finished |
 | --- | --- |
-| 1 | [day_03](/2017/day_03/src/main.rs) |
+| [2021](/2021) | 1 |
+| [2020](/2020) | 1 |
+| [2017](/2017) | 10 |
+| [2016](/2016) | 1 |
+| [2015](/2015) | 1 |
