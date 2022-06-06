@@ -63,7 +63,7 @@ fn solve_part_one(input: String) {
 
     let mut count: i32 = 0;
 
-    for s in rows {
+    for s in &rows {
         for c in s {
             match c {
                 '1' => {
@@ -75,10 +75,63 @@ fn solve_part_one(input: String) {
     }
 
     println!("Solution part 1: {}", count);
+    solve_part_two(rows)
 }
 
 fn solve_part_two(rows: Vec<Vec<char>>) {
-    
+    let mut found: Vec<(usize, usize)> = Vec::new();
+    let mut group_count: i32 = 0;
+
+    for i in 0..8 {
+        for j in 0..8 {
+            print!("{}", rows[i][j])
+        }
+        println!()
+    }
+
+    for i in 0..rows.len() {
+        for j in 0..rows[i].len() {
+            if rows[i][j] == '1' {
+                if !found.contains(&(i, j)) {
+                    found.push((i, j));
+                    find_ones(&rows, (i, j), &mut found);  
+                    group_count += 1;
+                }
+            }
+        }
+    }
+
+    println!("Solution part 2: {}", group_count);
+}
+
+fn find_ones(grid: &Vec<Vec<char>>, starting_pos: (usize, usize), already_found: &mut Vec<(usize, usize)>) {
+    if starting_pos.1 + 1 < grid.len() {
+        if !already_found.contains(&(starting_pos.0, starting_pos.1 + 1)) && grid[starting_pos.0][starting_pos.1 + 1] == '1' {
+            already_found.push((starting_pos.0, starting_pos.1 + 1));
+            find_ones(grid, (starting_pos.0, starting_pos.1 + 1), already_found)
+        }
+    }
+
+    if starting_pos.0 + 1 < grid.len() {
+        if !already_found.contains(&(starting_pos.0 + 1, starting_pos.1)) && grid[starting_pos.0 + 1][starting_pos.1] == '1' {
+            already_found.push((starting_pos.0 +1, starting_pos.1));
+            find_ones(grid, (starting_pos.0 + 1, starting_pos.1), already_found)
+        }
+    }
+
+    if starting_pos.0 as i32 - 1 > -1 {
+        if !already_found.contains(&(starting_pos.0 - 1, starting_pos.1)) && grid[starting_pos.0 - 1][starting_pos.1] == '1' {
+            already_found.push((starting_pos.0 - 1, starting_pos.1));
+            find_ones(grid, (starting_pos.0 - 1, starting_pos.1), already_found)
+        }
+    }
+
+    if starting_pos.1 as i32 - 1 > -1 {
+        if !already_found.contains(&(starting_pos.0, starting_pos.1 - 1)) && grid[starting_pos.0][starting_pos.1 - 1] == '1' {
+            already_found.push((starting_pos.0, starting_pos.1 - 1));
+            find_ones(grid, (starting_pos.0, starting_pos.1 - 1), already_found)
+        }
+    }
 }
 
 fn reverse(min: &mut usize, number_range: &mut usize, elements: &mut [i32; 256]) -> Vec<i32> {
