@@ -14,3 +14,5 @@
 | 12 | [day 12](/2017/day_12/src/main.rs) |
 | 13 | [day 13](/2017/day_13/src/main.rs) |
 | 14 | [day 14](/2017/day_14/src/main.rs) |
+| 15 | [day 15](/2017/day_15/src/main.rs) |
+| 16 | [day 16](/2017/day_16/src/main.rs) |
