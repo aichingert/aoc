@@ -112,8 +112,21 @@ fn solve_part_one(input: &String) {
  
                         continue;
                     }
-                }
+                } else {
+                    if instructions[idx][1].parse::<i64>().unwrap() > 0 {
+                        let value: i64;
 
+                        value = instructions[idx][2].parse::<i64>().unwrap();
+
+                        if value > 0 {
+                            idx += value as usize;
+                        } else {
+                            idx -= value.abs() as usize;
+                        }
+ 
+                        continue;
+                    }
+                }
             },
             _ => {}
         }
@@ -125,227 +138,138 @@ fn solve_part_one(input: &String) {
 fn solve_part_two(input: String) {
     let mut instructions: Vec<Vec<&str>> = Vec::new();
 
-    let mut values_program_one: HashMap<String, i64> = HashMap::new();
-    let mut values_program_two: HashMap<String, i64> = HashMap::new();
+    let mut values_program_one: HashMap<String, (i64, bool)> = HashMap::new();
+    let mut values_program_two: HashMap<String, (i64, bool)> = HashMap::new();
 
     let mut sended: Vec<i64> = Vec::new();
-
-    let mut idx: usize = 0;
+    let mut sent: Vec<i64> = Vec::new();
 
     for line in input.lines() {
         instructions.push(line.split(' ').collect());
     }
 
-    for c in 'a'..'z' {
-        values_program_one.insert(c.to_string(), 0);
+    for c in 'a'..='z' {
+        if c != 'p' {
+            values_program_one.insert(c.to_string(), (0, false));
+        } else {
+            values_program_one.insert("p".to_string(), (0, true));
+        }
     }
+
+    for c in 'a'..='z' {
+        if c != 'p' {
+            values_program_two.insert(c.to_string(), (0, false));
+        } else {
+            values_program_two.insert("p".to_string(), (1, true));
+        }
+    }
+
+    sent = cycle(&mut values_program_one, &instructions, &mut sended);
+    sended = cycle(&mut values_program_two, &instructions, &mut sent);
+    
+    println!("Solution part two: {}", sended.len());
+}
+
+fn cycle(program_values: &mut HashMap<String, (i64, bool)>, instructions: &Vec<Vec<&str>>, received: &mut Vec<i64>) -> Vec<i64> {
+    let mut sended: Vec<i64> = Vec::new();
+    let mut idx = 0;
 
     while idx < instructions.len() {
         match instructions[idx][0] {
             "snd" => {
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    sended.push(values_program_one[instructions[idx][1]]);
+                if program_values.contains_key(instructions[idx][1]) && program_values[instructions[idx][1]].1 {
+                    sended.push(program_values[instructions[idx][1]].0);
                 } else {
                     sended.push(instructions[idx][1].parse::<i64>().unwrap());
                 }
             },
             "set" => {
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    values_program_one.remove(instructions[idx][1]).unwrap();
+                if program_values.contains_key(instructions[idx][1]) {
+                    program_values.remove(instructions[idx][1]).unwrap();
                 }
 
-                if values_program_one.contains_key(instructions[idx][2]) {
-                    values_program_one.insert(instructions[idx][1].to_string(), values_program_one[instructions[idx][2]]);
+                if program_values.contains_key(instructions[idx][2]) {
+                    program_values.insert(instructions[idx][1].to_string(), program_values[instructions[idx][2]]);
                 } else {
-                    values_program_one.insert(instructions[idx][1].to_string(), instructions[idx][2].parse::<i64>().unwrap());
+                    program_values.insert(instructions[idx][1].to_string(), (instructions[idx][2].parse::<i64>().unwrap(), true));
                 }
             },
             "add" => {
                 let mut value: i64;
 
-                if values_program_one.contains_key(instructions[idx][2]) {
-                    value = values_program_one[instructions[idx][2]];
+                if program_values.contains_key(instructions[idx][2]) {
+                    value = program_values[instructions[idx][2]].0;
                 } else {
                     value = instructions[idx][2].parse::<i64>().unwrap();
                 }
 
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    value += values_program_one.remove(instructions[idx][1]).unwrap();
+                if program_values.contains_key(instructions[idx][1]) {
+                    value += program_values.remove(instructions[idx][1]).unwrap().0;
                 } 
 
-                values_program_one.insert(instructions[idx][1].to_string(), value);
+                program_values.insert(instructions[idx][1].to_string(), (value, true));
             },
             "mul" => {
                 let mut value: i64;
 
-                if values_program_one.contains_key(instructions[idx][2]) {
-                    value = values_program_one[instructions[idx][2]];
+                if program_values.contains_key(instructions[idx][2]) {
+                    value = program_values[instructions[idx][2]].0;
                 } else {
                     value = instructions[idx][2].parse::<i64>().unwrap();
                 }
 
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    value *= values_program_one.remove(instructions[idx][1]).unwrap();
+                if program_values.contains_key(instructions[idx][1]) {
+                    value *= program_values.remove(instructions[idx][1]).unwrap().0;
                 } 
 
-                values_program_one.insert(instructions[idx][1].to_string(), value);
+                program_values.insert(instructions[idx][1].to_string(), (value, true));
             },
             "mod" => {
                 let mut value: i64;
 
-                if values_program_one.contains_key(instructions[idx][2]) {
-                    value = values_program_one[instructions[idx][2]];
+                if program_values.contains_key(instructions[idx][2]) {
+                    value = program_values[instructions[idx][2]].0;
                 } else {
                     value = instructions[idx][2].parse::<i64>().unwrap();
                 }
 
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    value = values_program_one.remove(instructions[idx][1]).unwrap() % value;
+                if program_values.contains_key(instructions[idx][1]) {
+                    value = program_values.remove(instructions[idx][1]).unwrap().0 % value;
                 } 
 
-                values_program_one.insert(instructions[idx][1].to_string(), value);
+                program_values.insert(instructions[idx][1].to_string(), (value, true));
             },
             "rcv" => {
-                break;
-            },
-            "jgz" => {
-                if values_program_one.contains_key(instructions[idx][1]) {
-                    if values_program_one[instructions[idx][1]] > 0 {
-                        let value: i64;
-
-                        if values_program_one.contains_key(instructions[idx][2]) {
-                            value = values_program_one[instructions[idx][2]];
-                        } else {
-                            value = instructions[idx][2].parse::<i64>().unwrap();
-                        }
-
-                        if value > 0 {
-                            idx += value as usize;
-                        } else {
-                            idx -= value.abs() as usize;
-                        }
- 
-                        continue;
-                    }
-                }
-
-            },
-            _ => {}
-        }
-
-        idx += 1;
-    }
-     
-    println!("{:?}", sended.len());
-
-    for c in 'a'..='z' {
-        if c != 'p' {
-            values_program_two.insert(c.to_string(), 0);
-        } else {
-            values_program_two.insert(c.to_string(), 1);
-        }
-    }
-
-    let mut send_count = 0;
-    let mut letter_count: i32 = 0;
-    idx = 0;
-
-    while idx < instructions.len() {
-        match instructions[idx][0] {
-            "snd" => {
-                send_count += 1;
-            },
-            "set" => {
-                if values_program_two.contains_key(instructions[idx][1]) {
-                    values_program_two.remove(instructions[idx][1]).unwrap();
-                }
-
-                if values_program_two.contains_key(instructions[idx][2]) {
-                    values_program_two.insert(instructions[idx][1].to_string(), values_program_two[instructions[idx][2]]);
-                } else {
-                    values_program_two.insert(instructions[idx][1].to_string(), instructions[idx][2].parse::<i64>().unwrap());
-                }
-            },
-            "add" => {
-                let mut value: i64;
-
-                if values_program_two.contains_key(instructions[idx][2]) {
-                    value = values_program_two[instructions[idx][2]];
-                } else {
-                    value = instructions[idx][2].parse::<i64>().unwrap();
-                }
-
-                if values_program_two.contains_key(instructions[idx][1]) {
-                    value += values_program_two.remove(instructions[idx][1]).unwrap();
-                } 
-
-                values_program_two.insert(instructions[idx][1].to_string(), value);
-            },
-            "mul" => {
-                let mut value: i64;
-
-                if values_program_two.contains_key(instructions[idx][2]) {
-                    value = values_program_two[instructions[idx][2]];
-                } else {
-                    value = instructions[idx][2].parse::<i64>().unwrap();
-                }
-
-                if values_program_two.contains_key(instructions[idx][1]) {
-                    value *= values_program_two.remove(instructions[idx][1]).unwrap();
-                } 
-
-                values_program_two.insert(instructions[idx][1].to_string(), value);
-            },
-            "mod" => {
-                let mut value: i64;
-
-                if values_program_two.contains_key(instructions[idx][2]) {
-                    value = values_program_two[instructions[idx][2]];
-                } else {
-                    value = instructions[idx][2].parse::<i64>().unwrap();
-                }
-
-                if values_program_two.contains_key(instructions[idx][1]) {
-                    value = values_program_two.remove(instructions[idx][1]).unwrap() % value;
-                } 
-
-                values_program_two.insert(instructions[idx][1].to_string(), value);
-            },
-            "rcv" => {
-                let mut idx: i32 = 0;
-                let mut value: String = String::new();
-
-                for c in 'a'..'z' {
-                    if idx == letter_count {
-                        value = c.to_string();
-                        break;
-                    }
-
-                    idx += 1;
-                }
-
-                if sended.len() == 0 {
+                if received.len() == 0 {
                     break;
-                } else {
-                    println!("{:?}", sended[0]);
                 }
 
-                let mut number: i64 = values_program_two.remove(&value).unwrap();
-                number += sended.remove(0);
-                values_program_two.insert(value, number);
-                letter_count += 1;
-
-                if letter_count > 24 {
-                    letter_count = 0;
-                }
+                program_values.remove(instructions[idx][1]);
+                program_values.insert(instructions[idx][1].to_string(), (received.remove(0), true));
             },
             "jgz" => {
-                if values_program_two.contains_key(instructions[idx][1]) {
-                    if values_program_two[instructions[idx][1]] > 0 {
+                let a = instructions[idx][1].parse::<i64>();
+
+                if a.is_ok() && a.unwrap() > 0 {
+                    let value: i64;
+
+                    value = instructions[idx][2].parse::<i64>().unwrap();
+
+                    if value > 0 {
+                        idx += value as usize;
+                    } else {
+                        idx -= value.abs() as usize;
+                    }
+
+                    continue;
+                }
+
+                if program_values[instructions[idx][1]].1 {
+                    if program_values[instructions[idx][1]].0 > 0 {
                         let value: i64;
 
-                        if values_program_two.contains_key(instructions[idx][2]) {
-                            value = values_program_two[instructions[idx][2]];
+                        if program_values.contains_key(instructions[idx][2]) {
+                            value = program_values[instructions[idx][2]].0;
                         } else {
                             value = instructions[idx][2].parse::<i64>().unwrap();
                         }
@@ -359,13 +283,12 @@ fn solve_part_two(input: String) {
                         continue;
                     }
                 }
-
             },
             _ => {}
         }
 
         idx += 1;
     }
-    
-    println!("Solution part two: {}", send_count);
+
+    sended
 }
