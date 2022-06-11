@@ -1,14 +1,12 @@
 # Advent-of-Code-Rust
 
-Solutions to the advent of code problems, written in rust :rust:.
-
-:christmas_tree:
+Solutions to the advent of code problems, written in rust.
 
 ## Solutions
 | Year | Finished |
 | --- | --- |
-| [2021](/2021) | 1 |
-| [2020](/2020) | 1 |
-| [2017](/2017) | 17 |
-| [2016](/2016) | 2 |
-| [2015](/2015) | 1 |
+| :christmas_tree: [2021](/2021) | 1 |
+| :christmas_tree: [2020](/2020) | 1 |
+| :christmas_tree: [2017](/2017) | 17 |
+| :christmas_tree: [2016](/2016) | 2 |
+| :christmas_tree: [2015](/2015) | 1 |
