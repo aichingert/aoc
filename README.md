@@ -1,6 +1,8 @@
 # Advent-of-Code-Rust
 
-Solutions to the advent of code problems, written in rust.
+Solutions to the advent of code problems, written in rust :rust:.
+
+:christmas_tree:
 
 ## Solutions
 | Year | Finished |
