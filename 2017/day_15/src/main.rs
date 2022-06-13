@@ -12,7 +12,7 @@ fn solve_part_one() {
     let divide: i64 = 2147483647;
     let mut count: i32 = 0;
 
-    for i in 1..40000000 {
+    for _ in 1..40000000 {
         gen_a = (gen_a * fa) % divide;
         gen_b = (gen_b * fb) % divide;
         
@@ -21,7 +21,6 @@ fn solve_part_one() {
 
         if a == b {
             count += 1;
-            println!("{}", i)
         }
     }
 
@@ -37,7 +36,7 @@ fn solve_part_two() {
     let divide: i64 = 2147483647;
     let mut count: i32 = 0;
 
-    for i in 1..5000000 {
+    for _ in 1..5000000 {
         gen_a = (gen_a * fa) % divide;
         gen_b = (gen_b * fb) % divide;
 
@@ -54,7 +53,6 @@ fn solve_part_two() {
 
         if a == b {
             count += 1;
-            println!("{}", i)
         }
     }
 
