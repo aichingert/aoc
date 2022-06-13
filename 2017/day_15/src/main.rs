@@ -4,20 +4,20 @@ fn main() {
 }
 
 fn solve_part_one() {
-    let mut gen_a: i64 = 65;
-    let mut gen_b: i64 = 8921;
+    let mut gen_a: u64 = 65;
+    let mut gen_b: u64 = 8921;
 
-    let fa: i64 = 16807;
-    let fb: i64 = 48271;
-    let divide: i64 = 2147483647;
+    let fa: u64 = 16807;
+    let fb: u64 = 48271;
+    let divide: u64 = 2147483647;
     let mut count: i32 = 0;
 
     for _ in 1..40000000 {
         gen_a = (gen_a * fa) % divide;
         gen_b = (gen_b * fb) % divide;
         
-        let a = to_bits(gen_a);
-        let b = to_bits(gen_b);
+        let a = gen_a as u16;
+        let b = gen_b as u16;
 
         if a == b {
             count += 1;
@@ -28,15 +28,15 @@ fn solve_part_one() {
 }
 
 fn solve_part_two() {
-    let mut gen_a: i64 = 634;
-    let mut gen_b: i64 = 301;
+    let mut gen_a: u64 = 634;
+    let mut gen_b: u64 = 301;
 
-    let fa: i64 = 16807;
-    let fb: i64 = 48271;
-    let divide: i64 = 2147483647;
+    let fa: u64 = 16807;
+    let fb: u64 = 48271;
+    let divide: u64 = 2147483647;
     let mut count: i32 = 0;
 
-    for _ in 1..5000000 {
+    for i in 1..5000000 {
         gen_a = (gen_a * fa) % divide;
         gen_b = (gen_b * fb) % divide;
 
@@ -48,8 +48,8 @@ fn solve_part_two() {
             gen_b = (gen_b * fb) % divide;
         }
         
-        let a = to_bits(gen_a);
-        let b = to_bits(gen_b);
+        let a = gen_a as u16;
+        let b = gen_b as u16;
 
         if a == b {
             count += 1;
@@ -59,9 +59,10 @@ fn solve_part_two() {
     println!("Solve part 2: {}", count);
 }
 
-fn to_bits(number: i64) -> String {
+/* Not performant enough but right.
+fn to_bits(number: u64) -> String {
     let mut bits: String = String::new();
-    let mut cur_num: i64 = number;
+    let mut cur_num: u64 = number;
 
     while cur_num > 0 {
         if cur_num == 1 {
@@ -88,3 +89,4 @@ fn to_bits(number: i64) -> String {
 
     bits
 }
+*/
