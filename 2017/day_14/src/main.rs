@@ -53,6 +53,7 @@ fn solve_part_one(input: String) {
         }
 
         let hash: String = generate_hash(dense_hash(&mut elements));
+        println!("{}", hash);
         for c in hash.chars() {
             to_binary(c, &mut binary_form)
         }
