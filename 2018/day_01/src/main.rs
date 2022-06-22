@@ -1,5 +1,7 @@
+use std::{fs, collections::HashMap};
+
 fn main() {
-    let input: String = std::fs::read_to_string("input.txt").expect("err");
+    let input: String = fs::read_to_string("input.txt").expect("err");
 
     solve_part_one(&input);
     solve_part_two(&input);
@@ -17,22 +19,22 @@ fn solve_part_one(input: &String) {
 
 fn solve_part_two(input: &String) {
     let mut frequenzy: i32 = 0;
-    let mut values: Vec<i32> = Vec::new();
+    let mut values: HashMap<i32, bool> = HashMap::new();
 
-    while !values.contains(&frequenzy) {
-        values.push(frequenzy);
-        
+    while !values.contains_key(&frequenzy) {
+        values.insert(frequenzy, false);
+
         for line in input.lines() {
             frequenzy += line.parse::<i32>().unwrap();
 
-            if values.contains(&frequenzy) {
+            if values.contains_key(&frequenzy) {
                 break;
             }
 
-            values.push(frequenzy);
+            values.insert(frequenzy, false);
         }
 
-        values.pop();
+        values.remove(&frequenzy);
     }
 
     println!("Solution part one: {}", frequenzy);
