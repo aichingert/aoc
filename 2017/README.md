@@ -2,6 +2,7 @@
 
 | Day | Solution |
 | --- | --- |
+| 2 | [day 02](/2017/day_02/src/main.rs) |
 | 3 | [day 03](/2017/day_03/src/main.rs) |
 | 4 | [day 04](/2017/day_04/src/main.rs) |
 | 5 | [day 05](/2017/day_05/src/main.rs) |
