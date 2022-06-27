@@ -20,25 +20,20 @@ fn solve_part_one(input: &String) {
 fn solve_part_two(input: &String) {
     let mut frequenzy: i32 = 0;
     let mut values: HashMap<i32, bool> = HashMap::new();
-    let mut contains: bool = false;
 
-    while !values.contains_key(&frequenzy) {
+    'main: while !values.contains_key(&frequenzy) {
         values.insert(frequenzy, false);
 
         for line in input.lines() {
             frequenzy += line.parse::<i32>().unwrap();
 
             if values.contains_key(&frequenzy) {
-                contains = true;
-                break;
+                break 'main;
             }
 
             values.insert(frequenzy, false);
         }
 
-        if contains {
-            break;
-        }
         values.remove(&frequenzy);
     }
 
