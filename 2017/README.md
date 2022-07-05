@@ -22,3 +22,4 @@
 | 18 | [day 18](/2017/day_18/src/main.rs) |
 | 19 | [day 19](/2017/day_19/src/main.rs) |
 | 20 | [day 20](/2017/day_20/src/main.rs) |
+| 22 | [day 22](/2017/day_22/src/main.rs) |
