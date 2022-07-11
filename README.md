@@ -6,7 +6,7 @@ Solutions to the advent of code problems, written in rust.
 | Year | Finished |
 | ---- | -------- |
 | :christmas_tree: [2021](/2021) |  2 |
-| :christmas_tree: [2020](/2020) |  3 |
+| :christmas_tree: [2020](/2020) |  6 |
 | :christmas_tree: [2019](/2019) |  2 |
 | :christmas_tree: [2018](/2018) |  5 |
 | :christmas_tree: [2017](/2017) | 21 |
