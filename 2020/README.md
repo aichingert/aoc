@@ -11,3 +11,4 @@
 | 7 | [day 07](/2020/day_07/src/main.rs) |
 | 8 | [day 08](/2020/day_08/src/main.rs) |
 | 9 | [day 09](/2020/day_09/src/main.rs) |
+| 11 | [day 11](/2020/day_11/src/main.rs) |
