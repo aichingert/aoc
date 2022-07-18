@@ -93,6 +93,7 @@ fn solve_part_two(input: &String) {
         }
     }
 
+    println!("Solution part two: ");
     for i in 0..resulting.len() {
         if i % X as usize == 0 {
             println!();
