@@ -12,28 +12,10 @@ fn solve_part_one(input: &String) {
         .lines()
         .collect();
     let mut m: Vec<(i32, i32)> = vec![];
-    let mut c: Vec<(i32, i32)> = vec![];
     
-    for i in 0..ins.len() {
-        fp(&mut ins[i]
-            .split(',')
-            .map( | s | s.to_string())
-            .collect(), &mut m)
-            .iter()
-            .for_each( | v | c.push(*v));
-    }
+    f(&mut ins[0].split(',').map( | s | s.to_string()).collect(), &mut m);
 
-    let mut s: i32 = 10000000;
-
-    for i in 0..c.len() {
-        let r: i32 = c[i].0.abs() + c[i].1.abs();
-
-        if s > r {
-            s = r;
-        }
-    }
-
-    println!("Solution part one: {}", s);
+    println!("Solution part one: {}", s(&mut ins[1].split(',').map( | s | s.to_string()).collect(), &m));
 }
 
 fn solve_part_two(input: &String) {
@@ -166,12 +148,9 @@ fn ss(ins: &mut Vec<String>, m: &HashMap<(i32, i32), i32>) -> i32 {
     ms
 }
 
-fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
-    //              x  , y
-    let mut c: Vec<(i32, i32)> = vec![];
+fn f(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) {
     let mut p: (i32, i32) = (0, 0);
-    let s: bool = m.len() != 0;
-    
+
     for i in 0..ins.len() {
         let d: char = ins[i].remove(0);
         let v: i32 = ins[i].parse().unwrap();
@@ -180,9 +159,7 @@ fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
             'R' => {
                 for _ in 0..v {
                     p.0 += 1;
-                    if s && m.contains(&(p.0, p.1)) {
-                        c.push((p.0, p.1))
-                    } else if !s {
+                    if !m.contains(&(p.0, p.1)) {
                         m.push((p.0, p.1))
                     }
                 }
@@ -190,9 +167,7 @@ fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
             'L' => {
                 for _ in 0..v {
                     p.0 -= 1;
-                    if  s&& m.contains(&(p.0, p.1)) {
-                        c.push((p.0, p.1))
-                    } else if !s {
+                    if !m.contains(&(p.0, p.1)) {
                         m.push((p.0, p.1))
                     }
                 }
@@ -200,9 +175,7 @@ fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
             'U' => {
                 for _ in 0..v {
                     p.1 += 1;
-                    if s && m.contains(&(p.0, p.1)) {
-                        c.push((p.0, p.1))
-                    } else if !s {
+                    if !m.contains(&(p.0, p.1)) {
                         m.push((p.0, p.1))
                     }
                 }
@@ -210,9 +183,7 @@ fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
             'D' => {
                 for _ in 0..v {
                     p.1 -= 1;
-                    if s && m.contains(&(p.0, p.1)) {
-                        c.push((p.0, p.1))
-                    } else if !s {
+                    if !m.contains(&(p.0, p.1)) {
                         m.push((p.0, p.1))
                     }
                 }
@@ -222,6 +193,66 @@ fn fp(ins: &mut Vec<String>, m: &mut Vec<(i32, i32)>) -> Vec<(i32, i32)> {
             }
         }
     }
-    
-    c
+}
+
+fn s(ins: &mut Vec<String>, m: &Vec<(i32, i32)>) -> i32 {
+    let mut p: (i32, i32) = (0, 0);
+    let mut ms: i32 = 100000000;
+
+    for i in 0..ins.len() {
+        let d: char = ins[i].remove(0);
+        let v: i32 = ins[i].parse().unwrap();
+
+        match d {
+            'R' => {
+                for _ in 0..v {
+                    p.0 += 1;
+                    if m.contains(&(p.0, p.1)) {
+                        let r: i32 = p.0.abs() + p.1.abs();
+                        if ms > r {
+                            ms = r;
+                        }
+                    }
+                }
+            },
+            'L' => {
+                for _ in 0..v {
+                    p.0 -= 1;
+                    if m.contains(&(p.0, p.1)) {
+                        let r: i32 = p.0.abs() + p.1.abs();
+                        if ms > r {
+                            ms = r;
+                        }
+                    }
+                }
+            },
+            'U' => {
+                for _ in 0..v {
+                    p.1 += 1;
+                    if m.contains(&(p.0, p.1)) {
+                        let r: i32 = p.0.abs() + p.1.abs();
+                        if ms > r {
+                            ms = r;
+                        }
+                    }
+                }
+            },
+            'D' => {
+                for _ in 0..v {
+                    p.1 -= 1;
+                    if m.contains(&(p.0, p.1)) {
+                        let r: i32 = p.0.abs() + p.1.abs();
+                        if ms > r {
+                            ms = r;
+                        }
+                    }
+                }
+            },
+            _ => {
+                println!("{}", d);
+            }
+        }
+    }
+
+    ms
 }
