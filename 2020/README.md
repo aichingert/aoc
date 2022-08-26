@@ -14,3 +14,4 @@
 | 11 | [day 11](/2020/day_11/src/main.rs) |
 | 12 | [day 12](/2020/day_12/src/main.rs) |
 | 14 | [day 14](/2020/day_14/src/main.rs) |
+| 15 | [day 15](/2020/day_15/src/main.rs) |
