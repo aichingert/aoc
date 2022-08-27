@@ -133,14 +133,10 @@ fn solve_part_two(inp: &String) {
     let n: Vec<i32> = g.1;
     let mut r: i32 = 0;
 
-    for i in 0..n.len() {
+    'main: for i in 0..n.len() {
         let mut j = 0;
 
         while j < b.len() {
-            if j >= b.len() {
-                break;
-            }
-
             for k in 0..b[j].a.len() {
                 for l in 0..b[j].a[k].len() {
                     if b[j].a[k][l].0 == n[i] {
@@ -149,30 +145,29 @@ fn solve_part_two(inp: &String) {
                 }
             }
     
-            if B::bingo(&b[j]) && b.len() > 1 {
-                b.remove(j);
+            if B::bingo(&b[j]) {
+                if b.len() > 1 {
+                    b.remove(j);
+                    continue;
+                } else {
+                    for k in 0..b[j].a.len() {
+                        for l in 0..b[j].a[k].len() {
+                            if !b[j].a[k][l].1 {
+                                r += b[j].a[k][l].0;
+                            }
+                        }
+                    }
+
+                    r *= n[i];
+                    break 'main;
+                }
             }
 
             j+=1;
         }
     }
 
-    for i in 0..n.len() {
 
-        for j in 0..b.len() {
-            for k in 0..b[j].a.len() {
-                for l in 0..b[j].a[k].len() {
-                    if b[j].a[k][l].0 == n[i] {
-                        b[j].a[k][l].1 = true;
-                    }
-                }
-            }
 
-            if B::bingo(&b[j]) && b.len() > 0 {
-                b.remove(j);
-            }
-        }
-    }
-
-    println!("Solution part one: {:?}", b);
+    println!("Solution part one: {:?}", r);
 }
