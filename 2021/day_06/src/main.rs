@@ -6,6 +6,17 @@ fn main() {
 
 fn solve_part_one(inp: &String) {
     let mut a: [usize; 9] = p(inp);
+
+    for _ in 0..80 {
+        let z: usize = a[0];
+        for i in 1..a.len() {
+            a[i - 1] = a[i];
+        }
+        a[6] += z;
+        a[8] = z;
+    }
+
+    println!("Solution part one: {}", s(&a));
 }
 
 fn p(inp: &String) -> [usize; 9] {
@@ -17,4 +28,14 @@ fn p(inp: &String) -> [usize; 9] {
     }
 
     r
+}
+
+fn s(a: &[usize; 9]) -> usize {
+    let mut s: usize = 0;
+
+    for i in 0..a.len() {
+        s += a[i];
+    }
+
+    s
 }
