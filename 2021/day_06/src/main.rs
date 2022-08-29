@@ -2,6 +2,7 @@ fn main() {
     let inp: String = std::fs::read_to_string("input.txt").expect("err");
 
     solve_part_one(&inp);
+    solve_part_two(&inp);
 }
 
 fn solve_part_one(inp: &String) {
@@ -17,6 +18,21 @@ fn solve_part_one(inp: &String) {
     }
 
     println!("Solution part one: {}", s(&a));
+}
+
+fn solve_part_two(inp: &String) {
+    let mut a: [usize; 9] = p(inp);
+
+    for _ in 0..256 {
+        let z: usize = a[0];
+        for i in 1..a.len() {
+            a[i - 1] = a[i];
+        }
+        a[6] += z;
+        a[8] = z;
+    }
+
+    println!("Solution part two: {}", s(&a));
 }
 
 fn p(inp: &String) -> [usize; 9] {
