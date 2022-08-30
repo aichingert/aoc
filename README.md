@@ -11,4 +11,4 @@ Solutions to the advent of code problems, written in rust. (Probably not the bes
 | :christmas_tree: [2018](/2018) |  5 |
 | :christmas_tree: [2017](/2017) | 21 |
 | :christmas_tree: [2016](/2016) |  8 |
-| :christmas_tree: [2015](/2015) |  7 |
+| :christmas_tree: [2015](/2015) |  8 |
