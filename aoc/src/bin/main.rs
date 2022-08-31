@@ -14,7 +14,7 @@ pub trait Solution {
 fn main() {
     let _args = std::env::args().collect::<Vec<String>>();
 
-    run()
+    run_2015()
 }
 
 pub fn run_solution<T: Solution>(solution: &mut T) {
