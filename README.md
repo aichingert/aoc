@@ -7,7 +7,7 @@ Solutions to the advent of code problems, written in rust. (Probably not the bes
 | ---- | -------- |
 | :christmas_tree: [2021](/2021) |  7 |
 | :christmas_tree: [2020](/2020) |  11 |
-| :christmas_tree: [2019](/2019) |  5 |
+| :christmas_tree: [2019](/2019) |  6 |
 | :christmas_tree: [2018](/2018) |  5 |
 | :christmas_tree: [2017](/2017) | 21 |
 | :christmas_tree: [2016](/2016) |  8 |
