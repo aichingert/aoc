@@ -1,8 +1,6 @@
 use aoc::read_to_chars;
 use std::collections::HashSet;
 
-use crate::Solution;
-
 pub struct Aoc2015_03 {
     d: Vec<char>
 }

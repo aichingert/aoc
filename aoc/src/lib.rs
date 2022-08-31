@@ -12,6 +12,14 @@ pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char> {
         .collect()
 }
 
+pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String> {
+    read_to_string(path)
+        .expect("unable to open file")
+        .split(sep)
+        .map( | s | s.to_string())
+        .collect()
+}
+
 pub fn numbers<T: AsRef<Path>, U: FromStr>(path: T, sep: char) -> Vec<Vec<U>> 
 where <U as FromStr>::Err: Debug,
 {
