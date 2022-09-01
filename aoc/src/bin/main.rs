@@ -2,9 +2,11 @@ use std::fmt::Display;
 
 mod aoc2015;
 mod aoc2016;
+mod aoc2017;
 
 use aoc2015::*;
 use aoc2016::*;
+use aoc2017::*;
 
 pub trait Solution {
     fn name(&self) -> (usize, usize);
@@ -18,6 +20,7 @@ fn main() {
 
     run_2015();
     run_2016();
+    run_2017();
 }
 
 pub fn run_solution<T: Solution>(solution: &mut T) {
