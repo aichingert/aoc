@@ -12,55 +12,17 @@ impl Aoc2016_01 {
     }
 }
 
-fn contains_0(m: &mut HashMap<(i32, i32), bool>, p: &mut (i32, i32), n: i32) -> (i32, i32, bool) {
+fn contains(m: &mut HashMap<(i32, i32), bool>, p: &mut (i32, i32), n: i32, r: i32, c: i32) -> (i32, i32, bool) {
     for i in 0..n {
-        if m.contains_key(&(p.0, p.1 - i)) {
-            return (p.0, p.1 - i, true);
+        if m.contains_key(&(p.0 + (i * r), p.1 + (i * c))) {
+            return (p.0 + (i * r), p.1 + (i * c), true);
         } else {
-            m.insert((p.0, p.1 - i), true);
+            m.insert((p.0 + (i * r), p.1 + (i * c)), true);
         }
     }
 
-    p.1 -= n;
-    (0, 0, false)
-}
-
-fn contains_90(m: &mut HashMap<(i32, i32), bool>, p: &mut (i32, i32), n: i32) -> (i32, i32, bool) {
-    for i in 0..n {
-        if m.contains_key(&(p.0 + i, p.1)) {
-            return (p.0 + i, p.1, true);
-        } else {
-            m.insert((p.0 + i, p.1), true);
-        }
-    }
-
-    p.0 += n;
-    (0, 0, false)
-}
-
-fn contains_180(m: &mut HashMap<(i32, i32), bool>, p: &mut (i32, i32), n: i32) -> (i32, i32, bool) {
-    for i in 0..n {
-        if m.contains_key(&(p.0, p.1 + i)) {
-            return (p.0, p.1 + i, true);
-        } else {
-            m.insert((p.0, p.1 + i), true);
-        }
-    }
-
-    p.1 += n;
-    (0, 0, false)
-}
-
-fn contains_270(m: &mut HashMap<(i32, i32), bool>, p: &mut (i32, i32), n: i32) -> (i32, i32, bool) {
-    for i in 0..n {
-        if m.contains_key(&(p.0 - i, p.1)) {
-            return (p.0 - i, p.1, true);
-        } else {
-            m.insert((p.0 - i, p.1), true);
-        }
-    }
-
-    p.0 -= n;
+    p.0 += n * r;
+    p.1 += n * c;
     (0, 0, false)
 }
 
@@ -123,10 +85,10 @@ impl crate::Solution for Aoc2016_01 {
                 }
 
                 match d {
-                    0 => s = contains_0(&mut m, &mut p, n),
-                    90 => s = contains_90(&mut m, &mut p, n),
-                    180 => s = contains_180(&mut m, &mut p, n),
-                    270 => s = contains_270(&mut m, &mut p, n),
+                    0 => s = contains(&mut m, &mut p, n, 0, -1),
+                    90 => s = contains(&mut m, &mut p, n, 1, 0),
+                    180 => s = contains(&mut m, &mut p, n, 0, 1),
+                    270 => s = contains(&mut m, &mut p, n, -1, 0),
                     _ => panic!("invalid degree value"),
                 }
 
