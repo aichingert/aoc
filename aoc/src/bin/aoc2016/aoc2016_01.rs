@@ -43,12 +43,8 @@ impl crate::Solution for Aoc2016_01 {
             let n: i32 = self.d[i][1..self.d[i].len()].parse::<i32>().unwrap();
 
             match &self.d[i][0..1] {
-                "R" => {
-                    d = (d + 90) % 360;
-                },
-                "L" => {
-                    d = ((d - 90) + 360) % 360;
-                }
+                "R" => d = (d + 90) % 360,
+                "L" => d = ((d - 90) + 360) % 360,
                 _ => panic!("invalid direction")
             }
 
@@ -75,12 +71,8 @@ impl crate::Solution for Aoc2016_01 {
                 let n: i32 = self.d[i][1..self.d[i].len()].parse::<i32>().unwrap();
 
                 match &self.d[i][0..1] {
-                    "R" => {
-                        d = (d + 90) % 360;
-                    },
-                    "L" => {
-                        d = ((d - 90) + 360) % 360;
-                    }
+                    "R" => d = (d + 90) % 360,
+                    "L" => d = ((d - 90) + 360) % 360,
                     _ => panic!("invalid direction")
                 }
 
