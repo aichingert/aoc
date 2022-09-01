@@ -4,11 +4,13 @@ mod aoc2015;
 mod aoc2016;
 mod aoc2017;
 mod aoc2018;
+mod aoc2019;
 
 use aoc2015::*;
 use aoc2016::*;
 use aoc2017::*;
 use aoc2018::*;
+use aoc2019::*;
 
 pub trait Solution {
     fn name(&self) -> (usize, usize);
@@ -24,6 +26,7 @@ fn main() {
     run_2016();
     run_2017();
     run_2018();
+    run_2019();
 }
 
 pub fn run_solution<T: Solution>(solution: &mut T) {

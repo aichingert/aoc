@@ -22,6 +22,4 @@ pub fn run_2015() {
     run_solution(&mut day_02);
     run_solution(&mut day_03);
     run_solution(&mut day_12);
-    
-    println!();
 }
