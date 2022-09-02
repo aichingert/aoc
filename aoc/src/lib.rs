@@ -36,6 +36,7 @@ where <U as FromStr>::Err: Debug, {
     read_to_string(path)
     .expect("unable to open file")
     .lines()
+    .filter( | l | !l.is_empty())
     .map( | l | l.parse::<U>().expect("unable to parse number"))            
     .collect()
 }
@@ -47,7 +48,7 @@ where <U as FromStr>::Err: Debug, {
         .lines()
         .map( | l | l.split(sep)
         .filter( | f | !f.is_empty())
-        .map( | v | v.parse::<U>().expect("unable to parse number"))            
+        .map( | v | v.parse::<U>().expect("unable to parse number "))            
         .collect())
         .collect()
 }

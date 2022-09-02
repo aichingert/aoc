@@ -16,6 +16,13 @@ use aoc2019::*;
 use aoc2020::*;
 use aoc2021::*;
 
+pub enum Selector {
+    All,
+    Year,
+    Day(usize),
+    Last,
+}
+
 pub trait Solution {
     fn name(&self) -> (usize, usize);
     fn parse(&mut self);
@@ -24,18 +31,56 @@ pub trait Solution {
 }
 
 fn main() {
-    let _args = std::env::args().collect::<Vec<String>>();
+    let args = std::env::args().collect::<Vec<String>>();
 
-    run_2015();
-    run_2016();
-    run_2017();
-    run_2018();
-    run_2019();
-    run_2020();
-    run_2021();
+    if args.len() > 1 {
+        if let Ok(year) = args[1].parse::<usize>() {
+            if args.len() > 2 {
+                if let Ok(day) = args[2].parse::<usize>() {
+                    match year {
+                        2015 => run_2015(Selector::Day(day)),
+                        2016 => run_2016(Selector::Day(day)),
+                        2017 => run_2017(Selector::Day(day)),
+                        2018 => run_2018(Selector::Day(day)),
+                        2019 => run_2019(Selector::Day(day)),
+                        2020 => run_2020(Selector::Day(day)),
+                        2021 => run_2021(Selector::Day(day)),
+                        _ => panic!("invalid year {year}")
+                    }
+                }
+            } else {
+                match year {
+                    2015 => run_2015(Selector::All),
+                    2016 => run_2016(Selector::All),
+                    2017 => run_2017(Selector::All),
+                    2018 => run_2018(Selector::All),
+                    2019 => run_2019(Selector::All),
+                    2020 => run_2020(Selector::All),
+                    2021 => run_2021(Selector::All),
+                    _ => panic!("invalid year {year}")
+                }
+            }
+        } else {
+            run_2015(Selector::All);
+            run_2016(Selector::All);
+            run_2017(Selector::All);
+            run_2018(Selector::All);
+            run_2019(Selector::All);
+            run_2020(Selector::All);
+            run_2021(Selector::All);
+        }
+    } else {
+        run_2015(Selector::Last);
+        run_2016(Selector::Last);
+        run_2017(Selector::Last);
+        run_2018(Selector::Last);
+        run_2019(Selector::Last);
+        run_2020(Selector::Last);
+        run_2021(Selector::Last);
+    }
 }
 
-pub fn run_solution<T: Solution>(solution: &mut T) {
+pub fn run_solution<T: Solution +?Sized>(solution: &mut T) {
     let name = solution.name();
     println!("---- {}, Day {} ----", name.0, name.1);
 
