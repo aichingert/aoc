@@ -46,7 +46,6 @@ impl crate::Solution for Aoc2019_02 {
         for n in 0..100 {
             for v in 0..100 {
                 let mut c = self.d.clone();
-                i = 0;
                 c[1] = n;
                 c[2] = v;
 
@@ -64,10 +63,10 @@ impl crate::Solution for Aoc2019_02 {
                     }
                     i+=4;
                 }
-
                 if c[0] == 19690720 {
                     return crate::output(100 * n + v);
                 }
+                i = 0;
             }
         }
 
