@@ -82,7 +82,7 @@ fn main() {
 
 pub fn run_solution<T: Solution +?Sized>(solution: &mut T) {
     let name = solution.name();
-    println!("---- {}, Day {} ----", name.0, name.1);
+    println!("------ {}, Day {} ------", name.0, name.1);
 
     solution.parse();
 

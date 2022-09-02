@@ -6,8 +6,6 @@ mod aoc2016_02;
 use aoc2016_01::*;
 use aoc2016_02::*;
 
-use crate::run_solution;
-
 pub fn run_2016(which: Selector) {
     let mut day_01 = Aoc2016_01::new();
     let mut day_02 = Aoc2016_02::new();
