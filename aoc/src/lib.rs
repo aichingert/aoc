@@ -12,6 +12,17 @@ pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char> {
         .collect()
 }
 
+pub fn read_to_slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<Vec<String>> {
+    read_to_string(path)
+        .expect("unable to open file")
+        .lines()
+        .map( | l | 
+        l.split(sep)
+        .map( | s | s.to_string())
+        .collect())
+        .collect()
+}
+
 pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String> {
     read_to_string(path)
         .expect("unable to open file")
