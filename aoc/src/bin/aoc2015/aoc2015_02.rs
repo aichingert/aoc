@@ -36,7 +36,7 @@ impl crate::Solution for Aoc2015_02 {
     }
 
     fn parse(&mut self) {
-        let mut d: Vec<Vec<u32>> = numbers("input/2015/02.txt", 'x');
+        let mut d: Vec<Vec<u32>> = numbers("input/2015/02.txt", "x");
         for i in 0..d.len() {
             d[i].sort();
             self.d.push(P::new(&d[i]));

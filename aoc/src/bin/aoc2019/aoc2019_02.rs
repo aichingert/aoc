@@ -16,7 +16,7 @@ impl crate::Solution for Aoc2019_02 {
     }
 
     fn parse(&mut self) {
-        self.d = numbers("input/2019/02.txt", ',')[0].clone();
+        self.d = numbers("input/2019/02.txt", ",")[0].clone();
     }
 
     fn part1(&mut self) -> Vec<String> {
@@ -41,7 +41,7 @@ impl crate::Solution for Aoc2019_02 {
 
     fn part2(&mut self) -> Vec<String> {
         let mut i: usize = 0;
-        self.d = numbers("input/2019/02.txt", ',')[0].clone();
+        self.d = numbers("input/2019/02.txt", ",")[0].clone();
 
         for n in 0..100 {
             for v in 0..100 {

@@ -40,7 +40,7 @@ where <U as FromStr>::Err: Debug, {
     .collect()
 }
 
-pub fn numbers<T: AsRef<Path>, U: FromStr>(path: T, sep: char) -> Vec<Vec<U>> 
+pub fn numbers<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<Vec<U>> 
 where <U as FromStr>::Err: Debug, {
     read_to_string(path)
         .expect("unable to open file")
