@@ -52,3 +52,12 @@ where <U as FromStr>::Err: Debug, {
         .collect())
         .collect()
 }
+
+pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
+    read_to_string(path)
+        .expect("unable to open file")
+        .lines()
+        .map( | l | l.chars()
+        .collect())
+        .collect()
+}

@@ -5,6 +5,11 @@
 pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char>
 ```
 
+## Reads the input to a Vec<Vec<char>>
+``` rust
+pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>>
+```
+
 ## Reads the input to a Vec<Vec<String>>
 ``` rust
 pub fn read_to_slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<Vec<String>> {
