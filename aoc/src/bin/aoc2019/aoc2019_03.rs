@@ -1,5 +1,5 @@
 use aoc::read_to_slice;
-use std::collections::{HashSet, HashMap};
+use std::collections::HashMap;
 
 pub struct Aoc2019_03 {
     d: Vec<Vec<String>>
