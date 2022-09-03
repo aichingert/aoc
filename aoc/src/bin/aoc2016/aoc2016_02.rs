@@ -14,15 +14,12 @@ impl Aoc2016_02 {
             return false;
         }
 
-        let p = 5 - m[y as usize].len();
-
-        match p {
+        match 5 - m[y as usize].len() {
             4 => if x != 2 { return false } else { return true },
             2 => if x >= 1 && x <= 3 { return true } else { return false },
             0 => true,
             _ => panic!("wrong math")
         }
-
     }
 }
 
