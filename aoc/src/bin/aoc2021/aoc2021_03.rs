@@ -81,6 +81,6 @@ impl crate::Solution for Aoc2021_03 {
     fn part2(&mut self) -> Vec<String> {
         let ogx: Vec<char> = Aoc2021_03::evolution(&mut self.d.clone(), '1', '0');
         let co2: Vec<char> = Aoc2021_03::evolution(&mut self.d.clone(), '0', '1');
-        crate::output(isize::from_str_radix(&ogx.iter().cloned().collect::<String>(), 2).expect("invalid gamma string") * isize::from_str_radix(&co2.iter().cloned().collect::<String>(), 2).expect("invalid epsilon string"))
+        crate::output(isize::from_str_radix(&ogx.into_iter().collect::<String>(), 2).expect("invalid gamma string") * isize::from_str_radix(&co2.into_iter().collect::<String>(), 2).expect("invalid epsilon string"))
     }
 }
