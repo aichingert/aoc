@@ -2,16 +2,19 @@ use crate::{Selector, Solution};
 
 mod aoc2021_01;
 mod aoc2021_02;
+mod aoc2021_03;
 
 use aoc2021_01::*;
 use aoc2021_02::*;
+use aoc2021_03::*;
 
 pub fn run_2021(which: Selector) {
     let mut day_01 = Aoc2021_01::new();
     let mut day_02 = Aoc2021_02::new();
+    let mut day_03 = Aoc2021_03::new();
 
     let mut days: Vec<&mut dyn Solution> = vec![
-        &mut day_01, &mut day_02
+        &mut day_01, &mut day_02, &mut day_03
     ];
 
     match which {
