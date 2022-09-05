@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub struct Aoc2016_04 {
     d: Vec<Vec<String>>,
-    v: Vec<String>
+    v: Vec<Vec<String>>
 }
 
 impl Aoc2016_04 {
@@ -73,13 +73,31 @@ impl crate::Solution for Aoc2016_04 {
 
             if t {
                 s += c[0].parse::<i32>().unwrap();
-                self.v.push(self.d[i].iter().cloned().collect::<String>());
+                self.v.push(self.d[i].clone());
             }
         }
         crate::output(s)
     }
 
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        for i in 0..self.d.len() {
+            let mut d: String = String::new();
+            let n: Vec<&str> = self.d[i][self.d[i].len() - 1].split('[').collect();
+            let r: i32 = n[0].parse::<i32>().unwrap();
+
+            for j in 0..self.d[i].len() - 1 {
+                for c in self.d[i][j].chars() {
+                    d.push(((((((c as u8 - 'a' as u8) as i32) + r) % 26) as u8) + ('a' as u8)) as char)
+                }
+                d.push(' ');
+            }
+            d.remove(d.len() - 1);
+
+            if d == "northpole object storage" {
+                return crate::output(r);
+            }
+        }
+        
+        panic!("no solution found")
     }
 }
