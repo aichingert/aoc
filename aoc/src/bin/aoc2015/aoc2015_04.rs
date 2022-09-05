@@ -41,7 +41,7 @@ impl crate::Solution for Aoc2015_04 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut i = 1;
+        let mut i = 10000;
         loop {
             let s: Vec<char> = Aoc2015_04::get_hash(&(self.d.clone() + &i.to_string())).chars().collect();
              if s[..6].iter().map( | v | match v {
