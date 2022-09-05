@@ -37,6 +37,91 @@ impl Passport {
             cid: -1,
         }
     }
+
+    fn check_height(&self) -> bool {
+        let mut s: String = String::new();
+        let mut f: String = String::new();
+    
+        for c in self.hgt.chars() {
+            if c.is_numeric() {
+                s.push(c)
+            } else {
+                f.push(c);
+            }
+        }
+    
+        let n: i32 = s.parse().unwrap();
+    
+        match &f as &str {
+            "in" => {
+                if n >= 59 && n <= 76 {
+                    return true;
+                }
+            },
+            "cm" => {
+                if n >= 150 && n <= 193 {
+                    return true;
+                }
+            },
+            _ => {}
+        }
+    
+        false
+    }
+
+    fn check_hair_color(&self) -> bool {
+        let mut h: String = self.hcl.clone();
+        let mut v: bool = false;
+    
+        if h.remove(0) != '#' {
+            return false;
+        }
+    
+        if h.len() != 6 {
+            return false;
+        }
+    
+        for c in h.chars() {
+            for s in 'a'..='f' {
+                if c == s {
+                    v = true;
+                }
+            }
+    
+            if c.is_numeric() {
+                v = true;
+            }
+        }
+    
+        v
+    }
+    
+    fn check_eye_color(&self) -> bool {
+        match &self.ecl as &str {
+            "amb" => return true,
+            "blu" => return true,
+            "brn" => return true,
+            "gry" => return true,
+            "grn" => return true,
+            "hzl" => return true,
+            "oth" => return true,
+            _ => return false
+        }
+    }
+
+    fn check_pid(&self) -> bool {
+        if self.pid.len() != 9 {
+            return false;
+        }
+    
+        for c in self.pid.chars() {
+            if !c.is_numeric() {
+                return false;
+            }
+        }
+    
+        true
+    }
 }
 
 impl crate::Solution for Aoc2020_04 {
@@ -101,6 +186,25 @@ impl crate::Solution for Aoc2020_04 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        todo!()
+        let mut v: bool;
+        let mut s: i32 = 0;
+
+        for i in 0..self.d.len() {
+            if self.d[i].byr.to_string().len() == 4 && self.d[i].byr >= 1920 && self.d[i].byr <= 2002
+            && self.d[i].iyr.to_string().len() == 4 && self.d[i].iyr >= 2010 && self.d[i].iyr <= 2020
+            && self.d[i].eyr.to_string().len() == 4 && self.d[i].eyr >= 2020 && self.d[i].eyr <= 2030
+            && self.d[i].check_height() && self.d[i].check_hair_color()
+            && self.d[i].check_eye_color() && self.d[i].check_pid() {
+                v = true;
+            } else {
+                v = false;
+            }
+
+            if v {
+                s += 1;
+            }
+        }
+
+        crate::output(s)
     }
 }
