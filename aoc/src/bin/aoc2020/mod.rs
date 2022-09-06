@@ -4,21 +4,24 @@ mod aoc2020_01;
 mod aoc2020_02;
 mod aoc2020_03;
 mod aoc2020_04;
+mod aoc2020_05;
 
 use aoc2020_01::*;
 use aoc2020_02::*;
 use aoc2020_03::*;
 use aoc2020_04::*;
+use aoc2020_05::*;
 
 pub fn run_2020(which: Selector) {
     let mut day_01 = Aoc2020_01::new();
     let mut day_02 = Aoc2020_02::new();
     let mut day_03 = Aoc2020_03::new();
     let mut day_04 = Aoc2020_04::new();
+    let mut day_05 = Aoc2020_05::new();
 
 
     let mut days: Vec<&mut dyn Solution> = vec![
-        &mut day_01, &mut day_02, &mut day_03, &mut day_04
+        &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05
     ];
 
     match which {
