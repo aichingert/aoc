@@ -1,7 +1,5 @@
 use aoc::read_to_slice;
 
-use crate::aoc2015::P;
-
 pub struct Aoc2020_04 {
     d: Vec<Passport>
 }
@@ -161,7 +159,7 @@ impl crate::Solution for Aoc2020_04 {
 
     fn part1(&mut self) -> Vec<String> {
         let mut o: usize = 0;
-        let mut v: bool = false;
+        let mut v: bool;
         let mut s: i32 = 0;
 
         for i in 0..self.d.len() {
