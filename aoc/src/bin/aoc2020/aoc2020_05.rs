@@ -110,6 +110,38 @@ impl crate::Solution for Aoc2020_05 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        todo!()
+        let mut map: Vec<Vec<char>> = vec![vec!['.'; 8]; 128];
+        let mut x: usize = 0;
+        let mut y: usize = 0;
+
+        for seat in &self.s {
+            if seat.0 == 0 && seat.0 == 127 {
+                continue;
+            }
+
+            map[seat.0][seat.1] = '#';
+        }
+
+        let mut c: bool = false;
+
+        for i in 0..map.len() {
+            for j in 0..map[i].len() {
+                if !c && map[i][j] == '#' {
+                    c = true;
+                }
+
+                if c && map[i][j] == '.' {
+                    y = i;
+                    x = j;
+                    break;
+                }
+            }
+
+            if y != 0 {
+                break;
+            }
+        }
+
+        crate::output(y * 8 + x)
     }
 }
