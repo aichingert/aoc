@@ -123,6 +123,41 @@ impl crate::Solution for Aoc2021_04 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut r: i32 = 0;
+
+        'main: for i in 0..self.d.len() {
+            let mut j = 0;
+
+            while j < self.b.len() {
+                for k in 0..self.b[j].b.len() {
+                    for l in 0..self.b[j].b[k].len() {
+                        if self.b[j].b[k][l].0 == self.d[i] {
+                            self.b[j].b[k][l].1 = true;
+                        }
+                    }
+                }
+        
+                if Board::bingo(&self.b[j]) {
+                    if self.b.len() > 1 {
+                        self.b.remove(j);
+                        continue;
+                    } else {
+                        for k in 0..self.b[j].b.len() {
+                            for l in 0..self.b[j].b[k].len() {
+                                if !self.b[j].b[k][l].1 {
+                                    r += self.b[j].b[k][l].0;
+                                }
+                            }
+                        }
+
+                        r *= self.d[i];
+                        break 'main;
+                    }
+                }
+
+                j+=1;
+            }
+        }
+        crate::output(r)
     }
 }

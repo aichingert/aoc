@@ -3,7 +3,7 @@
 ## solutions
 | year | finished |
 | ---- | -------- |
-| :christmas_tree: [2021](/aoc/src/bin/aoc2021) | 3 |
+| :christmas_tree: [2021](/aoc/src/bin/aoc2021) | 4 |
 | :christmas_tree: [2020](/aoc/src/bin/aoc2020) | 4 |
 | :christmas_tree: [2019](/aoc/src/bin/aoc2019) | 4 |
 | :christmas_tree: [2018](/aoc/src/bin/aoc2018) | 3 |
