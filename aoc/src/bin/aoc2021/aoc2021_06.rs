@@ -20,7 +20,7 @@ impl crate::Solution for Aoc2021_06 {
     }
 
     fn part1(&mut self) -> Vec<String> {
-        let mut l: [i32; 9] = [0; 9];
+        let mut l: [usize; 9] = [0; 9];
 
         for i in 0..self.d[0].len() {
             l[self.d[0][i]] += 1;
@@ -37,10 +37,27 @@ impl crate::Solution for Aoc2021_06 {
             l[8] = n;
         }
 
-        crate::output(l.iter().sum::<i32>())
+        crate::output(l.iter().sum::<usize>())
     }
 
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut l: [usize; 9] = [0; 9];
+
+        for i in 0..self.d[0].len() {
+            l[self.d[0][i]] += 1;
+        }
+
+        for _ in 0..256 {
+            let n = l[0];
+
+            for i in 1..l.len() {
+                l[i - 1] = l[i];
+            }
+
+            l[6] += n;
+            l[8] = n;
+        }
+
+        crate::output(l.iter().sum::<usize>())
     }
 }
