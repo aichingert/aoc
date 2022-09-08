@@ -72,6 +72,6 @@ impl crate::Solution for Aoc2017_09 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.g)
     }
 }
