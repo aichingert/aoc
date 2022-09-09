@@ -17,6 +17,7 @@ impl crate::Solution for Aoc2015_05 {
         
     fn parse(&mut self) {
         self.d = slice("input/2015/05.txt", "\r\n");
+        self.d.remove(self.d.len() - 1);
     }
         
     fn part1(&mut self) -> Vec<String> {
@@ -55,6 +56,38 @@ impl crate::Solution for Aoc2015_05 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut s: i32 = 0;
+
+        for i in 0..self.d.len() {
+            let mut v: bool = false;
+            let mut c: bool = false;
+            for j in 0..self.d[i].len() - 1 {
+                if !c {
+                    let d = self.d[i][j..=j].to_owned() + &self.d[i][j+1..=j+1];
+
+                    for k in j+2..self.d[i].len() - 1 {
+                        if d == self.d[i][k..=k].to_owned() + &self.d[i][k+1..=k+1] {
+                            c = true;
+                            break;
+                        }
+                    }
+                }
+
+                if j < self.d[i].len() - 2 {
+                    if self.d[i][j..=j] == self.d[i][j+2..=j+2] {
+                        v = true;
+                        if c {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if v && c {
+                s += 1;
+            }
+        }
+
+        crate::output(s)
     }
 }
