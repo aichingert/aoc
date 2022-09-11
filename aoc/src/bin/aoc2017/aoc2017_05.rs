@@ -38,27 +38,23 @@ impl crate::Solution for Aoc2017_05 {
         
     fn part2(&mut self) -> Vec<String> {
         self.parse();
-        let mut r = (self.d.clone(), vec![0; self.d.len()]);
         let mut p: i32 = 0;
         let mut s: i32 = 0;
 
         loop {
-            if p >= r.0.len() as i32 {
+            if p >= self.d.len() as i32 {
                 break;
             }
-            let check: bool = if r.1[p as usize] >= 3 {
-                true
-            } else { 
-                false
+
+            let l = p;
+            p += self.d[p as usize];
+            self.d[l as usize] += if self.d[l as usize] >= 3 {
+                -1
+            } else {
+                1
             };
 
-            r.1[p as usize] += if check { -1 } else { 1 };
-            p += r.1[p as usize] + r.0[p as usize] + if check { -1 } else { 1 };
             s += 1;
-
-            if s % 10000 == 0 {
-                println!("{s}")
-            }
         }
 
         crate::output(s)

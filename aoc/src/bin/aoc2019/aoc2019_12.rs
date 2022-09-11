@@ -1,5 +1,5 @@
 use aoc::read_to_slice;
-use std::collections::HashMap;
+
 pub struct Aoc2019_12 {
     d: Vec<[[i32; 3]; 2]>
 }
