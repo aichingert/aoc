@@ -4,17 +4,17 @@ mod aoc2017_01;
 mod aoc2017_02;
 mod aoc2017_03;
 mod aoc2017_04;
+mod aoc2017_05;
 mod aoc2017_09;
 mod aoc2017_11;
-mod aoc2017_05;
 
 use aoc2017_01::*;
 use aoc2017_02::*;
 use aoc2017_03::*;
 use aoc2017_04::*;
+use aoc2017_05::*;
 use aoc2017_09::*;
 use aoc2017_11::*;
-use aoc2017_05::*;
 
 pub fn run_2017(which: Selector) {
     let mut day_01 = Aoc2017_01::new();

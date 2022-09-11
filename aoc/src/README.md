@@ -31,3 +31,9 @@ pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String>
 pub fn numbers<T: AsRef<Path>, U: FromStr>(path: T, sep: char) -> Vec<Vec<U>> 
 where <U as FromStr>::Err: Debug,
 ```
+
+## Reads the input to a Vec<U>, where u is the type you pass to the fn
+``` rust
+pub fn read_number_stream<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<U> 
+where <U as FromStr>::Err: Debug
+```

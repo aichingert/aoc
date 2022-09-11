@@ -53,6 +53,16 @@ where <U as FromStr>::Err: Debug, {
         .collect()
 }
 
+pub fn read_number_stream<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<U> 
+where <U as FromStr>::Err: Debug
+{
+    read_to_string(path)
+        .expect("unable to open file")
+        .split(sep)
+        .map(|s| s.parse::<U>().expect("invalid input"))
+        .collect()
+}
+
 pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
     read_to_string(path)
         .expect("unable to open file")
