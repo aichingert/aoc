@@ -56,6 +56,23 @@ impl crate::Solution for Aoc2015_09 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut list = self.cities
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>();
+        let mut perms = Permutations::new();
+        perms.generate(&mut list, self.cities.len());
+        let mut longest: u64 = 0;
+
+        for p in perms.list.iter() {
+            let mut sum: u64 = 0;
+            for pair in p.windows(2) {
+                sum += self.dist[&(pair[0].clone(), pair[1].clone())];
+            }
+
+            longest = longest.max(sum);
+        }
+
+        crate::output(longest)
     }
 }
