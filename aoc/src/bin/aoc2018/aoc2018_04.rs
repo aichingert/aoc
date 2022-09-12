@@ -160,6 +160,34 @@ impl crate::Solution for Aoc2018_04 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut result: (i32, i32, i32) = (0, 0, 0);
+
+        for i in 0..self.g.len() {
+            let mut asleep_mins: HashMap<i32, i32> = HashMap::new();
+
+            for j in 0..self.g[i].times.len() {
+                for k in self.g[i].times[j].0..self.g[i].times[j].1 {
+                    if let Some(min) = asleep_mins.remove(&k) {
+                        asleep_mins.insert(k, min + 1);
+                    } else {
+                        asleep_mins.insert(k, 1);
+                    }
+                }
+            }
+
+            let mut most_mins: (i32, i32) = (0, 0);
+
+            for k in asleep_mins.keys() {
+                if asleep_mins[k] > most_mins.1 {
+                    most_mins = (*k, asleep_mins[k]);
+                }
+            }
+
+            if result.2 < most_mins.1 {
+                result = (self.g[i].id, most_mins.0, most_mins.1);
+            }
+        }
+
+        crate::output(result.0 * result.1)
     }
 }
