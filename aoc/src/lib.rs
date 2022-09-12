@@ -71,3 +71,30 @@ pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
         .collect())
         .collect()
 }
+
+pub struct Permutations<T> {
+    list: Vec<Vec<T>>
+}
+
+impl<T: Clone> Permutations<T> {
+    pub fn new() -> Self {
+        Self { list: vec![] }
+    }
+    pub fn generate(&mut self, vec: &mut [T], len: usize) {
+        if len == 1 {
+            self.list.push(Vec::from(vec))
+        } else {
+            self.generate(vec, len - 1);
+
+            for i in 0..len - 1 {
+                if len % 2 == 0 {
+                    vec.swap(i, len - 1);
+                } else {
+                    vec.swap(0, len - 1);
+                }
+
+                self.generate(vec, len - 1)
+            }
+        }
+    }
+}

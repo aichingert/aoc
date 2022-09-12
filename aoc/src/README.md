@@ -37,3 +37,8 @@ where <U as FromStr>::Err: Debug,
 pub fn read_number_stream<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<U> 
 where <U as FromStr>::Err: Debug
 ```
+
+## Struct Permutations gets the permutations of a vec
+``` rust 
+pub struct Permutations<T>
+```
