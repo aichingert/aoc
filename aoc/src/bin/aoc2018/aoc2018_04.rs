@@ -44,20 +44,21 @@ impl crate::Solution for Aoc2018_04 {
                 d[i][0][9..=10].parse().expect("unable to parse day"), 
                 d[i][1][0..=1].parse().expect("unable to parse hour"),
                 d[i][1][3..=4].parse().expect("unable to parse minute"));
+                let mut new: bool = false;
 
                 if current_date.0 < date.0 {
-                    date = current_date;
-                    position = i;
+                    new = true;
                 } else if current_date.0 <= date.0 && current_date.1 < date.1 {
-                    date = current_date;
-                    position = i;
+                    new = true;
                 } else if current_date.0 <= date.0 && current_date.1 <= date.1 && current_date.2 < date.2 {
-                    date = current_date;
-                    position = i;
+                    new = true;
                 } else if current_date.0 <= date.0 && current_date.1 <= date.1 && current_date.2 <= date.2 && current_date.3 < date.3 {
-                    date = current_date;
-                    position = i;
+                    new = true;
                 } else if current_date.0 <= date.0 && current_date.1 <= date.1 && current_date.2 <= date.2 && current_date.3 <= date.3 && current_date.4 < date.4 {
+                    new = true;
+                }
+
+                if new {
                     date = current_date;
                     position = i;
                 }
