@@ -73,7 +73,7 @@ pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
 }
 
 pub struct Permutations<T> {
-    list: Vec<Vec<T>>
+    pub list: Vec<Vec<T>>
 }
 
 impl<T: Clone> Permutations<T> {
