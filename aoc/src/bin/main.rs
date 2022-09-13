@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, time};
 
 mod aoc2015;
 mod aoc2016;
@@ -86,21 +86,25 @@ pub fn run_solution<T: Solution +?Sized>(solution: &mut T) {
 
     solution.parse();
 
+    let time = time::Instant::now();
     let p1 = solution.part1();
-    print_solution(1, &p1);
+    let duration = time.elapsed();
+    print_solution(1, &p1, duration);
 
+    let time = time::Instant::now();
     let p2 = solution.part2();
-    print_solution(2, &p2);
+    let duration = time.elapsed();
+    print_solution(2, &p2, duration);
 }
 
 pub fn output<T: Display>(output: T) -> Vec<String> {
     vec![format!("{}", output)]
 }
 
-fn print_solution(which: usize, output: &[String]) {
+fn print_solution(which: usize, output: &[String], duration: time::Duration) {
     let mut iter = output.iter();
 
-    println!("Part {which}: {}", iter.next().unwrap());
+    println!("{:.6} | Part {which}: {}",duration.as_secs_f64() , iter.next().unwrap());
     
     for line in iter {
         println!("       {}", line)
