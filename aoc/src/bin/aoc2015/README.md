@@ -9,4 +9,4 @@
 |  5 | **[Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5)** | [day  5](/aoc/src/bin/aoc2015/aoc2015_05.rs) |
 |  9 | **[All in a Single Night](https://adventofcode.com/2015/day/09)** | [day  9](/aoc/src/bin/aoc2015/aoc2015_09.rs) |
 | 13 | **[Knights of the Dinner Table](https://adventofcode.com/2015/day/13)** | [day 13](/aoc/src/bin/aoc2015/aoc2015_13.rs) |
-| 15 | **[name](https://adventofcode.com/2015/day/15)** | [day 15](/aoc/src/bin/aoc2015/aoc2015_15.rs) |
+| 15 | **[Science for Hungry People](https://adventofcode.com/2015/day/15)** | [day 15](/aoc/src/bin/aoc2015/aoc2015_15.rs) |
