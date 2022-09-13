@@ -64,6 +64,32 @@ impl crate::Solution for Aoc2015_13 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        for p in self.people.iter() {
+            self.happiness.insert(("you".to_string(), p.clone()), 0);
+            self.happiness.insert((p.clone(), "you".to_string()), 0);
+        }
+        self.people.insert("you".to_string());
+        let mut list = self.people
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>();
+        let mut perms = Permutations::new();
+        perms.generate(&mut list, self.people.len());
+
+        let mut most = -i32::MAX;
+
+        for p in perms.list {
+            let mut sum: i32 = 0;
+            for pair in p.windows(2) {
+                sum += self.happiness[&(pair[0].clone(), pair[1].clone())];
+                sum += self.happiness[&(pair[1].clone(), pair[0].clone())]
+            }
+            sum += self.happiness[&(p[0].clone(), p[p.len() - 1].clone())];
+            sum += self.happiness[&(p[p.len() - 1].clone(), p[0].clone())];
+
+            most = most.max(sum);
+        }
+
+        crate::output(most)
     }
 }

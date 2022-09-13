@@ -2,10 +2,10 @@
 
 | day | name | solution |
 | --- | --- | --- |
-| 1 | **[Not Quite Lisp](https://adventofcode.com/2015/day/1)** | [day  1](/aoc/src/bin/aoc2015/aoc2015_01.rs) |
-| 2 | **[I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2)** | [day  2](/aoc/src/bin/aoc2015/aoc2015_02.rs) |
-| 3 | **[Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3)** | [day  3](/aoc/src/bin/aoc2015/aoc2015_03.rs) |
-| 4 | **[The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4)** | [day  4](/aoc/src/bin/aoc2015/aoc2015_04.rs) |
-| 5 | **[Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5)** | [day  5](/aoc/src/bin/aoc2015/aoc2015_05.rs) |
+|  1 | **[Not Quite Lisp](https://adventofcode.com/2015/day/1)** | [day  1](/aoc/src/bin/aoc2015/aoc2015_01.rs) |
+|  2 | **[I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2)** | [day  2](/aoc/src/bin/aoc2015/aoc2015_02.rs) |
+|  3 | **[Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3)** | [day  3](/aoc/src/bin/aoc2015/aoc2015_03.rs) |
+|  4 | **[The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4)** | [day  4](/aoc/src/bin/aoc2015/aoc2015_04.rs) |
+|  5 | **[Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5)** | [day  5](/aoc/src/bin/aoc2015/aoc2015_05.rs) |
 |  9 | **[All in a Single Night](https://adventofcode.com/2015/day/09)** | [day  9](/aoc/src/bin/aoc2015/aoc2015_09.rs) |
-| 13 | **[name](https://adventofcode.com/2015/day/13)** | [day 13](/aoc/src/bin/aoc2015/aoc2015_13.rs) |
+| 13 | **[Knights of the Dinner Table](https://adventofcode.com/2015/day/13)** | [day 13](/aoc/src/bin/aoc2015/aoc2015_13.rs) |
