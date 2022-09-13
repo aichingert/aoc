@@ -122,6 +122,36 @@ impl crate::Solution for Aoc2015_16 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let searching: Aunt = Aunt {
+            id: 0,
+            children: 3,
+            cats: 7,
+            samoyeds: 2,
+            pomeranians: 3,
+            akitas: 0,
+            vizslas: 0,
+            goldfish: 5,
+            trees: 3,
+            cars: 2,
+            perfumes: 1
+        };
+        let mut id: i32 = 0;
+
+        for i in 0..self.aunts.len() {
+            if searching.children != self.aunts[i].children && self.aunts[i].children != -1 { continue; }
+            if searching.cats >= self.aunts[i].cats && self.aunts[i].cats != -1 {continue;}
+            if searching.samoyeds != self.aunts[i].samoyeds && self.aunts[i].samoyeds != -1 {continue;}
+            if searching.pomeranians <= self.aunts[i].pomeranians && self.aunts[i].pomeranians != -1 {continue;}
+            if searching.akitas != self.aunts[i].akitas && self.aunts[i].akitas != -1 {continue;}
+            if searching.vizslas != self.aunts[i].vizslas && self.aunts[i].vizslas != -1 {continue;}
+            if searching.goldfish <= self.aunts[i].goldfish && self.aunts[i].goldfish != -1 {continue;}
+            if searching.trees >= self.aunts[i].trees && self.aunts[i].trees != -1 {continue;}
+            if searching.cars != self.aunts[i].cars && self.aunts[i].cars != -1 {continue;}
+            if searching.perfumes != self.aunts[i].perfumes && self.aunts[i].perfumes != -1 {continue;}
+
+            id = self.aunts[i].id;
+            break;
+        }
+        crate::output(id)
     }
 }
