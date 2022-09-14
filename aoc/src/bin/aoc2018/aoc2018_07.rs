@@ -34,10 +34,11 @@ impl crate::Solution for Aoc2018_07 {
         
     fn part1(&mut self) -> Vec<String> {
         let mut ans: String = String::new();
+        let mut nodes = self.nodes.clone();
 
-        while self.nodes.len() > 0 {
+        while nodes.len() > 0 {
             let mut free_nodes: Vec<&String> = Vec::new();
-            let current_nodes = self.nodes.clone();
+            let current_nodes = nodes.clone();
 
             'outer: for search_key in current_nodes.iter() {
                 for key in current_nodes.iter() {
@@ -54,7 +55,7 @@ impl crate::Solution for Aoc2018_07 {
             if free_nodes.len() > 0 {
                 free_nodes.sort();
                 ans.push_str(&free_nodes[0].clone());
-                self.nodes.remove(free_nodes.remove(0));
+                nodes.remove(free_nodes.remove(0));
             }
         }
 
@@ -62,6 +63,55 @@ impl crate::Solution for Aoc2018_07 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut nodes: HashMap<String, (Vec<String>, i32)> = HashMap::new();
+        let mut workes: [i32; 5] = [0; 5];
+        let mut seconds: i32 = 0;
+
+        for key in self.nodes.keys() {
+            nodes.insert(key.clone(), (self.nodes[key].clone(), (key.chars().next().expect("string is empty") as u8 - 'A' as u8 + 1) as i32));
+        }
+
+        while nodes.len() > 0 {
+            let mut free_nodes: Vec<(&String, i32)> = Vec::new();
+            let current_nodes = nodes.clone();
+
+            'outer: for search_key in current_nodes.iter() {
+                for key in current_nodes.iter() {
+                    if self.nodes[key.0].contains(search_key.0) {
+                        continue 'outer;
+                    }
+                }
+
+                if !free_nodes.contains(&(search_key.0, search_key.1.1)) {
+                    free_nodes.push((search_key.0, search_key.1.1));
+                }
+            }
+
+            for i in 0..workes.len() {
+                if free_nodes.len() > i {
+                    if workes[i] == 0 {
+                        let values = nodes.remove(free_nodes[i].0).unwrap();
+                        if values.1 - 1 != 0 {
+                            nodes.insert(free_nodes[i].0.clone(), (values.0, values.1 - 1));
+                        }
+                        workes[i] = values.1 - 1;
+                    } else {
+                        if let Some(values) = nodes.remove(free_nodes[i].0) {
+                            if values.1 - 1 != 0 {
+                                nodes.insert(free_nodes[i].0.clone(), (values.0, values.1 - 1));
+                            }
+                            workes[i] = values.1 - 1;
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            println!("{seconds} {:?} {:?}", free_nodes, workes);
+            seconds += 1;
+        }
+        
+        crate::output(seconds)
     }
 }
