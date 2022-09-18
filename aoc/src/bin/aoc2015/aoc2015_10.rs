@@ -48,7 +48,10 @@ impl crate::Solution for Aoc2015_10 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        for _ in 0..10 {
+            self.number = self.say();
+        }
+        crate::output(self.number.len())
     }
 }
 
