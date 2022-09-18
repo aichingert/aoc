@@ -70,6 +70,59 @@ impl crate::Solution for Aoc2021_05 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        self.map = vec![vec![0; S]; S];
+
+        for i in 0..self.cords.len() {
+            let ma: usize;
+            let mi: usize;
+
+            if self.cords[i].0.0 == self.cords[i].1.0 {
+                ma = std::cmp::max(self.cords[i].0.1, self.cords[i].1.1);
+                mi = std::cmp::min(self.cords[i].0.1, self.cords[i].1.1);
+    
+                for j in mi..=ma {
+                    self.map[j][self.cords[i].0.0] += 1;
+                }
+            } else if self.cords[i].0.1 == self.cords[i].1.1 {
+                ma = std::cmp::max(self.cords[i].0.0, self.cords[i].1.0);
+                mi = std::cmp::min(self.cords[i].0.0, self.cords[i].1.0);
+    
+                for j in mi..=ma {
+                    self.map[self.cords[i].0.1][j] += 1;
+                }
+            } else {
+                let x: i32 = self.cords[i].0.0 as i32 - self.cords[i].1.0 as i32;
+                let y: i32 = self.cords[i].0.1 as i32 - self.cords[i].1.1 as i32;
+    
+                // -2 ; 2
+                // -2 ; -2
+    
+                if (x > -1 && y > -1) || (x < 0 && y < 0) {
+                    if x < 0 && y < 0 {
+                        let s = self.cords[i].0;
+                        self.cords[i].0 = self.cords[i].1;
+                        self.cords[i].1 = s;
+                    }
+    
+                    for j in 0..=self.cords[i].0.0-self.cords[i].1.0 {
+                        self.map[self.cords[i].1.1 + j][self.cords[i].1.0 + j] += 1;
+                    }
+                } else {
+                    // 4,0 -> 0,4
+                    // 4 ; -4
+                    // -4 ; 4
+                    if x < 0 && y > -1 {
+                        let s = self.cords[i].0;
+                        self.cords[i].0 = self.cords[i].1;
+                        self.cords[i].1 = s;
+                    }
+    
+                    for j in 0..=self.cords[i].0.0-self.cords[i].1.0 {
+                        self.map[self.cords[i].1.1 - j][self.cords[i].1.0 + j] += 1;
+                    }
+                }
+            }
+        }
+        crate::output(self.sum())
     }
 }
