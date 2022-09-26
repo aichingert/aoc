@@ -9,3 +9,4 @@
 |  7 | **[name](https://adventofcode.com/2018/day/07)** | [day  7](/aoc/src/bin/aoc2018/aoc2018_07.rs) |
 | 11 | **[Chronal Charge](https://adventofcode.com/2018/day/11)** | [day 11](/aoc/src/bin/aoc2018/aoc2018_11.rs) |
 | 12 | **[name](https://adventofcode.com/2018/day/12)** | [day 12](/aoc/src/bin/aoc2018/aoc2018_12.rs) |
+|  5 | **[name](https://adventofcode.com/2018/day/05)** | [day  5](/aoc/src/bin/aoc2018/aoc2018_05.rs) |
