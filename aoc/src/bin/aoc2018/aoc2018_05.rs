@@ -40,6 +40,39 @@ impl crate::Solution for Aoc2018_05 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut i: usize = 0;
+        let mut password: Vec<char> = vec!['-'; 8];
+
+        loop {
+            let hash: Vec<char> = Aoc2018_05::get_hash(&(self.word.to_owned() + &i.to_string())).chars().collect();
+            if hash[0..5].iter().map(|v| match v {
+                '0' => 0,
+                _ => 1,
+            }).sum::<i32>() == 0 {
+                let index: usize =(hash[5] as u8 - '0' as u8) as usize; 
+
+                if index >= 8 {
+                    i += 1;
+                    continue;
+                }
+
+                if password[index] != '-' {
+                    i += 1;
+                    continue;
+                } 
+
+                password[index] = hash[6];
+                
+                if password.iter().map(|c| match c {
+                    '-' => 1,
+                    _ => 0,
+                }).sum::<i32>() == 0 {
+                    break;
+                };
+            }
+           i += 1;
+        }
+
+        crate::output(password.into_iter().collect::<String>())
     }
 }
