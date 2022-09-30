@@ -92,7 +92,7 @@ impl crate::Solution for Aoc2015_11 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-
-        crate::output("")
+        self.tick();
+        crate::output(self.solve())
     }
 }
