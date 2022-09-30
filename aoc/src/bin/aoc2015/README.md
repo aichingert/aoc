@@ -12,3 +12,4 @@
 | 13 | **[Knights of the Dinner Table](https://adventofcode.com/2015/day/13)** | [day 13](/aoc/src/bin/aoc2015/aoc2015_13.rs) |
 | 15 | **[Science for Hungry People](https://adventofcode.com/2015/day/15)** | [day 15](/aoc/src/bin/aoc2015/aoc2015_15.rs) |
 | 16 | **[Aunt Sue](https://adventofcode.com/2015/day/16)** | [day 16](/aoc/src/bin/aoc2015/aoc2015_16.rs) |
+| 11 | **[name](https://adventofcode.com/2015/day/11)** | [day 11](/aoc/src/bin/aoc2015/aoc2015_11.rs) |
