@@ -22,8 +22,8 @@ pub fn run_2017(which: Selector) {
     let mut day_03 = Aoc2017_03::new();
     let mut day_04 = Aoc2017_04::new();
     let mut day_05 = Aoc2017_05::new();
-	let mut day_09 = Aoc2017_09::new();
-	let mut day_11 = Aoc2017_11::new();
+    let mut day_09 = Aoc2017_09::new();
+    let mut day_11 = Aoc2017_11::new();
 
     let mut days: Vec<&mut dyn Solution> = vec![
         &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05, &mut day_09, &mut day_11
