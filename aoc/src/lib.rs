@@ -5,6 +5,9 @@ use std::{
     fmt::Debug,
 };
 
+/// Returns the input
+/// as a list of chars
+///
 pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char> {
     read_to_string(path)
         .expect("unable to open file")
@@ -12,6 +15,9 @@ pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char> {
         .collect()
 }
 
+/// Returns a list of a
+/// list of seperated strings
+///
 pub fn read_to_slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<Vec<String>> {
     read_to_string(path)
         .expect("unable to open file")
@@ -23,6 +29,10 @@ pub fn read_to_slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<Vec<String>> {
         .collect()
 }
 
+/// Returns a list of Strings that 
+/// are seperated
+/// by a seperater 'sep'
+///
 pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String> {
     read_to_string(path)
         .expect("unable to open file")
@@ -31,6 +41,11 @@ pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String> {
         .collect()
 }
 
+/// Expects the input to be
+/// a single number per line
+/// and then parses that into
+/// a list
+///
 pub fn read_to_numbers<T: AsRef<Path>, U: FromStr>(path: T) -> Vec<U>
 where <U as FromStr>::Err: Debug, {
     read_to_string(path)
@@ -41,6 +56,11 @@ where <U as FromStr>::Err: Debug, {
     .collect()
 }
 
+/// Expects the input to be
+/// a map of numbers only
+/// and then parses it per
+/// line per character 
+///
 pub fn numbers<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<Vec<U>> 
 where <U as FromStr>::Err: Debug, {
     read_to_string(path)
@@ -53,6 +73,11 @@ where <U as FromStr>::Err: Debug, {
         .collect()
 }
 
+/// Expects the input to be
+/// a line of numbers only
+/// and then parses it per
+/// character into a number
+///
 pub fn read_number_stream<T: AsRef<Path>, U: FromStr>(path: T, sep: &str) -> Vec<U> 
 where <U as FromStr>::Err: Debug
 {
@@ -63,6 +88,10 @@ where <U as FromStr>::Err: Debug
         .collect()
 }
 
+/// Gives the input line
+/// per line parsed per
+/// character
+///
 pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
     read_to_string(path)
         .expect("unable to open file")
@@ -72,6 +101,12 @@ pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
         .collect()
 }
 
+/// Permutations 
+/// 
+/// calculates the possible
+/// permutations for the given
+/// list
+///
 pub struct Permutations<T> {
     pub list: Vec<Vec<T>>
 }
