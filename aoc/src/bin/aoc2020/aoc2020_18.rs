@@ -9,6 +9,11 @@ impl Aoc2020_18 {
 
     fn calculate(line: &Vec<String>) -> i32 {
         let mut idx: usize = 0;
+
+        if line.len() == 1 {
+            return line[0].parse::<i32>().unwrap();
+        }
+
         let mut result: i32 = match &line[idx+1] as &str {
             "+" => {
                 line[idx].parse::<i32>().unwrap()+line[idx+2].parse::<i32>().unwrap()
@@ -36,6 +41,34 @@ impl Aoc2020_18 {
         }
 
         result
+    }
+
+    fn unzip(values: &mut Vec<String>, idx: usize) -> i32 {
+        let mut equation: Vec<String> = vec![];
+
+        if &values[idx][0..=0] == "(" {
+            values[idx] = values[idx][1..values[idx].len()].to_string();
+            equation.push(Aoc2020_18::unzip(values, idx).to_string());
+        } 
+
+        while idx < values.len() {
+            if &values[idx][0..=0] == "(" {
+                equation.push(Aoc2020_18::unzip(values, idx).to_string());
+            } else {
+                if values[idx].len() >= 2 {
+                    equation.push(values[idx][0..=0].to_string());
+                    if values[idx].len() > 2 {
+                        values[idx] = values[idx][2..=values[idx].len()].to_string();
+                    } else {
+                        values.remove(idx);
+                    }
+                    break;
+                }
+                equation.push(values.remove(idx));
+            }
+        }
+
+        Aoc2020_18::calculate(&equation)
     }
 }
         
@@ -75,5 +108,10 @@ mod test {
         assert!(Aoc2020_18::calculate(&vec![
             "2".to_string(), "*".to_string(), "3".to_string()]) == 6
         );
+    }
+
+    #[test]
+    fn aoc2020_18_unzip_function() {
+        assert!(Aoc2020_18::unzip(&mut vec!["(2".to_string(), "+".to_string(), "3)".to_string()], 0) == 5);
     }
 }
