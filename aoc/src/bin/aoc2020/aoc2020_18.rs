@@ -15,24 +15,16 @@ impl Aoc2020_18 {
         }
 
         let mut result: u64 = match &line[idx+1] as &str {
-            "+" => {
-                line[idx].parse::<u64>().unwrap()+line[idx+2].parse::<u64>().unwrap()
-            },
-            "*" => {
-                line[idx].parse::<u64>().unwrap()*line[idx+2].parse::<u64>().unwrap()
-            },
+            "+" => line[idx].parse::<u64>().unwrap()+line[idx+2].parse::<u64>().unwrap(),
+            "*" => line[idx].parse::<u64>().unwrap()*line[idx+2].parse::<u64>().unwrap(),
             _ => panic!("invalid operator")
         };
  
         idx=3;
         while idx < line.len() {
             match &line[idx] as &str {
-                "+" => {
-                    result+=line[idx+1].parse::<u64>().unwrap();
-                },
-                "*" => {
-                    result*=line[idx+1].parse::<u64>().unwrap();
-                },
+                "+" => result+=line[idx+1].parse::<u64>().unwrap(),
+                "*" => result*=line[idx+1].parse::<u64>().unwrap(),
                 _ => panic!("invalid operator")
             }
             idx+=2;
@@ -41,18 +33,23 @@ impl Aoc2020_18 {
         result
     }
 
-    fn unzip(values: &mut Vec<String>, idx: usize) -> u64 {
+    fn calculate_with_priority(line: &Vec<String>) -> u64 {
+
+        0
+    }
+
+    fn unzip(values: &mut Vec<String>, idx: usize, part: bool) -> u64 {
         let mut equation: Vec<String> = vec![];
 
         if &values[idx][0..=0] == "(" {
             values[idx] = values[idx][1..values[idx].len()].to_string();
-            equation.push(Aoc2020_18::unzip(values, idx).to_string());
+            equation.push(Aoc2020_18::unzip(values, idx, part).to_string());
         } 
 
         while idx < values.len() {
             if &values[idx][0..=0] == "(" {
                 values[idx] = values[idx][1..values[idx].len()].to_string();
-                equation.push(Aoc2020_18::unzip(values, idx).to_string());
+                equation.push(Aoc2020_18::unzip(values, idx, part).to_string());
             } else {
                 if values[idx].len() >= 2 {
                     equation.push(values[idx][0..=0].to_string());
@@ -70,7 +67,11 @@ impl Aoc2020_18 {
             }
         }
 
-        Aoc2020_18::calculate(&equation)
+        if part {
+            Aoc2020_18::calculate(&equation)
+        } else {
+            0
+        }
     }
 }
         
@@ -84,11 +85,11 @@ impl crate::Solution for Aoc2020_18 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0)).sum::<u64>())
+        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, true)).sum::<u64>())
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, false)).sum::<u64>())
     }
 }
 
@@ -104,10 +105,10 @@ mod test {
 
     #[test]
     fn aoc2020_18_unzip_function() {
-        assert!(Aoc2020_18::unzip(&mut (String::from("2 * 3 + (4 * 5)").split(' ').map(|s| s.to_string()).collect()), 0) == 26);
-        assert!(Aoc2020_18::unzip(&mut (String::from("5 + (8 * 3 + 9 + 3 * 4 * 3)").split(' ').map(|s| s.to_string()).collect()), 0) == 437);
-        assert!(Aoc2020_18::unzip(&mut (String::from("5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))").split(' ').map(|s| s.to_string()).collect()), 0) == 12240);
-        assert!(Aoc2020_18::unzip(&mut (String::from("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2").split(' ').map(|s| s.to_string()).collect()), 0) == 13632);
-        assert!(Aoc2020_18::unzip(&mut (String::from("7 + 3 * 9 + (2 * (2 + 9 + 9 + 8 + 9) * (8 * 6)) * 4 * 9").split(' ').map(|s| s.to_string()).collect()), 0) == 131112);
+        assert!(Aoc2020_18::unzip(&mut (String::from("2 * 3 + (4 * 5)").split(' ').map(|s| s.to_string()).collect()), 0, true) == 26);
+        assert!(Aoc2020_18::unzip(&mut (String::from("5 + (8 * 3 + 9 + 3 * 4 * 3)").split(' ').map(|s| s.to_string()).collect()),0, true) == 437);
+        assert!(Aoc2020_18::unzip(&mut (String::from("5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))").split(' ').map(|s| s.to_string()).collect()),0, true) == 12240);
+        assert!(Aoc2020_18::unzip(&mut (String::from("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2").split(' ').map(|s| s.to_string()).collect()),0, true) == 13632);
+        assert!(Aoc2020_18::unzip(&mut (String::from("7 + 3 * 9 + (2 * (2 + 9 + 9 + 8 + 9) * (8 * 6)) * 4 * 9").split(' ').map(|s| s.to_string()).collect()),0, true) == 131112);
     }
 }
