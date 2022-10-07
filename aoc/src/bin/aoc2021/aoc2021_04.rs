@@ -60,7 +60,7 @@ impl crate::Solution for Aoc2021_04 {
     }
 
     fn parse(&mut self) {
-        let mut p = slice("input/2021/04.txt", "\r\n");
+        let mut p = slice("input/2021/04.txt", "\n");
         self.d = p.remove(0).split(',').map( | v | v.parse::<i32>().expect("invalid input")).collect();
         p.remove(0);
 

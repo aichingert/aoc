@@ -24,7 +24,7 @@ impl crate::Solution for Aoc2016_03 {
     }
 
     fn parse(&mut self) {
-        self.d = numbers("Input/2016/03.txt", " ");
+        self.d = numbers("input/2016/03.txt", " ");
     }
 
     fn part1(&mut self) -> Vec<String> {
