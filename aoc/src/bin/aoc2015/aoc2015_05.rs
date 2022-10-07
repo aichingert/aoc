@@ -16,7 +16,7 @@ impl crate::Solution for Aoc2015_05 {
     }
         
     fn parse(&mut self) {
-        self.d = slice("input/2015/05.txt", "\r\n");
+        self.d = slice("input/2015/05.txt", "\n");
         self.d.remove(self.d.len() - 1);
     }
         

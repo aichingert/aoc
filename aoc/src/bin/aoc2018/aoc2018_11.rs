@@ -86,7 +86,6 @@ impl crate::Solution for Aoc2018_11 {
                     }
                 }
             }
-            println!("{s}")
         }
 
         crate::output(format!("{},{},{}", cords.0 + 1, cords.1 + 1, cords.2))

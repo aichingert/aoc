@@ -22,7 +22,7 @@ impl crate::Solution for Aoc2015_15 {
     }
         
     fn parse(&mut self) {
-        for l in slice("input/2015/15.txt", "\r\n") {
+        for l in slice("input/2015/15.txt", "\n") {
             let line = l.split(' ').collect::<Vec<&str>>();
             self.values.push([
                 line[2][0..line[2].len() - 1].parse().unwrap(), 

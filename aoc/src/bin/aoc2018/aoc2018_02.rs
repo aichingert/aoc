@@ -33,7 +33,7 @@ impl crate::Solution for Aoc2018_02 {
     }
 
     fn parse(&mut self) {
-        self.d = slice("input/2018/02.txt", "\r\n");
+        self.d = slice("input/2018/02.txt", "\n");
     }
 
     fn part1(&mut self) -> Vec<String> {
