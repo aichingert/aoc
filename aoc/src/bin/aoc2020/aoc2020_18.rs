@@ -7,23 +7,23 @@ impl Aoc2020_18 {
         Self { line: vec![] }
     }
 
-    fn calculate(line: &Vec<String>) -> u64 {
+    fn calculate(line: &Vec<String>) -> usize {
         if line.len() == 1 {
-            return line[0].parse::<u64>().unwrap();
+            return line[0].parse::<usize>().unwrap();
         }
 
         let mut idx: usize = 0;
-        let mut result: u64 = match &line[idx+1] as &str {
-            "+" => line[idx].parse::<u64>().unwrap()+line[idx+2].parse::<u64>().unwrap(),
-            "*" => line[idx].parse::<u64>().unwrap()*line[idx+2].parse::<u64>().unwrap(),
+        let mut result: usize = match &line[idx+1] as &str {
+            "+" => line[idx].parse::<usize>().unwrap()+line[idx+2].parse::<usize>().unwrap(),
+            "*" => line[idx].parse::<usize>().unwrap()*line[idx+2].parse::<usize>().unwrap(),
             _ => panic!("invalid operator")
         };
  
         idx=3;
         while idx < line.len() {
             match &line[idx] as &str {
-                "+" => result+=line[idx+1].parse::<u64>().unwrap(),
-                "*" => result*=line[idx+1].parse::<u64>().unwrap(),
+                "+" => result+=line[idx+1].parse::<usize>().unwrap(),
+                "*" => result*=line[idx+1].parse::<usize>().unwrap(),
                 _ => panic!("invalid operator")
             }
             idx+=2;
@@ -32,17 +32,35 @@ impl Aoc2020_18 {
         result
     }
 
-    fn calculate_with_priority(line: &Vec<String>) -> u64 {
+    fn calculate_with_priority(line: &Vec<String>) -> usize {
         if line.len() == 1 {
-            return line[0].parse::<u64>().unwrap();
+            return line[0].parse::<usize>().unwrap();
         }
 
-        let mut priority_eq: Vec<String> = vec![];
+        let mut idx: usize = 3;
+        let mut priority_eq: Vec<String> = match &line[1] as &str {
+            "+" => vec![(line[0].parse::<usize>().unwrap() + line[2].parse::<usize>().unwrap()).to_string()],
+            "*" => vec![line[0].to_string(), line[1].to_string(), line[2].to_string()],
+            _ => panic!()
+        };
+
+        while idx < line.len() {
+            let len: usize = priority_eq.len()-1;
+            match &line[idx] as &str {
+                "+" => priority_eq[len] = (priority_eq[len].parse::<usize>().unwrap() + line[idx+1].parse::<usize>().unwrap()).to_string(),
+                "*" => {
+                    priority_eq.push(line[idx].to_string());
+                    priority_eq.push(line[idx+1].to_string());
+                }
+                _ => panic!("invalid operator!")
+            }
+            idx+=2;
+        }
         
         Aoc2020_18::calculate(&priority_eq)
     }
 
-    fn unzip(values: &mut Vec<String>, idx: usize, part: bool) -> u64 {
+    fn unzip(values: &mut Vec<String>, idx: usize, part: bool) -> usize {
         let mut equation: Vec<String> = vec![];
 
         if &values[idx][0..=0] == "(" {
@@ -89,11 +107,12 @@ impl crate::Solution for Aoc2020_18 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, true)).sum::<u64>())
+        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, true)).sum::<usize>())
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, false)).sum::<u64>())
+        self.parse();
+        crate::output(self.line.iter_mut().map(|l| Aoc2020_18::unzip(l, 0, false)).sum::<usize>())
     }
 }
 
