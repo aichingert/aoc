@@ -140,5 +140,7 @@ mod test {
     fn aoc2020_18_calculate_with_priority_fn() {
         assert!(Aoc2020_18::calculate_with_priority(&(String::from("1 + 2 * 3 + 4 * 5 + 6").split(' ').map(|s| s.to_string()).collect())) == 231);
         assert!(Aoc2020_18::unzip(&mut (String::from("1 + (2 * 3) + (4 * (5 + 6))").split(' ').map(|s| s.to_string()).collect()),0, false) == 51);
+        assert!(Aoc2020_18::unzip(&mut (String::from("5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))").split(' ').map(|s| s.to_string()).collect()),0, false) == 669060);
+        assert!(Aoc2020_18::unzip(&mut (String::from("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2").split(' ').map(|s| s.to_string()).collect()),0, false) == 23340);
     }
 }
