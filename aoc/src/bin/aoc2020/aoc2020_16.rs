@@ -1,11 +1,13 @@
 pub struct Aoc2020_16 {
+    ticket: Vec<i32>,
     valid_numbers: Vec<i32>,
-    nearby_tickets: Vec<i32>
+    nearby_tickets: Vec<Vec<i32>>
 }
 
 impl Aoc2020_16 {
     pub fn new() -> Self {
         Self { 
+            ticket: vec![],
             valid_numbers: vec![],
             nearby_tickets: vec![]    
         }
@@ -43,23 +45,33 @@ impl crate::Solution for Aoc2020_16 {
             idx+=1;
         }
 
+        self.ticket = lines[idx-3].split(',').map(|s| s.parse::<i32>().unwrap()).collect();
+
         while idx < lines.len() {
-            let nums: Vec<i32> = lines[idx].split(',').filter(|e| !e.is_empty()).map(|s| s.parse::<i32>().unwrap()).collect();
-            for i in 0..nums.len() {
-                self.nearby_tickets.push(nums[i]);
-            }
+            self.nearby_tickets.push(lines[idx].split(',').filter(|e| !e.is_empty()).map(|s| s.parse::<i32>().unwrap()).collect());
             idx += 1;
         }
     }
 
     fn part1(&mut self) -> Vec<String> {
-        crate::output(self.nearby_tickets.iter().map(|n| 
-            if self.valid_numbers.contains(&n) {
-                0
+        let mut idx: usize = 0;
+        let mut sum: i32 = 0;
+
+        while idx < self.nearby_tickets.len() {
+            let n_sum = self.nearby_tickets[idx].iter().map(|n| 
+                if self.valid_numbers.contains(n) {
+                    0
+                } else {
+                    *n
+                }).sum::<i32>();
+            if n_sum > 0 {
+                sum += n_sum;
+                self.nearby_tickets.remove(idx);
             } else {
-                *n
+                idx += 1;
             }
-        ).sum::<i32>())
+        }
+        crate::output(sum)
     }
 
     fn part2(&mut self) -> Vec<String> {
