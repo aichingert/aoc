@@ -1,6 +1,7 @@
 pub struct Aoc2020_16 {
     ticket: Vec<i32>,
     valid_numbers: Vec<i32>,
+    valid_names: Vec<(String, Vec<i32>)>,
     nearby_tickets: Vec<Vec<i32>>
 }
 
@@ -9,6 +10,7 @@ impl Aoc2020_16 {
         Self { 
             ticket: vec![],
             valid_numbers: vec![],
+            valid_names: vec![],
             nearby_tickets: vec![]    
         }
     }
@@ -31,17 +33,21 @@ impl crate::Solution for Aoc2020_16 {
             }
 
             let sec: Vec<&str> = lines[idx].split(": ").collect();
+            let mut name: (String, Vec<i32>) = (sec[0].to_string(), vec![]);
             let both: Vec<&str> = sec[1].split(" or ").collect();
             let mut bound: Vec<i32> = both[0].split('-').map(|s| s.parse::<i32>().unwrap()).collect();
             bound.append(&mut both[1].split('-').map(|s| s.parse::<i32>().unwrap()).collect());
 
             for i in bound[0]..=bound[1] {
                 self.valid_numbers.push(i);
+                name.1.push(i);
             }
             for i in bound[2]..=bound[3] {
                 self.valid_numbers.push(i);
+                name.1.push(i);
             }
 
+            self.valid_names.push(name);
             idx+=1;
         }
 
@@ -75,6 +81,38 @@ impl crate::Solution for Aoc2020_16 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut checks: [i32; 20 /* self.valid_names.len() */] = [0; 20];
+        let mut positions: [&str; 20] = [""; 20];
+        let mut result: i32 = 1;
+
+        for i in 0..self.valid_names.len() {
+            for j in 0..self.nearby_tickets.len() {
+                for k in 0..self.nearby_tickets[j].len() {
+                    if self.valid_names[i].1.contains(&self.nearby_tickets[j][k]) {
+                        checks[k]+=1;
+                    }
+                }
+
+                let mut position: (i32, usize) =  (0, 0);
+                for k in 0..checks.len() {
+                    if checks[k] > position.0 {
+                        position = (checks[k], k);
+                        checks[k]=0;
+                    }
+                }
+                positions[position.1] = &self.valid_names[i].0;
+            }
+        }
+        println!("")
+
+        for i in 0..positions.len() {
+            let binding: Vec<&str> = positions[i].split(' ').collect();
+
+            if binding[0] == "departure" {
+                println!("{result}");
+                result *= self.ticket[i];
+            }
+        }
+        crate::output(result)
     }
 }
