@@ -1,5 +1,5 @@
 pub struct Aoc2020_16 {
-    ticket: Vec<i32>,
+    ticket: Vec<i64>,
     valid_numbers: Vec<i32>,
     valid_names: Vec<(String, Vec<i32>)>,
     nearby_tickets: Vec<Vec<i32>>
@@ -51,10 +51,12 @@ impl crate::Solution for Aoc2020_16 {
             idx+=1;
         }
 
-        self.ticket = lines[idx-3].split(',').map(|s| s.parse::<i32>().unwrap()).collect();
+        self.ticket = lines[idx-3].split(',').map(|s| s.parse::<i64>().unwrap()).collect();
 
         while idx < lines.len() {
-            self.nearby_tickets.push(lines[idx].split(',').filter(|e| !e.is_empty()).map(|s| s.parse::<i32>().unwrap()).collect());
+            if !lines[idx].is_empty() {
+                self.nearby_tickets.push(lines[idx].split(',').filter(|e| !e.is_empty()).map(|s| s.parse::<i32>().unwrap()).collect());
+            }
             idx += 1;
         }
     }
@@ -81,35 +83,58 @@ impl crate::Solution for Aoc2020_16 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut checks: [i32; 20 /* self.valid_names.len() */] = [0; 20];
         let mut positions: [&str; 20] = [""; 20];
-        let mut result: i32 = 1;
+        let mut result: i64 = 1;
+        let mut posis: Vec<Vec<usize>> = Vec::new();
+        let mut idx: usize = 0;
+        let mut counter: i32 = 0;
 
         for i in 0..self.valid_names.len() {
-            for j in 0..self.nearby_tickets.len() {
-                for k in 0..self.nearby_tickets[j].len() {
-                    if self.valid_names[i].1.contains(&self.nearby_tickets[j][k]) {
-                        checks[k]+=1;
+            let mut possible: Vec<usize> = Vec::new();
+            for j in 0..self.nearby_tickets[0].len() {
+                let mut passes = true;
+                for k in 0..self.nearby_tickets.len() {
+                    if !self.valid_names[i].1.contains(&self.nearby_tickets[k][j]) {
+                       passes = false;
+                       break; 
                     }
                 }
 
-                let mut position: (i32, usize) =  (0, 0);
-                for k in 0..checks.len() {
-                    if checks[k] > position.0 {
-                        position = (checks[k], k);
-                        checks[k]=0;
-                    }
+                if passes && self.valid_names[i].1.contains(&(self.ticket[j] as i32)) && positions[j] == "" {
+                    possible.push(j);
                 }
-                positions[position.1] = &self.valid_names[i].0;
             }
+
+            posis.push(possible);
         }
-        println!("")
+
+        while counter < 20 {
+            if posis[idx].len() == 1 {
+                positions[posis[idx][0]] = &self.valid_names[idx].0;
+                counter += 1;
+                for i in 0..posis.len() {
+                    if i != idx {
+                        for j in 0..posis[i].len() {
+                            if posis[i][j] == posis[idx][0] {
+                                posis[i].remove(j);
+                                break;
+                            }
+                        }
+                    }
+                    
+                }
+                posis[idx].clear();
+                idx = 0;
+                continue;
+            }
+
+            idx+= 1;
+        }
 
         for i in 0..positions.len() {
             let binding: Vec<&str> = positions[i].split(' ').collect();
 
             if binding[0] == "departure" {
-                println!("{result}");
                 result *= self.ticket[i];
             }
         }
