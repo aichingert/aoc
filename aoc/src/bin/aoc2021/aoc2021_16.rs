@@ -4,37 +4,38 @@ pub struct Aoc2021_16 {
     d: Vec<Vec<usize>>
 }
 
+struct Packet {
+}
+
+struct Operator {
+}
+
 impl Aoc2021_16 {
     pub fn new() -> Self {
         Self { d: vec![] }
     }
 
     fn unwrap_packet(&self, bits: &[u8]) -> Vec<i32> {
+        let version = self.version(bits);
+        let mut literal: i32 = 0;
 
-        vec![self.version(bits), self.id(bits), self.get_group(bits)]
+        match version {
+            4 => literal = self.get_literal(bits),
+            _ => ()
+        }
+
+        vec![self.version(bits), self.id(bits), self.get_literal(bits)]
     }
 
     fn version(&self, bits: &[u8]) -> i32 {
-        let mut version: i32 = 0;
-
-        for i in 0..3 {
-            version += bits[2 - i] as i32 * 2_i32.pow(i as u32);
-        }
-
-        version
+       self.calc_bin_to_dec(&bits[0..3])
     }
 
-    fn id(&self, bits: &[u8]) -> i32 {
-        let mut id: i32 = 0;
-
-        for i in 3..6 {
-            id += bits[8-i] as i32 * 2_i32.pow((i-3) as u32);
-        }
-
-        id
+    fn id(&self, bits: &[u8]) -> i32 {        
+        self.calc_bin_to_dec(&bits[3..6])
     }
 
-    fn get_group(&self, bits: &[u8]) -> i32 {
+    fn get_literal(&self, bits: &[u8]) -> i32 {
         let mut idx: usize = 6;
         let mut stop: bool = false;
         let mut to_calc: Vec<u8> = Vec::new();
@@ -52,6 +53,10 @@ impl Aoc2021_16 {
         }
 
         self.calc_bin_to_dec(&to_calc)
+    }
+
+    fn get_operator(&self, bits: &[u8]) {
+        
     }
 
     fn calc_bin_to_dec(&self, bits: &[u8]) -> i32 {
