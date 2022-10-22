@@ -14,7 +14,7 @@ impl crate::Solution for Aoc2021_07 {
     }
         
     fn parse(&mut self) {
-        self.d = aoc::("input/2021/07.txt");
+        self.d = aoc::read_to_numbers("input/2021/07.txt");
     }
         
     fn part1(&mut self) -> Vec<String> {

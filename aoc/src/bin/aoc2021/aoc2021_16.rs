@@ -120,7 +120,7 @@ impl crate::Solution for Aoc2021_16 {
     fn parse(&mut self) {
         self.d = numbers("input/2021/16.txt", ",");
 
-        println!("{:?}", self.unwrap_packet(&[1,1,0,1,0,0,1,0,1,1,1,1,1,1,1,0,0,0,1,0,1,0,0,0]));
+        println!("{:?}", self.unwrap_packet(&hex_to_bin(&("D2FE28".to_string().chars().collect::<Vec<char>>()))));
     }
 
     fn part1(&mut self) -> Vec<String> {
@@ -130,4 +130,33 @@ impl crate::Solution for Aoc2021_16 {
     fn part2(&mut self) -> Vec<String> {
        crate::output("")
     }
+}
+
+fn hex_to_bin(s: &[char]) -> Vec<u8> {
+    let mut b = s.iter().map(|v| match v {
+        &'0' => "0000",
+        &'1' => "0001",
+        &'2' => "0010",
+        &'3' => "0011",
+        &'4' => "0100",
+        &'5' => "0101",
+        &'6' => "0110",
+        &'7' => "0111",
+        &'8' => "1000",
+        &'9' => "1001",
+        &'A' => "1010",
+        &'B' => "1011",
+        &'C' => "1100",
+        &'D' => "1101",
+        &'E' => "1110",
+        &'F' => "1111",
+        _ => panic!("Invalid hex character")
+    }).map(|b| b.chars().into_iter().map(|l| if l == '1' { 1 } else { 0 }).collect::<Vec<u8>>()).collect::<Vec<Vec<u8>>>();
+
+
+    let mut r: Vec<u8> = Vec::new();
+
+    b.iter_mut().map(|s| r.append(s)).count();
+
+    r
 }
