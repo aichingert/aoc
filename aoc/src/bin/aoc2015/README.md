@@ -7,7 +7,7 @@
 |  3 | **[Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3)** | [day  3](/aoc/src/bin/aoc2015/aoc2015_03.rs) |
 |  4 | **[The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4)** | [day  4](/aoc/src/bin/aoc2015/aoc2015_04.rs) |
 |  5 | **[Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5)** | [day  5](/aoc/src/bin/aoc2015/aoc2015_05.rs) |
-|  9 | **[All in a Single Night](https://adventofcode.com/2015/day/09)** | [day  9](/aoc/src/bin/aoc2015/aoc2015_09.rs) |
+|  9 | **[All in a Single Night](https://adventofcode.com/2015/day/9)** | [day  9](/aoc/src/bin/aoc2015/aoc2015_09.rs) |
 | 10 | **[Elves Look, Elves Say](https://adventofcode.com/2015/day/10)** | [day 10](/aoc/src/bin/aoc2015/aoc2015_10.rs) |
 | 11 | **[Corporate Policy](https://adventofcode.com/2015/day/11)** | [day 11](/aoc/src/bin/aoc2015/aoc2015_11.rs) |
 | 12 | **[JSAbacusFramework.io](https://adventofcode.com/2015/day/12)** | [day 12](/aoc/src/bin/aoc2015/aoc2015_12.rs) |
