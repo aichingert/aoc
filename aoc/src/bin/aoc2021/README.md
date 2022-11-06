@@ -11,3 +11,4 @@
 |  7 | **[The Treachery of Whales](https://adventofcode.com/2021/day/7)** | [day  7](/aoc/src/bin/aoc2021/aoc2021_07.rs) |
 |  8 | **[Seven Segment Search](https://adventofcode.com/2021/day/8)** | [day  8](/aoc/src/bin/aoc2021/aoc2021_08.rs) |
 |  9 | **[Smoke Basin](https://adventofcode.com/2021/day/09)** | [day  9](/aoc/src/bin/aoc2021/aoc2021_09.rs) |
+| 17 | **[Trick Shot](https://adventofcode.com/2021/day/17)** | [day 17](/aoc/src/bin/aoc2021/aoc2021_17.rs) |
