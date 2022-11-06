@@ -39,7 +39,31 @@ impl crate::Solution for Aoc2021_17 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut m: i32 = 0;
+
+        for x in -500..500 {
+            for y in -500..500 {
+                let p: f32 = x as f32 * (1f32 + x as f32) / 2f32;
+
+                if self.a_x.contains(&(p as i32)) {
+                    let m_y = (y as f32 * (1f32 + y as f32) / 2f32) as i32;
+                    let mut y_v = y;
+                    let mut y_p = y;
+
+                    while y_p > self.a_y[0] {
+                        y_p += y_v;
+                        y_v -= 1;
+                    }
+
+                    if self.a_y.contains(&y_p) && m_y > m {
+                        m = m_y;
+                    }
+                }
+            }
+        }
+
+
+        crate::output(m)
     }
         
     fn part2(&mut self) -> Vec<String> {
