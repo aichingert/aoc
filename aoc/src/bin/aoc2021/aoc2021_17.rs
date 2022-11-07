@@ -71,10 +71,10 @@ impl crate::Solution for Aoc2021_17 {
 
         for x in -500..500 {
             for y in -500..500 {
+                let mut x_p = 0;
+                let mut y_p = 0;
                 let mut x_v = x;
-                let mut x_p = x;
                 let mut y_v = y;
-                let mut y_p = y;
 
                 while y_p >= self.a_y[0] {
                     if self.a_x.contains(&x_p) && self.a_y.contains(&y_p) {
