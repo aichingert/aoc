@@ -12,3 +12,4 @@
 |  8 | **[Seven Segment Search](https://adventofcode.com/2021/day/8)** | [day  8](/aoc/src/bin/aoc2021/aoc2021_08.rs) |
 |  9 | **[Smoke Basin](https://adventofcode.com/2021/day/09)** | [day  9](/aoc/src/bin/aoc2021/aoc2021_09.rs) |
 | 17 | **[Trick Shot](https://adventofcode.com/2021/day/17)** | [day 17](/aoc/src/bin/aoc2021/aoc2021_17.rs) |
+| 22 | **[Reactor Reboot](https://adventofcode.com/2021/day/22)** | [day 22](/aoc/src/bin/aoc2021/aoc2021_22.rs) |
