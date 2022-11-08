@@ -74,3 +74,4 @@ impl crate::Solution for Aoc2021_17 {
 
         crate::output(c)
     }
+}
