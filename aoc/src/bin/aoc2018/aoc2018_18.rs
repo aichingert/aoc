@@ -58,9 +58,9 @@ impl Aoc2018_18 {
         x+j > -1 && y+i > -1 && x+j < self.map[0].len() as i32 && y+i < self.map.len() as i32
     }
     
-    fn count(&self) -> i32 {
-        let mut c_t: i32 = 0;
-        let mut c_l: i32 = 0;
+    fn count(&self) -> usize {
+        let mut c_t: usize = 0;
+        let mut c_l: usize = 0;
         
         for y in 0..self.map.len() {
             for x in 0..self.map[y].len() {
@@ -112,11 +112,19 @@ impl crate::Solution for Aoc2018_18 {
             self.map = n_m;
         }
         crate::output(self.count())
-        
     }
     
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
-        
+        for c in 0..1000000000-10 {
+            let mut n_m: Vec<Vec<State>> = self.map.clone();
+            
+            for y in 0..self.map.len() {
+                for x in 0..self.map[y].len() {
+                    n_m[y][x] = self.next_state(x,y);
+                }
+            }
+            self.map = n_m;
+        }
+        crate::output(self.count())
     }
 }
