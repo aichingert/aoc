@@ -44,23 +44,13 @@ impl crate::Solution for Aoc2019_12 {
                         if i == j {
                             continue;
                         }
-    
-                        if self.d[j][0][0] > self.d[i][0][0] {
-                            self.d[i][1][0] += 1;
-                        } else if self.d[j][0][0] < self.d[i][0][0] {
-                            self.d[i][1][0] -= 1;
-                        }
-    
-                        if self.d[j][0][1] > self.d[i][0][1] {
-                            self.d[i][1][1] += 1;
-                        } else if self.d[j][0][1] < self.d[i][0][1] {
-                            self.d[i][1][1] -= 1;
-                        }
-    
-                        if self.d[j][0][2] > self.d[i][0][2] {
-                            self.d[i][1][2] += 1;
-                        } else if self.d[j][0][2] < self.d[i][0][2] {
-                            self.d[i][1][2] -= 1;
+
+                        for p in 0..3usize {
+                            if self.d[j][0][p] > self.d[i][0][p] {
+                                self.d[i][1][p] += 1;
+                            } else if self.d[j][0][p] < self.d[i][0][p] {
+                                self.d[i][1][p] -= 1;
+                            }
                         }
                     }
                 }
