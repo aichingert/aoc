@@ -13,4 +13,4 @@
 
 ## templates
 
-I made a programm to automaticly make a new day <a href="https://github.com/aichingert/template-rs" traget="_blank">template-rs<a/>b
+I made a programm to automaticly make a new day <a href="https://github.com/aichingert/template-rs" traget="_blank">template-rs<a/>
