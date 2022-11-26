@@ -2,14 +2,16 @@ use std::collections::HashMap;
 
 pub struct Aoc2015_07 {
     d: Vec<Vec<String>>,
-    v: HashMap<String, i32>
+    v: HashMap<String, i32>,
+    p: i32
 }
         
 impl Aoc2015_07 {
     pub fn new() -> Self {
         Self { 
             d: vec![],
-            v: HashMap::new()
+            v: HashMap::new(),
+            p: 0
         }
     }
 
@@ -95,10 +97,16 @@ impl crate::Solution for Aoc2015_07 {
             }
         }
 
+        self.p = self.v["a"];
         crate::output(self.v["a"])
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        self.v.clear();
+        self.parse();
+        self.v.insert("b".to_string(), self.p);
+
+
+        self.part1()
     }
 }
