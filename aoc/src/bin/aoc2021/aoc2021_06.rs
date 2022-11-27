@@ -1,12 +1,22 @@
-use aoc::numbers;
+use std::collections::VecDeque;
 
 pub struct Aoc2021_06 {
-    d: Vec<Vec<usize>>
+    l: VecDeque<u64>
 }
 
 impl Aoc2021_06 {
     pub fn new() -> Self {
-        Self { d: vec![] }
+        Self { l: VecDeque::from(vec![0; 9]) }
+    }
+
+    fn solve(&mut self, steps: u32) -> u64 {
+        for _ in 0..steps {
+            let n: u64 = self.l.pop_front().unwrap();
+            self.l[6] += n;
+            self.l.push_back(n);
+        }
+        
+        self.l.iter().sum::<u64>()
     }
 }
 
@@ -16,48 +26,15 @@ impl crate::Solution for Aoc2021_06 {
     }
 
     fn parse(&mut self) {
-        self.d = numbers("input/2021/06.txt", ",");
+        aoc::read_number_stream::<&str, usize>("input/2021/06.txt", ",")
+            .iter().for_each(|i| self.l[*i] += 1);
     }
 
     fn part1(&mut self) -> Vec<String> {
-        let mut l: [usize; 9] = [0; 9];
-
-        for i in 0..self.d[0].len() {
-            l[self.d[0][i]] += 1;
-        }
-
-        for _ in 0..80 {
-            let n = l[0];
-
-            for i in 1..l.len() {
-                l[i - 1] = l[i];
-            }
-
-            l[6] += n;
-            l[8] = n;
-        }
-
-        crate::output(l.iter().sum::<usize>())
+       crate::output(self.solve(80))
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut l: [usize; 9] = [0; 9];
-
-        for i in 0..self.d[0].len() {
-            l[self.d[0][i]] += 1;
-        }
-
-        for _ in 0..256 {
-            let n = l[0];
-
-            for i in 1..l.len() {
-                l[i - 1] = l[i];
-            }
-
-            l[6] += n;
-            l[8] = n;
-        }
-
-        crate::output(l.iter().sum::<usize>())
+        crate::output(self.solve(/* 256 - 80 = */176))
     }
 }
