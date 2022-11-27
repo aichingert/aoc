@@ -1,12 +1,18 @@
 use aoc::read_to_slice;
 
 pub struct Aoc2021_02 {
-    d: Vec<Vec<String>>
+    i: Vec<(String, i32)>,
+    d: i32,
+    h: i32
 }
 
 impl Aoc2021_02 {
     pub fn new() -> Self {
-        Self { d: vec![] }
+        Self { 
+            i: vec![],
+            d: 0,
+            h: 0,
+        }
     }
 }
 
@@ -16,46 +22,41 @@ impl crate::Solution for Aoc2021_02 {
     }
 
     fn parse(&mut self) {
-        self.d = read_to_slice("input/2021/02.txt", " ");
+        read_to_slice("input/2021/02.txt", " ")
+            .iter()
+            .for_each(|e| self.i.push((e[0].clone(), e[1].parse::<i32>().expect("invalid input"))));
     }
 
     fn part1(&mut self) -> Vec<String> {
-        let mut d: i32 = 0;
-        let mut h: i32 = 0;
-
-        for i in 0..self.d.len() {
-            let n: i32 = self.d[i][1].parse::<i32>().expect("invalid input");
-
-            match &self.d[i][0] as &str {
-                "forward" => h += n,
-                "up" => d -= n,
-                "down" => d += n,
-                _ => panic!("couldn't match {}", self.d[i][0])
+        for i in 0..self.i.len() {
+            match &self.i[i].0 as &str {
+                "forward" => self.h += self.i[i].1,
+                "up" => self.d -= self.i[i].1,
+                "down" => self.d += self.i[i].1,
+                _ => panic!("couldn't match {}", self.i[i].0)
             }
         }
 
-        crate::output(d * h)
+        crate::output(self.d * self.h)
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut d: i32 = 0;
-        let mut h: i32 = 0;
         let mut a: i32 = 0;
+        self.h = 0;
+        self.d = 0;
 
-        for i in 0..self.d.len() {
-            let n: i32 = self.d[i][1].parse::<i32>().expect("invalid input");
-
-            match &self.d[i][0] as &str {
+        for i in 0..self.i.len() {
+            match &self.i[i].0 as &str {
                 "forward" => {
-                    h += n;
-                    d += n * a;
+                    self.h += self.i[i].1;
+                    self.d += self.i[i].1 * a;
                 },
-                "up" => a -= n,
-                "down" => a += n,
-                _ => panic!("couldn't match {}", self.d[i][0])
+                "up" => a -= self.i[i].1,
+                "down" => a += self.i[i].1,
+                _ => panic!("couldn't match {}", self.i[i].0)
             }
         }
 
-        crate::output(d * h)
+        crate::output(self.d * self.h)
     }
 }
