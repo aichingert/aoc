@@ -56,6 +56,22 @@ where <U as FromStr>::Err: Debug, {
     .collect()
 }
 
+/// Expects the input to be a map of numbers
+/// Returns it as a list of lists
+///
+pub fn read_to_map<T: AsRef<Path>, U: FromStr>(path: T) -> Vec<Vec<U>>
+where <U as FromStr>::Err: Debug, Vec<U>: FromIterator<u8> {
+    read_to_string(path)
+        .expect("unable to open file")
+        .lines()
+        .map(|l| l.chars()
+            .map(|c| (c as u8 - '0' as u8))
+            .collect::<Vec<U>>()
+        )
+        .collect::<Vec<Vec<U>>>()
+}
+
+
 /// Expects the input to be
 /// a map of numbers only
 /// and then parses it per
