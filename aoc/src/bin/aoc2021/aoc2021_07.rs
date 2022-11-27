@@ -7,14 +7,25 @@ impl Aoc2021_07 {
         Self { d: vec![] }
     }
 
-    fn allign(&self, height: i32) -> i32 {
-        let mut fuel: i32 = 0;
+    fn allign(&self, part: bool) -> i32 {
+        let mut m: i32 = i32::MAX;
 
-        for i in 0..self.d.len() {
-            fuel += (self.d[i] - height).abs();
+        for height in 0..500 {
+            let mut fuel: i32 = 0;
+
+            for i in 0..self.d.len() {
+                if !part {
+                    fuel += (self.d[i] - height).abs();
+                } else {
+                    let dist: f32 = (self.d[i] - height).abs() as f32;
+                    fuel += (dist / 2.0 * (2.0 + dist-1.0)) as i32;
+                }
+            }
+
+            m = std::cmp::min(m, fuel);
         }
 
-        fuel
+        m
     }
 }
         
@@ -28,16 +39,10 @@ impl crate::Solution for Aoc2021_07 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        let mut m: i32 = i32::MAX;
-
-        for i in 0..500 {
-            m = std::cmp::min(m, self.allign(i));
-        }
-
-        crate::output(m)
+        crate::output(self.allign(false))
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.allign(true))
     }
 }
