@@ -1,29 +1,55 @@
 use std::collections::HashMap;
 
 pub struct Aoc2015_07 {
-    d: Vec<Vec<String>>,
-    v: HashMap<String, i32>,
-    p: i32
+    c: HashMap<String, Command>,
+    r: HashMap<String, u32>,
+    p: u32
+}
+
+#[derive(Debug, Clone)]
+enum Command {
+    Assign(String),
+    Not(String),
+    And(String, String),
+    Or(String, String),
+    LShift(String, u32),
+    RShift(String, u32)
 }
         
 impl Aoc2015_07 {
     pub fn new() -> Self {
         Self { 
-            d: vec![],
-            v: HashMap::new(),
+            c: HashMap::new(),
+            r: HashMap::new(),
             p: 0
         }
     }
 
-    fn get_match(&self, op: String, v_o: i32, v_t: i32) -> i32 {
-        match op.as_str() {
-            "AND" => v_o & v_t,
-            "OR" => v_o | v_t,
-            "LSHIFT" => v_o << v_t,
-            "RSHIFT" => v_o >> v_t,
-            "NOT" => !v_o,
-            _ => panic!("Invalid argument {}", op)
+    pub fn solve(&mut self, cur: &str) -> u32 {
+        let result: Result<u32, _> = cur.parse::<u32>();
+
+        match result {
+            Ok(value) => return value,
+            Err(_) => {}
         }
+
+        if self.r.contains_key(cur) {
+            return self.r[cur];
+        }
+
+        let command: Command = self.c[cur].clone();
+
+        let result = match command {
+            Command::Assign(x) => self.solve(&x),
+            Command::Not(x) => !self.solve(&x),
+            Command::And(x, y) => self.solve(&x) & self.solve(&y),
+            Command::Or(x, y) => self.solve(&x) | self.solve(&y),
+            Command::LShift(x, y) => self.solve(&x) << y,
+            Command::RShift(x, y) => self.solve(&x) >> y
+        };
+
+        self.r.insert(cur.to_string(), result);
+        result
     }
 }
         
@@ -33,80 +59,33 @@ impl crate::Solution for Aoc2015_07 {
     }
         
     fn parse(&mut self) {
-        self.d = aoc::read_to_slice("input/2015/07.txt", " -> ");
-        let mut idx: Vec<usize> = Vec::new();
-        let mut offset: usize = 0;
+        let mut lines: Vec<Vec<String>> = aoc::read_to_slice("input/2015/07.txt", " -> ");
 
-        for i in 0..self.d.len() {
-            if self.d[i][0].parse::<i32>().is_ok() && self.d[i].len() == 2 {
-                self.v.insert(self.d[i][1].clone(), self.d[i][0].parse::<i32>().unwrap());
-                idx.push(i);
-            }
-        }
+        for i in 0..lines.len() {
+            let to: String = lines[i][1].clone();
+            let from: Vec<&str> = lines[i][0].split(' ').collect::<Vec<&str>>();
 
-        while idx.len() > 0 {
-            self.d.remove(idx[0] - offset);
-            offset += 1;
-            idx.remove(0);
-        }
-
-        for i in 0..self.d.len() {
-            let mut f: Vec<String> = self.d[i][0].split(' ').map(|s| s.to_string()).collect::<Vec<String>>();
-            f.push(self.d[i][self.d[i].len()-1].clone());
-            self.d[i] = f;
+            match from.len() {
+                1 => self.c.insert(to, Command::Assign(from[0].to_string())),
+                2 => self.c.insert(to, Command::Not(from[1].to_string())),
+                _ => match from[1] {
+                    "AND" => self.c.insert(to, Command::And(from[0].to_string(), from[2].to_string())),
+                    "OR" => self.c.insert(to, Command::Or(from[0].to_string(), from[2].to_string())),
+                    "LSHIFT" => self.c.insert(to, Command::LShift(from[0].to_string(), from[2].parse::<u32>().expect("invalid input"))),
+                    "RSHIFT" => self.c.insert(to, Command::RShift(from[0].to_string(), from[2].parse::<u32>().expect("invalid input"))),
+                    _ => panic!("Invalid input {:?}", lines[i])
+                }
+            };
         }
     }
         
     fn part1(&mut self) -> Vec<String> {
-        while self.d.len() > 0 {
-            let mut rem: bool = false;
-            for i in 0..self.d.len() {
-                if self.d[i].len() >= 3 && self.v.contains_key(&self.d[i][0]) && self.d[i][2].parse::<i32>().is_ok() {
-                    let value: i32 = self.get_match(self.d[i][1].clone(), self.v[&self.d[i][0]], self.d[i][2].parse::<i32>().unwrap());
-                    self.v.insert(self.d[i][3].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() >= 3 && self.v.contains_key(&self.d[i][0]) && self.v.contains_key(&self.d[i][2]) {
-                    let value: i32 = self.get_match(self.d[i][1].clone(), self.v[&self.d[i][0]], self.v[&self.d[i][2]]);
-                    self.v.insert(self.d[i][3].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() >= 3 && self.d[i][0].parse::<i32>().is_ok() && self.v.contains_key(&self.d[i][2]) {
-                    let value: i32 = self.get_match(self.d[i][1].clone(), self.d[i][0].parse::<i32>().unwrap(), self.v[&self.d[i][2]]);
-                    self.v.insert(self.d[i][3].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() >= 3 && self.d[i][0].parse::<i32>().is_ok() && self.d[i][2].parse::<i32>().is_ok() {
-                    let value: i32 = self.get_match(self.d[i][1].clone(), self.d[i][0].parse::<i32>().unwrap(), self.d[i][2].parse::<i32>().unwrap());
-                    self.v.insert(self.d[i][3].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() >= 3 && self.d[i][0].as_str() == "NOT" && self.d[i][1].parse::<i32>().is_ok() {
-                    let value: i32 = self.get_match(self.d[i][0].clone(), self.d[i][1].parse::<i32>().unwrap(), 0);
-                    self.v.insert(self.d[i][2].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() >= 3 && self.d[i][0].as_str() == "NOT" && self.v.contains_key(&self.d[i][1]) {
-                    let value: i32 = self.get_match(self.d[i][0].clone(), self.v[&self.d[i][1]], 0);
-                    self.v.insert(self.d[i][2].clone(), value);
-                    rem = true;
-                } else if self.d[i].len() == 2 && self.v.contains_key(&self.d[i][0]) {
-                    self.v.insert(self.d[i][1].clone(), self.v[&self.d[i][0]]);
-                    rem = true;
-                }
-
-                if rem {
-                    self.d.remove(i);
-                    break;
-                }
-            }
-        }
-
-        self.p = self.v["a"];
-        crate::output(self.v["a"])
+        self.p = self.solve("a");
+        crate::output(self.p)
     }
         
     fn part2(&mut self) -> Vec<String> {
-        self.v.clear();
-        self.parse();
-        self.v.insert("b".to_string(), self.p);
-
-
-        self.part1()
+        self.r = HashMap::from([("b".to_string(), self.p)]);
+        crate::output(self.solve("a"))
     }
 }
