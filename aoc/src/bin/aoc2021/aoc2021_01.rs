@@ -1,12 +1,24 @@
 use aoc::read_to_numbers;
 
 pub struct Aoc2021_01 {
-    d: Vec<i32>
+    d: Vec<u32>
 }
 
 impl Aoc2021_01 {
     pub fn new() -> Self {
         Self { d: vec![] }
+    }
+
+    pub fn solve(&self, size: usize) -> usize {
+        // [0, 2, 5, 6, 1]
+        // (0, 2, 5, 6)
+        // (2, 5, 6, 1)
+        // (2, 5, 6 => 0)
+        // (0 < 1)
+        self.d
+            .windows(size)
+            .filter(|w| w[0] < w[size - 1])
+            .count()
     }
 }
 
@@ -20,28 +32,10 @@ impl crate::Solution for Aoc2021_01 {
     }
 
     fn part1(&mut self) -> Vec<String> {
-        let mut s: i32 = 0;
-
-        for i in 1..self.d.len() {
-            if self.d[i] > self.d[i - 1] {
-                s += 1;
-            }
-        }
-
-        crate::output(s)
+        crate::output(self.solve(2))
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut s: i32 = 0;
-
-        for i in 3..self.d.len() {
-            let a = self.d[i] + self.d[i - 1] + self.d[i - 2];
-            let b = self.d[i - 1] + self.d[i - 2] + self.d[i - 3];
-            if a > b {
-                s+=1;
-            }
-        }
-
-        crate::output(s)
+        crate::output(self.solve(4))
     }
 }
