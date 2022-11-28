@@ -4,20 +4,23 @@ mod aoc2016_01;
 mod aoc2016_02;
 mod aoc2016_03;
 mod aoc2016_04;
+mod aoc2016_05;
 
 use aoc2016_01::*;
 use aoc2016_02::*;
 use aoc2016_03::*;
 use aoc2016_04::*;
+use aoc2016_05::*;
 
 pub fn run_2016(which: Selector) {
     let mut day_01 = Aoc2016_01::new();
     let mut day_02 = Aoc2016_02::new();
     let mut day_03 = Aoc2016_03::new();
     let mut day_04 = Aoc2016_04::new();
+    let mut day_05 = Aoc2016_05::new();
 
     let mut days: Vec<&mut dyn Solution> = vec![
-        &mut day_01, &mut day_02, &mut day_03, &mut day_04
+        &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05
     ];
 
     match which {
