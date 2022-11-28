@@ -167,16 +167,10 @@ impl crate::Solution for Aoc2020_04 {
             || self.d[i - o].eyr == -1 || self.d[i - o].hgt == "".to_string() 
             || self.d[i - o].hcl == "".to_string() || self.d[i - o].ecl == "".to_string() 
             || self.d[i - o].pid == "".to_string() {
-                v = false;
-            } else {
-                v = true;
-            }
-    
-            if v {
-                s += 1;
-            } else {
                 self.d.remove(i - o);
                 o += 1;
+            } else {
+                s += 1;
             }
         }
 
@@ -193,14 +187,8 @@ impl crate::Solution for Aoc2020_04 {
             && self.d[i].eyr.to_string().len() == 4 && self.d[i].eyr >= 2020 && self.d[i].eyr <= 2030
             && self.d[i].check_height() && self.d[i].check_hair_color()
             && self.d[i].check_eye_color() && self.d[i].check_pid() {
-                v = true;
-            } else {
-                v = false;
-            }
-
-            if v {
                 s += 1;
-            }
+            } 
         }
 
         crate::output(s)

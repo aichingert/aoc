@@ -115,7 +115,7 @@ impl crate::Solution for Aoc2018_18 {
     }
     
     fn part2(&mut self) -> Vec<String> {
-        for c in 0..1000000000-10 {
+        for _ in 0..1000000000-10 {
             let mut n_m: Vec<Vec<State>> = self.map.clone();
             
             for y in 0..self.map.len() {

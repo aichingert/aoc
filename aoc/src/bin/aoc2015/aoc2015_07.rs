@@ -59,7 +59,7 @@ impl crate::Solution for Aoc2015_07 {
     }
         
     fn parse(&mut self) {
-        let mut lines: Vec<Vec<String>> = aoc::read_to_slice("input/2015/07.txt", " -> ");
+        let lines: Vec<Vec<String>> = aoc::read_to_slice("input/2015/07.txt", " -> ");
 
         for i in 0..lines.len() {
             let to: String = lines[i][1].clone();
