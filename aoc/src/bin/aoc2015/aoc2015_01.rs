@@ -25,7 +25,10 @@ impl crate::Solution for Aoc2015_01 {
             self.d.iter().map( | h | match h {
                 '(' => 1,
                 ')' => -1,
-                _ => panic!("invalid char in input!"),
+                _ => {
+                    println!("{:?}", h);
+                    panic!("invalid char in input!");
+                }
             }).sum::<i32>()
         )
     }

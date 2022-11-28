@@ -29,7 +29,8 @@ pub fn run_2020(which: Selector) {
 	let mut day_18 = Aoc2020_18::new();
 
     let mut days: Vec<&mut dyn Solution> = vec![
-        &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05, &mut day_15, &mut day_16, &mut day_18
+        &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05, 
+        &mut day_15, &mut day_16, &mut day_18
     ];
 
     match which {
