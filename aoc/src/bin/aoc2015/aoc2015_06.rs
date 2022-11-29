@@ -1,6 +1,6 @@
 pub struct Aoc2015_06 {
     d: Vec<(State, ((usize, usize), (usize, usize)))>,
-    m: Vec<Vec<bool>>
+    m: Vec<Vec<u8>>
 }
 
 enum State {
@@ -13,8 +13,18 @@ impl Aoc2015_06 {
     pub fn new() -> Self {
         Self { 
             d: vec![],
-            m: vec![vec![false; 1000]; 1000]
+            m: vec![vec![0; 1000]; 1000]
         }
+    }
+
+    fn count(&self) -> i64 {
+        let mut c: i64 = 0;
+        for y in 0..self.m.len() {
+            for x in 0..self.m[y].len() {
+                c += self.m[y][x] as i64;
+            }
+        }
+        c
     }
 }
         
@@ -52,32 +62,35 @@ impl crate::Solution for Aoc2015_06 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        let mut c: i64 = 0;
-
         for i in 0..self.d.len() {
             for y in self.d[i].1.0.0..=self.d[i].1.1.0 {
                 for x in self.d[i].1.0.1..=self.d[i].1.1.1 {
                     match self.d[i].0 {
-                        State::On => self.m[y][x] = true,
-                        State::Off => self.m[y][x] = false,
-                        State::Toggle => self.m[y][x] = !self.m[y][x],
+                        State::On => self.m[y][x] = 1,
+                        State::Off => self.m[y][x] = 0,
+                        State::Toggle => self.m[y][x] = if self.m[y][x] == 1 { 0 } else { 1 },
                     }
                 }
             }
         }
 
-        for i in 0..self.m.len() {
-            for j in 0..self.m[i].len() {
-                if self.m[i][j] {
-                    c += 1;
+        crate::output(self.count())
+    }
+        
+    fn part2(&mut self) -> Vec<String> {
+        self.m = vec![vec![0; 1000];1000];
+        for i in 0..self.d.len() {
+            for y in self.d[i].1.0.0..=self.d[i].1.1.0 {
+                for x in self.d[i].1.0.1..=self.d[i].1.1.1 {
+                    match self.d[i].0 {
+                        State::On => self.m[y][x] += 1,
+                        State::Off => self.m[y][x] -= if self.m[y][x] > 0 { 1 } else { 0 },
+                        State::Toggle => self.m[y][x] += 2,
+                    }
                 }
             }
         }
 
-        crate::output(c)
-    }
-        
-    fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.count())
     }
 }
