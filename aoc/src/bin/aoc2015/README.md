@@ -16,3 +16,4 @@
 | 15 | **[Science for Hungry People](https://adventofcode.com/2015/day/15)** | [day 15](/aoc/src/bin/aoc2015/aoc2015_15.rs) |
 | 16 | **[Aunt Sue](https://adventofcode.com/2015/day/16)** | [day 16](/aoc/src/bin/aoc2015/aoc2015_16.rs) |
 | 17 | **[No Such Thing as Too Much](https://adventofcode.com/2015/day/17)** | [day 17](/aoc/src/bin/aoc2015/aoc2015_17.rs) |
+|  6 | **[name](https://adventofcode.com/2015/day/06)** | [day  6](/aoc/src/bin/aoc2015/aoc2015_06.rs) |
