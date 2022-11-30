@@ -7,6 +7,7 @@ mod aoc2018;
 mod aoc2019;
 mod aoc2020;
 mod aoc2021;
+mod aoc2022;
 
 use aoc2015::*;
 use aoc2016::*;
@@ -15,6 +16,7 @@ use aoc2018::*;
 use aoc2019::*;
 use aoc2020::*;
 use aoc2021::*;
+use aoc2022::*;
 
 pub enum Selector {
     All,
@@ -45,6 +47,7 @@ fn main() {
                         2019 => run_2019(Selector::Day(day)),
                         2020 => run_2020(Selector::Day(day)),
                         2021 => run_2021(Selector::Day(day)),
+                        2022 => run_2022(Selector::Day(day)),
                         _ => panic!("invalid year {year}")
                     }
                 }
@@ -57,6 +60,7 @@ fn main() {
                     2019 => run_2019(Selector::All),
                     2020 => run_2020(Selector::All),
                     2021 => run_2021(Selector::All),
+                    2022 => run_2022(Selector::All),
                     _ => panic!("invalid year {year}")
                 }
             }
@@ -68,6 +72,7 @@ fn main() {
             run_2019(Selector::All);
             run_2020(Selector::All);
             run_2021(Selector::All);
+            run_2022(Selector::All);
         }
     } else {
         run_2015(Selector::Last);
