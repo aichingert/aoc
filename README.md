@@ -2,8 +2,8 @@
 
 ## solutions
 | year | finished |
-| 3 |--------|
-|:christmas_tree:[2022](/aoc/src/bin/aoc2022)| 1 |
+| -- |--------|
+|:christmas_tree:[2022](/aoc/src/bin/aoc2022)| 2 |
 |:christmas_tree:[2021](/aoc/src/bin/aoc2021)| 11 |
 |:christmas_tree:[2020](/aoc/src/bin/aoc2020)| 8 |
 |:christmas_tree:[2019](/aoc/src/bin/aoc2019)| 6 |
