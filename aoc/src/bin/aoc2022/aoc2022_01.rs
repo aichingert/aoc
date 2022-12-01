@@ -1,10 +1,10 @@
 pub struct Aoc2022_01 {
-    d: Vec<i32>
+    d: [u32;3]
 }
         
 impl Aoc2022_01 {
     pub fn new() -> Self {
-        Self { d: vec![] }
+        Self { d: [0;3] }
     }
 }
         
@@ -15,25 +15,34 @@ impl crate::Solution for Aoc2022_01 {
         
     fn parse(&mut self) {
         let input: String = std::fs::read_to_string("input/2022/01.txt").unwrap();
-        self.d.push(0);
+        let mut s: u32 = 0;
 
         for line in input.lines() {
-            if line.is_empty() {
-                self.d.push(0);
-            } else {
-                let len = self.d.len()-1;
-                self.d[len] += line.parse::<i32>().unwrap();
+            match line.is_empty() {
+                true => {
+                    if s > self.d[0] {
+                        self.d[2] = self.d[1];
+                        self.d[1] = self.d[0];
+                        self.d[0] = s;
+                    } else if s > self.d[1] {
+                        self.d[2] = self.d[1];
+                        self.d[1] = s;
+                    } else if s > self.d[2] {
+                        self.d[2] = s;
+                    }
+
+                    s = 0;
+                }
+                false => s += line.parse::<u32>().expect("invalid input"),
             }
         }
-
-        self.d.sort();
     }
         
     fn part1(&mut self) -> Vec<String> {
-        crate::output(self.d[self.d.len()-1])
+        crate::output(self.d[0])
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output(self.d[self.d.len()-3..self.d.len()].iter().sum::<i32>())
+        crate::output(self.d[..].iter().sum::<u32>())
     }
 }

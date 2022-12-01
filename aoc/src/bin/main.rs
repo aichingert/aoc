@@ -82,6 +82,7 @@ fn main() {
         run_2019(Selector::Last);
         run_2020(Selector::Last);
         run_2021(Selector::Last);
+        run_2022(Selector::Last);
     }
 }
 
