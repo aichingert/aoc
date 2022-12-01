@@ -34,6 +34,6 @@ impl crate::Solution for Aoc2022_01 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.d[self.d.len()-3..self.d.len()].iter().sum::<i32>())
     }
 }
