@@ -1,8 +1,10 @@
 use crate::{Selector, Solution};
 
 mod aoc2022_01;
+mod aoc2022_02;
 
 use aoc2022_01::*;
+use aoc2022_02::*;
 
 pub fn run_2022(which: Selector) {
     let mut day_01 = Aoc2022_01::new();
