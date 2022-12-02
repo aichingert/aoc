@@ -159,7 +159,6 @@ impl crate::Solution for Aoc2020_04 {
 
     fn part1(&mut self) -> Vec<String> {
         let mut o: usize = 0;
-        let mut v: bool;
         let mut s: i32 = 0;
 
         for i in 0..self.d.len() {
@@ -178,7 +177,6 @@ impl crate::Solution for Aoc2020_04 {
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut v: bool;
         let mut s: i32 = 0;
 
         for i in 0..self.d.len() {
