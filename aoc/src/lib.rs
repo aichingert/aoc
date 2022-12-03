@@ -39,6 +39,7 @@ pub fn slice<T: AsRef<Path>>(path: T, sep: &str) -> Vec<String> {
         .expect("unable to open file")
         .split(sep)
         .map( | s | s.trim().to_string())
+        .filter(|s| !s.is_empty())
         .collect()
 }
 
