@@ -9,6 +9,23 @@ impl Aoc2015_01 {
     pub fn new() -> Self {
         Self { d: vec![] }
     }
+
+    fn solve(&self, pt: bool) -> i32 {
+        let mut h: i32 = 0;
+        for (p, c) in self.d.iter().enumerate() {
+            match c {
+                '(' => h+=1,
+                ')' => h-=1,
+                _ => panic!("invalid input!")
+            }
+
+            if pt && h < 0 {
+                return p as i32 + 1;
+            }
+        }
+
+        h
+    }
 }
 
 impl crate::Solution for Aoc2015_01 {
@@ -21,32 +38,10 @@ impl crate::Solution for Aoc2015_01 {
     }
 
     fn part1(&mut self) -> Vec<String> {
-        crate::output(
-            self.d.iter().map( | h | match h {
-                '(' => 1,
-                ')' => -1,
-                _ => {
-                    println!("{:?}", h);
-                    panic!("invalid char in input!");
-                }
-            }).sum::<i32>()
-        )
+        crate::output(self.solve(false))
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut h: i32 = 0;
-        for (p, c) in self.d.iter().enumerate() {
-            match c {
-                '(' => h+=1,
-                ')' => h-=1,
-                _ => panic!("invalid char in input!"),
-            }
-
-            if h < 0 {
-                return crate::output(p + 1);
-            }
-        }
-
-        panic!("no answer found!");
+        crate::output(self.solve(true))
     }
 }
