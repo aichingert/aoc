@@ -36,6 +36,21 @@ impl crate::Solution for Aoc2022_03 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut score: u32 = 0;
+
+        for i in 0..self.d.len()/3 {
+            let f: &str = &self.d[i*3+0].as_str();
+            let s: &str = &self.d[i*3+1].as_str();
+            let t: &str = &self.d[i*3+2].as_str();
+ 
+            let c: char = f.chars().find(|ch| s.contains(*ch) && t.contains(*ch)).unwrap();
+            score += if c.is_lowercase() {
+                ((c as u8)  - ('a' as u8 - 1u8)) as u32
+            } else {
+                ((c as u8)  - ('A' as u8 - 1u8)) as u32 + 26u32
+            }
+        }
+
+        crate::output(score)
     }
 }
