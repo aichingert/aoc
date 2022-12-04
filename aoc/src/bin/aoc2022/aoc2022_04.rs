@@ -1,13 +1,11 @@
 pub struct Aoc2022_04 {
-    r: Vec<Vec<(u32, u32)>>,
-    c: Vec<(u32, u32)>
+    r: Vec<Vec<(u32, u32)>>
 }
         
 impl Aoc2022_04 {
     pub fn new() -> Self {
         Self { 
-            r: Vec::new(),
-            c: Vec::new()
+            r: Vec::new()
         }
     }
 }
@@ -37,6 +35,10 @@ impl crate::Solution for Aoc2022_04 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.r
+                .iter()
+                .map(|v| 
+                    if (v[0].1 >= v[1].0 && v[0].0 <= v[1].0) || (v[0].0 <= v[1].1 && v[0].1 >= v[1].0) { 1 } else { 0 })
+                .sum::<u32>())
     }
 }
