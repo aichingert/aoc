@@ -10,3 +10,4 @@
 | 15 | **[Rambunctious Recitation](https://adventofcode.com/2020/day/15)** | [day 15](/aoc/src/bin/aoc2020/aoc2020_15.rs) |
 | 16 | **[Ticket Translation](https://adventofcode.com/2020/day/16)** | [day 16](/aoc/src/bin/aoc2020/aoc2020_16.rs) |
 | 18 | **[Operation Order](https://adventofcode.com/2020/day/18)** | [day 18](/aoc/src/bin/aoc2020/aoc2020_18.rs) |
+| 13 | **[Shuttle Search](https://adventofcode.com/2020/day/13)** | [day 13](/aoc/src/bin/aoc2020/aoc2020_13.rs) |
