@@ -4,7 +4,7 @@
 | year | finished |
 | --- |--------|
 |:christmas_tree:[2022](/aoc/src/bin/aoc2022)| 4 |
-|:christmas_tree:[2020](/aoc/src/bin/aoc2020)| 10 |
+|:christmas_tree:[2020](/aoc/src/bin/aoc2020)| 11 |
 |:christmas_tree:[2020](/aoc/src/bin/aoc2020)| 8 |
 |:christmas_tree:[2019](/aoc/src/bin/aoc2019)| 6 |
 |:christmas_tree:[2018](/aoc/src/bin/aoc2018)| 8 |
