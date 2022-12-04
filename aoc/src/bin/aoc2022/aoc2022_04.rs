@@ -27,15 +27,17 @@ impl crate::Solution for Aoc2022_04 {
     }
 
     fn part1(&mut self) -> Vec<String> {
-        crate::output(self.r
-                      .iter()
-                      .map(|v| 
-                           if (v[0].0 <= v[1].0 && v[0].1 >= v[1].1) || (v[1].0 <= v[0].0 && v[1].1 >= v[0].1) { 1 } else { 0 })
-                      .sum::<u32>())
+        crate::output(
+            self.r
+                .iter()
+                .map(|v| 
+                    if (v[0].0 <= v[1].0 && v[0].1 >= v[1].1) || (v[1].0 <= v[0].0 && v[1].1 >= v[0].1) { 1 } else { 0 })
+                .sum::<u32>())
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output(self.r
+        crate::output(
+            self.r
                 .iter()
                 .map(|v| 
                     if (v[0].1 >= v[1].0 && v[0].0 <= v[1].0) || (v[0].0 <= v[1].1 && v[0].1 >= v[1].0) { 1 } else { 0 })
