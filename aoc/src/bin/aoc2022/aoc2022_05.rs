@@ -25,8 +25,7 @@ impl crate::Solution for Aoc2022_05 {
                     continue;
                 }
                 let v: Vec<&str> = line.split(' ').collect();
-                let mut i: usize = 0;
-                let mut j: usize = 0;
+                let (mut i, mut j): (usize, usize) = (0,0);
 
                 while i < v.len() {
                     if v[i] == "" {
@@ -40,18 +39,18 @@ impl crate::Solution for Aoc2022_05 {
                         if self.s.len() > j {
                             self.s[j].push(v[i][1..=1].to_string());
                         } else {
-                            self.s.push(vec![v[i][1..=1].to_string()])
+                            self.s.push(vec![v[i][1..=1].to_string()]);
                         }
                         i+=1;
                         j+=1;
                     }
                 }
             } else {
-                let splt: Vec<&str> = line.split(' ').collect();
-                if splt.len() < 4 {
+                let splt: Vec<usize> = line.split(' ').filter(|s| s.parse::<usize>().is_ok()).map(|s| s.parse::<usize>().unwrap()).collect();
+                if splt.len() < 1 {
                     continue;
                 }
-                self.r.push((splt[1].parse().unwrap(), splt[3].parse().unwrap(), splt[5].parse().unwrap()));
+                self.r.push((splt[0], splt[1], splt[2]));
             }
         }
     }
