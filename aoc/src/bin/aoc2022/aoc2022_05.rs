@@ -15,43 +15,37 @@ impl crate::Solution for Aoc2022_05 {
     }
         
     fn parse(&mut self) {
-        let input = std::fs::read_to_string("input/2022/05.txt").expect("unable to open file!");
-        let mut p: bool = false;
+        let input: String = std::fs::read_to_string("input/2022/05.txt").expect("unable to open file!");
+        let input: Vec<&str> = input.split("\n\n").collect();
+        let (head, body): (Vec<&str>, Vec<&str>) = (input[0].split('\n').collect(), input[1].split('\n').collect());
 
-        for line in input.lines() {
-            if !p {
-                if !line.contains('[') {
-                    p = true;
-                    continue;
-                }
-                let v: Vec<&str> = line.split(' ').collect();
-                let (mut i, mut j): (usize, usize) = (0,0);
+        for i in 0..head.len() - 1 {
+            let cargos: Vec<&str> = head[i].split(' ').collect();
+            let (mut i, mut j): (usize, usize) = (0, 0);
 
-                while i < v.len() {
-                    if v[i] == "" {
-                        // "P" "" "" "" "C"
-                        i+=4;
-                        j+=1;
-                        if self.s.len() <= j {
-                            self.s.push(vec![]);
-                        }
-                    } else {
-                        if self.s.len() > j {
-                            self.s[j].push(v[i][1..=1].to_string());
-                        } else {
-                            self.s.push(vec![v[i][1..=1].to_string()]);
-                        }
-                        i+=1;
-                        j+=1;
+            while i < cargos.len() {
+                if cargos[i] == "" {
+                    i+=4;
+                    j+=1;
+                    if self.s.len() <= j {
+                        self.s.push(vec![]);
                     }
+                } else {
+                    if self.s.len() > j {
+                        self.s[j].push(cargos[i][1..=1].to_string());
+                    } else {
+                        self.s.push(vec![cargos[i][1..=1].to_string()]);
+                    }
+                    
+                    i += 1;
+                    j += 1;
                 }
-            } else {
-                let splt: Vec<usize> = line.split(' ').filter(|s| s.parse::<usize>().is_ok()).map(|s| s.parse::<usize>().unwrap()).collect();
-                if splt.len() < 1 {
-                    continue;
-                }
-                self.r.push((splt[0], splt[1], splt[2]));
             }
+        }
+
+        for i in 0..body.len()-1 {
+            let values: Vec<usize> = body[i].split(' ').filter(|s| s.parse::<usize>().is_ok()).map(|s| s.parse().unwrap()).collect();
+            self.r.push((values[0], values[1], values[2]));
         }
     }
         
