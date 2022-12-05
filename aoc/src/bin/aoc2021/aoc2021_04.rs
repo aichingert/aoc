@@ -61,28 +61,20 @@ impl crate::Solution for Aoc2021_04 {
 
     fn parse(&mut self) {
         let mut p = slice("input/2021/04.txt", "\n");
-        self.d = p.remove(0).split(',').map( | v | v.parse::<i32>().expect("invalid input")).collect();
+        self.d = p.remove(0).split(',').map(|v| v.parse::<i32>().expect("invalid input")).collect();
         p.remove(0);
 
         let mut a: [[(i32, bool); 5]; 5] = [[(0, false); 5]; 5];
         let mut y: usize = 0;
     
         for i in 0..p.len() {
-            if p[i] == "" {
+            if y == 5 {
                 self.b.push(Board::new(a));
                 y = 0;
                 continue;
             }
     
-    
-            let t: Vec<&str> = p[i].split(' ').collect();
-            let mut v: Vec<i32> = vec![];
-    
-            for j in 0..t.len() {
-                if t[j] != "" {
-                    v.push(t[j].parse::<i32>().unwrap());
-                }
-            }
+            let v: Vec<i32> = p[i].split(' ').filter(|s| !s.is_empty()).map(|s| s.parse::<i32>().unwrap()).collect();
     
             for j in 0..v.len() {
                 a[y][j].0 = v[j];
