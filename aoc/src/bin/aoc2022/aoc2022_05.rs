@@ -57,17 +57,18 @@ impl crate::Solution for Aoc2022_05 {
         
     fn part1(&mut self) -> Vec<String> {
         let mut sol: String = String::new();
+        let mut stack: Vec<Vec<String>> = self.s.clone();
 
         for i in 0..self.r.len() {
             for _amt in 0..self.r[i].0 {
-                let v = self.s[self.r[i].1-1].remove(0);
-                self.s[self.r[i].2-1].insert(0, v);
+                let v = stack[self.r[i].1-1].remove(0);
+                stack[self.r[i].2-1].insert(0, v);
             }
         }
 
-        for i in 0..self.s.len() {
-            if self.s[i].len() > 0 {
-                sol.push_str(self.s[i][0].as_str());
+        for i in 0..stack.len() {
+            if stack[i].len() > 0 {
+                sol.push_str(stack[i][0].as_str());
             }
         }
 
@@ -75,9 +76,6 @@ impl crate::Solution for Aoc2022_05 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        self.r.clear();
-        self.s.clear();
-        self.parse();
         let mut sol: String = String::new();
 
         for i in 0..self.r.len() {

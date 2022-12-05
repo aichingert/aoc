@@ -14,7 +14,7 @@ impl crate::Solution for Aoc2022_03 {
     }
         
     fn parse(&mut self) {
-        self.d = aoc::slice("../input/2022/03.txt", "\n");
+        self.d = aoc::slice("input/2022/03.txt", "\n");
     }
         
     fn part1(&mut self) -> Vec<String> {
