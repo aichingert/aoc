@@ -6,6 +6,20 @@ impl Aoc2022_06 {
     pub fn new() -> Self {
         Self { d: vec![] }
     }
+
+    fn solve(&self, range: usize) -> usize {
+        for i in 0..self.d.len() - range {
+            let mut c: Vec<char> = Vec::new();
+            let mut dup: bool = false;
+            self.d[i..i+range].to_vec().iter().for_each(|ch| if c.contains(ch) { dup = true; } else { c.push(*ch); });
+
+            if !dup {
+                return i+range;
+            }
+        }
+        
+        panic!("invalid input!");
+    }
 }
         
 impl crate::Solution for Aoc2022_06 {
@@ -18,30 +32,10 @@ impl crate::Solution for Aoc2022_06 {
     }
         
     fn part1(&mut self) -> Vec<String> {
-        for i in 0..self.d.len() - 3 {
-            let mut c: Vec<char> = Vec::new();
-            let mut dup: bool = false;
-            self.d[i..=i+3].to_vec().iter().for_each(|ch| if c.contains(ch) { dup = true; } else { c.push(*ch); });
-
-            if !dup {
-                return crate::output(i+4);
-            }
-        }
-        
-        panic!("invalid input!");
+        crate::output(self.solve(4))
     }
         
     fn part2(&mut self) -> Vec<String> {
-        for i in 0..self.d.len() - 3 {
-            let mut c: Vec<char> = Vec::new();
-            let mut dup: bool = false;
-            self.d[i..=i+3].to_vec().iter().for_each(|ch| if c.contains(ch) { dup = true; } else { c.push(*ch); });
-
-            if !dup {
-                return crate::output(i+4);
-            }
-        }
-        
-        panic!("invalid input!");
+        crate::output(self.solve(14))
     }
 }
