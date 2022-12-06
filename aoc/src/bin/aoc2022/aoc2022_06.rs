@@ -32,6 +32,16 @@ impl crate::Solution for Aoc2022_06 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        for i in 0..self.d.len() - 3 {
+            let mut c: Vec<char> = Vec::new();
+            let mut dup: bool = false;
+            self.d[i..=i+3].to_vec().iter().for_each(|ch| if c.contains(ch) { dup = true; } else { c.push(*ch); });
+
+            if !dup {
+                return crate::output(i+4);
+            }
+        }
+        
+        panic!("invalid input!");
     }
 }
