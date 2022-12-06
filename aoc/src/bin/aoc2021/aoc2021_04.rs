@@ -1,5 +1,3 @@
-use aoc::slice;
-
 pub struct Aoc2021_04 {
     d: Vec<i32>,
     b: Vec<Board>
@@ -60,7 +58,8 @@ impl crate::Solution for Aoc2021_04 {
     }
 
     fn parse(&mut self) {
-        let mut p = slice("input/2021/04.txt", "\n");
+        let p: String = std::fs::read_to_string("input/2021/04.txt").expect("unable to open file!");
+        let mut p: Vec<&str> = p.split('\n').map(|s| s.trim()).collect();
         self.d = p.remove(0).split(',').map(|v| v.parse::<i32>().expect("invalid input")).collect();
         p.remove(0);
 
@@ -68,7 +67,7 @@ impl crate::Solution for Aoc2021_04 {
         let mut y: usize = 0;
     
         for i in 0..p.len() {
-            if y == 5 {
+            if p[i] == "" {
                 self.b.push(Board::new(a));
                 y = 0;
                 continue;
