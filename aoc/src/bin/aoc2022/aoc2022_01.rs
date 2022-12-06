@@ -14,6 +14,8 @@ impl crate::Solution for Aoc2022_01 {
     }
         
     fn parse(&mut self) {
+        // If you are using windows you have to split on \r\n\r\n                                                         | here
+        //                                                                                                                v
         for block in std::fs::read_to_string("input/2022/01.txt").expect("unable to open file!").split("\n\n") {
             let s: u32 = block.lines().map(|v| v.parse::<u32>().expect("invalid input")).sum::<u32>();
             if s > self.d[0] {

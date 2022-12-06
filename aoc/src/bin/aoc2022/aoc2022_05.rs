@@ -15,9 +15,14 @@ impl crate::Solution for Aoc2022_05 {
     }
         
     fn parse(&mut self) {
-        let input: String = std::fs::read_to_string("input/2022/05.txt").expect("unable to open file!");
+        // If you are using windows you have to split on \r\n\r\n    
+        let input: String = std::fs::read_to_string("input/2022/05.txt").expect("unable to open file!");                                                     
+        //                                   | here
+        //                                   v
         let input: Vec<&str> = input.split("\n\n").collect();
-        let (head, body): (Vec<&str>, Vec<&str>) = (input[0].split('\n').collect(), input[1].split('\n').collect());
+        //                                                           |                               | here
+        //                                                           v                               v
+        let (head, body): (Vec<&str>, Vec<&str>) = (input[0].split("\n").collect(), input[1].split("\n").collect());
 
         for i in 0..head.len() - 1 {
             let cargos: Vec<&str> = head[i].split(' ').collect();
