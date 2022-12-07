@@ -37,8 +37,8 @@ impl Aoc2022_07 {
             "dir" => {
                 let folder_path: String = format!("{}{}", &path, line[1]);
 
-                if !self.m.contains_key(line[1]) {
-                    self.m.insert(line[1].to_string(), 0u64);
+                if !self.m.contains_key(&folder_path) {
+                    self.m.insert(folder_path.clone(), 0u64);
                 }
 
                 if let Some(mut folders) = self.d.remove(&path) {
@@ -61,6 +61,17 @@ impl Aoc2022_07 {
     }
 
     fn size<'a>(&mut self) {
+        let mut keys: Vec<&String> = self.d.keys().collect();
+        keys.sort_by(|a,b| b.len().cmp(&a.len()));
+
+        for key in keys {
+            let folders: &Vec<String> = &self.d[key];
+
+            for i in 0..folders.len() {
+                let current_size = self.m[key];
+                self.m.insert(key.to_string(), current_size + self.m[&folders[i]]);
+            }
+        }
     }
 }
         
@@ -85,11 +96,11 @@ impl crate::Solution for Aoc2022_07 {
             }
         }
 
-
+        self.size();
     }
         
     fn part1(&mut self) -> Vec<String> {
-        crate::output("")
+        crate::output(self.m.iter().filter(|(_,size)| **size <= 100_000).map(|(_,size)| size).sum::<u64>())
     }
         
     fn part2(&mut self) -> Vec<String> {
