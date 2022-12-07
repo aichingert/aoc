@@ -104,6 +104,8 @@ impl crate::Solution for Aoc2022_07 {
     }
         
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let (mut max, unused): (u64, u64) = (u64::MAX, 30_000_000 - (70_000_000 - self.m["/"]));
+        self.m.iter().for_each(|(_,size)| if *size > unused && *size < max { max = *size });
+        crate::output(max)
     }
 }
