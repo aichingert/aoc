@@ -2,6 +2,7 @@
 
 ## solutions
 | year | finished |
+| ---- | -------- |
 |:christmas_tree:[2022](/aoc/src/bin/aoc2022)| 7 |
 |:christmas_tree:[2021](/aoc/src/bin/aoc2021)| 10 |
 |:christmas_tree:[2020](/aoc/src/bin/aoc2020)| 8 |

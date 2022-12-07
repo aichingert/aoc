@@ -50,8 +50,7 @@ impl crate::Solution for Aoc2022_07 {
                     }
 
                     if !tree.contains_key(self.d[i][1].as_str()) {
-                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0); // found it here we insert without the -
-                        // quick fix just delete lmao
+                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0);
                     }
                     continue;
                 }
@@ -67,22 +66,16 @@ impl crate::Solution for Aoc2022_07 {
                             curr = path.join("-");
                         },
                         _ => {
-                            curr.push_str(&format!("-{}", self.d[i][1])); // idk maybe actually not that bad
-                            //curr = concat!(curr, "-", self.d[i][1]);
+                            curr.push_str(&format!("-{}", self.d[i][1]));
                         }
                     }
                 },
                 "ls" => {
                     ls = true;
                 },
-                _ => {
-                    println!("{:?}", self.d[i][0]);
-                }
+                _ => panic!("invalid input!")
             }
         }
-
-        println!("{:?}", dir);
-        println!("\n{:?}", tree);
 
         let mut ked: Vec<&String> = dir.keys().collect();
         ked.sort_by(|a,b| b.len().cmp(&a.len()));
@@ -131,8 +124,7 @@ impl crate::Solution for Aoc2022_07 {
                     }
 
                     if !tree.contains_key(self.d[i][1].as_str()) {
-                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0); // found it here we insert without the -
-                        // quick fix just delete lmao
+                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0);
                     }
                     continue;
                 }
@@ -148,22 +140,16 @@ impl crate::Solution for Aoc2022_07 {
                             curr = path.join("-");
                         },
                         _ => {
-                            curr.push_str(&format!("-{}", self.d[i][1])); // idk maybe actually not that bad
-                            //curr = concat!(curr, "-", self.d[i][1]);
+                            curr.push_str(&format!("-{}", self.d[i][1]));
                         }
                     }
                 },
                 "ls" => {
                     ls = true;
                 },
-                _ => {
-                    println!("{:?}", self.d[i][0]);
-                }
+                _ => panic!("invalid input!")
             }
         }
-
-        println!("{:?}", dir);
-        println!("\n{:?}", tree);
 
         let mut ked: Vec<&String> = dir.keys().collect();
         ked.sort_by(|a,b| b.len().cmp(&a.len()));
