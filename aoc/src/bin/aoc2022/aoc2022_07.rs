@@ -1,12 +1,66 @@
 use std::collections::HashMap;
 
 pub struct Aoc2022_07 {
-    d: Vec<Vec<String>>
+    m: HashMap<String, u64>,
+    d: HashMap<String, Vec<String>>
 }
         
 impl Aoc2022_07 {
     pub fn new() -> Self {
-        Self { d: vec![] }
+        Self { 
+            m: HashMap::new(),
+            d: HashMap::new()
+        }
+    }
+
+    fn cmd<'a>(&mut self, pwd: &mut Vec<&'a str>, line: &Vec<&'a str>) {
+        match line[1] {
+            "cd" => {
+                match line[2] {
+                    ".." => {
+                        pwd.pop();
+                    },
+                    _ => {
+                        pwd.push(line[2]);
+                    }
+                }
+            },
+            "ls" => {}, // doesn't do anything
+            _ => panic!("invalid input!")
+        }
+    }
+
+    fn update<'a>(&mut self, pwd: &Vec<&'a str>, line: &Vec<&'a str>) {
+        let path: String = pwd.iter().map(|slice| slice.to_string()).collect::<String>();
+
+        match line[0] {
+            "dir" => {
+                let folder_path: String = format!("{}{}", &path, line[1]);
+
+                if !self.m.contains_key(line[1]) {
+                    self.m.insert(line[1].to_string(), 0u64);
+                }
+
+                if let Some(mut folders) = self.d.remove(&path) {
+                    folders.push(folder_path);
+                    self.d.insert(path, folders);
+                } else {
+                    self.d.insert(path, vec![folder_path]);
+                }
+            },
+            _ => {
+                let file_size: u64 = line[0].parse::<u64>().expect("invalid input: expected file size!");
+
+                if let Some(folder_size) = self.m.remove(&path) {
+                    self.m.insert(path, folder_size + file_size);
+                } else {
+                    self.m.insert(path, file_size);
+                }
+            }
+        }
+    }
+
+    fn size<'a>(&mut self) {
     }
 }
         
@@ -16,162 +70,29 @@ impl crate::Solution for Aoc2022_07 {
     }
     
     fn parse(&mut self) {
-        self.d = aoc::read_to_slice("input/2022/07.txt", " ");
-        for i in 0..self.d.len() {
-            if self.d[i][0].as_str() == "$" {
-                self.d[i].remove(0);
+        let mut pwd: Vec<&str> = Vec::new();
+
+        for l in std::fs::read_to_string("input/2022/07.txt").expect("unable to open file!").lines() {
+            let line: Vec<&str> = l.split(' ').collect();
+
+            match line[0] {
+                "$" => {
+                    self.cmd(&mut pwd, &line);
+                },
+                _ => {
+                    self.update(&pwd, &line);
+                }
             }
         }
+
+
     }
         
     fn part1(&mut self) -> Vec<String> {
-        let mut tree: HashMap<String, u64> = HashMap::new();
-        let mut dir: HashMap<String, Vec<String>> = HashMap::new();
-        let mut ls: bool = false;
-        let mut curr: String = String::new();
-
-        for i in 0..self.d.len() {
-            if ls {
-                if self.d[i][0].parse::<u64>().is_ok() {
-                    if tree.contains_key(curr.as_str()) {
-                        let v = tree.remove(curr.as_str()).unwrap();
-                        tree.insert(curr.clone(), v+self.d[i][0].parse::<u64>().unwrap());
-                    } else {
-                        tree.insert(curr.clone(), self.d[i][0].parse::<u64>().unwrap());
-                    }
-                    continue;
-                } else if self.d[i][0].as_str() == "dir" {
-                    if dir.contains_key(curr.as_str()) {
-                        let mut c = dir.remove(curr.as_str()).unwrap();
-                        c.push(format!("{}-{}", curr,self.d[i][1]));
-                        dir.insert(curr.clone(), c);
-                    } else {
-                        dir.insert(curr.clone(), vec![format!("{}-{}", curr,self.d[i][1])]);
-                    }
-
-                    if !tree.contains_key(self.d[i][1].as_str()) {
-                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0);
-                    }
-                    continue;
-                }
-                ls = false;
-            }
-
-            match self.d[i][0].as_str() {
-                "cd" => {
-                    match self.d[i][1].as_str() {
-                        ".." => {
-                            let mut path = curr.split('-').collect::<Vec<&str>>();
-                            path.remove(path.len() -1);
-                            curr = path.join("-");
-                        },
-                        _ => {
-                            curr.push_str(&format!("-{}", self.d[i][1]));
-                        }
-                    }
-                },
-                "ls" => {
-                    ls = true;
-                },
-                _ => panic!("invalid input!")
-            }
-        }
-
-        let mut ked: Vec<&String> = dir.keys().collect();
-        ked.sort_by(|a,b| b.len().cmp(&a.len()));
-
-        for k in ked {
-            let ke = dir.clone().remove(k).unwrap();
-            for i in 0..ke.len() {
-                let s = tree.remove(k).unwrap();
-                tree.insert(k.clone(), s+tree[ke[i].as_str()]);
-            }
-        }
-
-        let mut s: u64 = 0;
-
-        for k in tree.keys() {
-            if tree[k] <= 100000 {
-                s += tree[k];
-            }
-        }
-        crate::output(s)
+        crate::output("")
     }
         
     fn part2(&mut self) -> Vec<String> {
-        let mut tree: HashMap<String, u64> = HashMap::new();
-        let mut dir: HashMap<String, Vec<String>> = HashMap::new();
-        let mut ls: bool = false;
-        let mut curr: String = String::new();
-
-        for i in 0..self.d.len() {
-            if ls {
-                if self.d[i][0].parse::<u64>().is_ok() {
-                    if tree.contains_key(curr.as_str()) {
-                        let v = tree.remove(curr.as_str()).unwrap();
-                        tree.insert(curr.clone(), v+self.d[i][0].parse::<u64>().unwrap());
-                    } else {
-                        tree.insert(curr.clone(), self.d[i][0].parse::<u64>().unwrap());
-                    }
-                    continue;
-                } else if self.d[i][0].as_str() == "dir" {
-                    if dir.contains_key(curr.as_str()) {
-                        let mut c = dir.remove(curr.as_str()).unwrap();
-                        c.push(format!("{}-{}", curr,self.d[i][1]));
-                        dir.insert(curr.clone(), c);
-                    } else {
-                        dir.insert(curr.clone(), vec![format!("{}-{}", curr,self.d[i][1])]);
-                    }
-
-                    if !tree.contains_key(self.d[i][1].as_str()) {
-                        tree.insert(format!("{}-{}",curr, self.d[i][1]), 0);
-                    }
-                    continue;
-                }
-                ls = false;
-            }
-
-            match self.d[i][0].as_str() {
-                "cd" => {
-                    match self.d[i][1].as_str() {
-                        ".." => {
-                            let mut path = curr.split('-').collect::<Vec<&str>>();
-                            path.remove(path.len() -1);
-                            curr = path.join("-");
-                        },
-                        _ => {
-                            curr.push_str(&format!("-{}", self.d[i][1]));
-                        }
-                    }
-                },
-                "ls" => {
-                    ls = true;
-                },
-                _ => panic!("invalid input!")
-            }
-        }
-
-        let mut ked: Vec<&String> = dir.keys().collect();
-        ked.sort_by(|a,b| b.len().cmp(&a.len()));
-
-        for k in ked {
-            let ke = dir.clone().remove(k).unwrap();
-            for i in 0..ke.len() {
-                let s = tree.remove(k).unwrap();
-                tree.insert(k.clone(), s+tree[ke[i].as_str()]);
-            }
-        }
-
-        let mut m: u64 = u64::MAX;
-
-        let u: u64 = 30000000 - (70000000-tree["-/"]);
-
-        for k in tree.keys() {
-            if tree[k] > u && m > tree[k] {
-                m = tree[k];
-            }
-        }
-
-        crate::output(m)
+        crate::output("")
     }
 }
