@@ -1,15 +1,13 @@
 use std::collections::HashMap;
 
 pub struct Aoc2022_07 {
-    m: HashMap<String, u64>,
-    d: HashMap<String, Vec<String>>
+    m: HashMap<String, u64>
 }
         
 impl Aoc2022_07 {
     pub fn new() -> Self {
         Self { 
             m: HashMap::new(),
-            d: HashMap::new()
         }
     }
 
@@ -18,7 +16,12 @@ impl Aoc2022_07 {
             "cd" => {
                 match line[2] {
                     ".." => {
+                        let child_folder: String = pwd.iter().map(|slice| slice.to_string()).collect::<String>();
                         pwd.pop();
+                        let parent_folder: String = pwd.iter().map(|slice| slice.to_string()).collect::<String>();
+                        if let Some(size) = self.m.remove(&parent_folder) {
+                            self.m.insert(parent_folder, size + self.m[&child_folder]);
+                        }
                     },
                     _ => {
                         pwd.push(line[2]);
@@ -38,14 +41,7 @@ impl Aoc2022_07 {
                 let folder_path: String = format!("{}{}", &path, line[1]);
 
                 if !self.m.contains_key(&folder_path) {
-                    self.m.insert(folder_path.clone(), 0u64);
-                }
-
-                if let Some(mut folders) = self.d.remove(&path) {
-                    folders.push(folder_path);
-                    self.d.insert(path, folders);
-                } else {
-                    self.d.insert(path, vec![folder_path]);
+                    self.m.insert(folder_path, 0u64);
                 }
             },
             _ => {
@@ -59,20 +55,6 @@ impl Aoc2022_07 {
             }
         }
     }
-
-    fn size<'a>(&mut self) {
-        let mut keys: Vec<&String> = self.d.keys().collect();
-        keys.sort_by(|a,b| b.len().cmp(&a.len()));
-
-        for key in keys {
-            let folders: &Vec<String> = &self.d[key];
-
-            for i in 0..folders.len() {
-                let current_size = self.m[key];
-                self.m.insert(key.to_string(), current_size + self.m[&folders[i]]);
-            }
-        }
-    }
 }
         
 impl crate::Solution for Aoc2022_07 {
@@ -82,8 +64,9 @@ impl crate::Solution for Aoc2022_07 {
     
     fn parse(&mut self) {
         let mut pwd: Vec<&str> = Vec::new();
+        let input: String = std::fs::read_to_string("input/2022/07.txt").expect("unable to open file!");
 
-        for l in std::fs::read_to_string("input/2022/07.txt").expect("unable to open file!").lines() {
+        for l in input.lines() {
             let line: Vec<&str> = l.split(' ').collect();
 
             match line[0] {
@@ -96,7 +79,9 @@ impl crate::Solution for Aoc2022_07 {
             }
         }
 
-        self.size();
+        while pwd.len() > 0 {
+            self.cmd(&mut pwd, &vec!["$", "cd", ".."]);
+        }
     }
         
     fn part1(&mut self) -> Vec<String> {
