@@ -12,6 +12,21 @@ impl Aoc2015_04 {
     fn get_hash(s: &str) -> String {
         format!("{:X}", md5::compute(s.as_bytes()))
     }
+
+    fn solve(&self, len: usize) -> i32 {
+        let mut i = 10000;
+        loop {
+            let s: Vec<char> = Aoc2015_04::get_hash(&(self.d.clone() + &i.to_string())).chars().collect();
+             if s[..len].iter().map( | v | match v {
+                '0' => 0,
+                _ => 1,
+            }).sum::<i32>() == 0 {
+                return i;
+            }
+
+            i += 1;
+        }
+    }
 }
 
 impl crate::Solution for Aoc2015_04 {
@@ -24,36 +39,10 @@ impl crate::Solution for Aoc2015_04 {
     }
 
     fn part1(&mut self) -> Vec<String> {
-        let mut i = 1;
-        loop {
-            let s: Vec<char> = Aoc2015_04::get_hash(&(self.d.clone() + &i.to_string())).chars().collect();
-             if s[..5].iter().map( | v | match v {
-                '0' => 0,
-                _ => 1,
-            }).sum::<i32>() == 0 {
-                break;
-            }
-
-            i += 1;
-        }
-
-        crate::output(i)
+        crate::output(self.solve(5))
     }
 
     fn part2(&mut self) -> Vec<String> {
-        let mut i = 10000;
-        loop {
-            let s: Vec<char> = Aoc2015_04::get_hash(&(self.d.clone() + &i.to_string())).chars().collect();
-             if s[..6].iter().map( | v | match v {
-                '0' => 0,
-                _ => 1,
-            }).sum::<i32>() == 0 {
-                break;
-            }
-
-            i += 1;
-        }
-
-        crate::output(i)
+        crate::output(self.solve(6))
     }
 }
