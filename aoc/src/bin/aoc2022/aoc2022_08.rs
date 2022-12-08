@@ -76,7 +76,7 @@ impl crate::Solution for Aoc2022_08 {
         c += 2 * self.d.len() as i32 + 2 * (self.d[0].len() - 2) as i32;
         crate::output(c)
     }
-        
+
     fn part2(&mut self) -> Vec<String> {
         let mut c: i32 = 0;
 
@@ -117,7 +117,6 @@ impl crate::Solution for Aoc2022_08 {
                         break;
                     }
                 }
-
 
                 l += 1;
                 r += 1;
