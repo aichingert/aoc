@@ -9,3 +9,4 @@
 |  5 | **[Supply Stacks](https://adventofcode.com/2022/day/05)** | [day  5](/aoc/src/bin/aoc2022/aoc2022_05.rs) |
 |  6 | **[Tuning Trouble](https://adventofcode.com/2022/day/06)** | [day  6](/aoc/src/bin/aoc2022/aoc2022_06.rs) |
 |  7 | **[No Space Left On Device](https://adventofcode.com/2022/day/07)** | [day  7](/aoc/src/bin/aoc2022/aoc2022_07.rs) |
+|  8 | **[name](https://adventofcode.com/2022/day/08)** | [day  8](/aoc/src/bin/aoc2022/aoc2022_08.rs) |
