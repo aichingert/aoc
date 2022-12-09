@@ -8,6 +8,19 @@ impl Aoc2022_09 {
     pub fn new() -> Self {
         Self { d: Vec::new() }
     }
+
+    /*
+        x:4 y:5 h
+        x:3 y:5 t
+
+        x: // 
+    */
+    fn simulate(&self, knots: &mut Vec<(i32, i32)>, p1: usize, p2: usize) {
+        if knots[p1].1.abs_diff(knots[p2].1) > 1 || knots[p1].0.abs_diff(knots[p2].0) > 1 {
+            knots[p2].1 += (knots[p1].1 - knots[p2].1).signum();
+            knots[p2].0 += (knots[p1].0 - knots[p2].0).signum();
+        }
+    }
 }
         
 impl crate::Solution for Aoc2022_09 {
@@ -23,75 +36,50 @@ impl crate::Solution for Aoc2022_09 {
 
             self.d.push((s[0].chars().next().unwrap(), s[1].parse::<i32>().unwrap()));
         }
-        
-
     }
-        
+
     fn part1(&mut self) -> Vec<String> {
         let mut positions: HashSet<(i32, i32)> = HashSet::new();
-        let mut hx: i32 = 0;
-        let mut hy: i32 = 0;
-        let mut tx: i32 = 0;
-        let mut ty: i32 = 0;
+        let mut knots: Vec<(i32, i32)> = vec![(0,0);2];
 
         for i in 0..self.d.len() {
             for _ in 0..self.d[i].1 {
-                positions.insert((tx, ty));
+                positions.insert(knots[knots.len()-1]);
                 match self.d[i].0 {
-                    'R' => hx += 1,
-                    'L' => hx -= 1,
-                    'U' => hy += 1,
-                    'D' => hy -= 1,
+                    'R' => knots[0].0 += 1,
+                    'L' => knots[0].0 -= 1,
+                    'U' => knots[0].1 += 1,
+                    'D' => knots[0].1 -= 1,
                     _ => panic!()
-                }
-
-                if hx == tx && hy.abs_diff(ty) > 1 {
-                    match self.d[i].0 {
-                        'R' => tx += 0,
-                        'L' => tx -= 0,
-                        'U' => ty += 1,
-                        'D' => ty -= 1,
-                        _ => panic!("same x")
-                    }
-                } else if hy == ty && hx.abs_diff(tx) > 1 {
-                    match self.d[i].0 {
-                        'R' => tx += 1,
-                        'L' => tx -= 1,
-                        'U' => ty += 0,
-                        'D' => ty -= 0,
-                        _ => panic!("same y")
-                    }
-                } else if hx != tx && hy != ty && (hx.abs_diff(tx) > 1 || hy.abs_diff(ty) > 1) {
-                    match self.d[i].0 {
-                        'R' => {
-                            ty = hy;
-                            tx += 1;
-                        },
-                        'L' => {
-                            ty = hy;
-                            tx -= 1;
-                        },
-                        'U' => {
-                            tx = hx;
-                            ty += 1;
-                        },
-                        'D' => {
-                            tx = hx;
-                            ty -= 1;
-                        },
-                        _ => panic!()
-                    }
-                }
-
-                print!("{hx} {hy} -> ");
-                println!("{tx} {ty}\n");
+                };
+                self.simulate(&mut knots, 0, 1);
             }
         }
 
         crate::output(positions.len())
     }
-        
+
     fn part2(&mut self) -> Vec<String> {
-        crate::output("")
+        let mut positions: HashSet<(i32, i32)> = HashSet::new();
+        let mut knots: Vec<(i32, i32)> = vec![(0,0);10];
+        positions.insert(knots[knots.len()-1]);
+
+        for i in 0..self.d.len() {
+            for _ in 0..self.d[i].1 {
+                match self.d[i].0 {
+                    'R' => knots[0].0 += 1,
+                    'L' => knots[0].0 -= 1,
+                    'U' => knots[0].1 += 1,
+                    'D' => knots[0].1 -= 1,
+                    _ => panic!()
+                };
+                for j in 0..knots.len()-1 {
+                    self.simulate(&mut knots, j, j+1);
+                }
+                positions.insert(knots[knots.len()-1]);
+            }
+        }
+
+        crate::output(positions.len())
     }
 }
