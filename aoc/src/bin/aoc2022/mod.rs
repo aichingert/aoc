@@ -8,6 +8,7 @@ mod aoc2022_05;
 mod aoc2022_06;
 mod aoc2022_07;
 mod aoc2022_08;
+mod aoc2022_09;
 
 use aoc2022_01::*;
 use aoc2022_02::*;
@@ -17,6 +18,7 @@ use aoc2022_05::*;
 use aoc2022_06::*;
 use aoc2022_07::*;
 use aoc2022_08::*;
+use aoc2022_09::*;
 
 pub fn run_2022(which: Selector) {
     let mut day_01 = Aoc2022_01::new();
@@ -27,10 +29,12 @@ pub fn run_2022(which: Selector) {
     let mut day_06 = Aoc2022_06::new();
     let mut day_07 = Aoc2022_07::new();
     let mut day_08 = Aoc2022_08::new();
+    let mut day_09 = Aoc2022_09::new();
+
 
     let mut days: Vec<&mut dyn Solution> = vec![
         &mut day_01, &mut day_02, &mut day_03, &mut day_04, &mut day_05,
-        &mut day_06, &mut day_07, &mut day_08
+        &mut day_06, &mut day_07, &mut day_08, &mut day_09
     ];
 
     match which {

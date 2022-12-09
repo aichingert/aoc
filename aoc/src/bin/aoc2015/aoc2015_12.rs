@@ -1,5 +1,3 @@
-use aoc::slice;
-
 use serde_json::Value;
 
 pub struct Aoc2015_12 {
@@ -19,7 +17,7 @@ impl crate::Solution for Aoc2015_12 {
 
     fn parse(&mut self) {
         self.d = Some(
-            serde_json::from_str(&slice("input/2015/12.txt", "\n")[0])
+            serde_json::from_str(&std::fs::read_to_string("input/2015/12.txt").expect("unable to open file!"))
                 .expect("invalid input file")
         );
     }
