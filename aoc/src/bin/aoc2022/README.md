@@ -12,3 +12,4 @@
 |  8 | **[Treetop Tree House](https://adventofcode.com/2022/day/08)** | [day  8](/aoc/src/bin/aoc2022/aoc2022_08.rs) |
 |  9 | **[Rope Bridge](https://adventofcode.com/2022/day/09)** | [day  9](/aoc/src/bin/aoc2022/aoc2022_09.rs) |
 | 10 | **[Cathode-Ray Tube](https://adventofcode.com/2022/day/10)** | [day 10](/aoc/src/bin/aoc2022/aoc2022_10.rs) |
+| 11 | **[name](https://adventofcode.com/2022/day/11)** | [day 11](/aoc/src/bin/aoc2022/aoc2022_11.rs) |
