@@ -3,9 +3,11 @@ use std::{
     fs::read_to_string,
     str::FromStr,
     fmt::Debug,
+    ops::{Div, Mul, Sub}
 };
 
-/// Returns the input
+
+/// Returns the inputx^x
 /// as a list of chars
 ///
 pub fn read_to_chars<T: AsRef<Path>>(path: T) -> Vec<char> {
@@ -118,22 +120,7 @@ pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
         .collect())
         .collect()
 }
-/*
 
-int q, r;
-
-// loop till remainder is 0
-while (b > 0)
-{
-q = a / b; // quotient
-r = a — q * b; // remainder
-
-// or we can simply use (a % b) to calculate r
-
-// a becomes b and b becomes r (a % b)
-a = b;
-b = r;
-*/
 pub fn gcd(a: usize, b: usize) -> usize {
     let mut f = a;
     let mut s = b;
