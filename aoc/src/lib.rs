@@ -118,6 +118,34 @@ pub fn get_chars<T: AsRef<Path>>(path: T) -> Vec<Vec<char>> {
         .collect())
         .collect()
 }
+/*
+
+int q, r;
+
+// loop till remainder is 0
+while (b > 0)
+{
+q = a / b; // quotient
+r = a — q * b; // remainder
+
+// or we can simply use (a % b) to calculate r
+
+// a becomes b and b becomes r (a % b)
+a = b;
+b = r;
+*/
+pub fn gcd(a: usize, b: usize) -> usize {
+    let mut f = a;
+    let mut s = b;
+
+    while s > 0 {
+        let r = f % s;
+        f = s;
+        s = r;
+    }
+
+    f
+}
 
 /// Permutations 
 /// 
