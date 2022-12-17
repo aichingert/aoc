@@ -13,3 +13,4 @@
 |  9 | **[Rope Bridge](https://adventofcode.com/2022/day/09)** | [day  9](/aoc/src/bin/aoc2022/aoc2022_09.rs) |
 | 10 | **[Cathode-Ray Tube](https://adventofcode.com/2022/day/10)** | [day 10](/aoc/src/bin/aoc2022/aoc2022_10.rs) |
 | 11 | **[Monkey in the Middle](https://adventofcode.com/2022/day/11)** | [day 11](/aoc/src/bin/aoc2022/aoc2022_11.rs) |
+| 12 | **[Hill Climbing Algorithm](https://adventofcode.com/2022/day/12)** | [day 12](/aoc/src/bin/aoc2022/aoc2022_12.rs) |
