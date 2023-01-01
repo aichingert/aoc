@@ -6,18 +6,18 @@ fn main() {
 }
 
 fn solve(lines: &[char], part: bool) -> i32 {
-    let mut d: i32 = 0;
+    let mut loc: i32 = 0;
 
     for (i,c) in lines.iter().enumerate() {
-        d += match c {
+        loc += match c {
             '(' => 1,
             _ => -1
         };
 
-        if part && d < 0 {
+        if part && loc < 0 {
             return i as i32 + 1;
         }
     }
 
-    d
+    loc
 }
