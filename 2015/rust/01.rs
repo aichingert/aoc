@@ -1,10 +1,3 @@
-fn main() {
-    let input: Vec<char> = std::fs::read_to_string("../input/01").unwrap().chars().collect();
-
-    println!("Part 1: {}", solve(&input, false));
-    println!("Part 2: {}", solve(&input, true));
-}
-
 fn solve(lines: &[char], part: bool) -> i32 {
     let mut loc: i32 = 0;
 
@@ -20,4 +13,11 @@ fn solve(lines: &[char], part: bool) -> i32 {
     }
 
     loc
+}
+
+fn main() {
+    let input: Vec<char> = std::fs::read_to_string("../input/01").unwrap().chars().collect();
+
+    println!("Part 1: {}", solve(&input, false));
+    println!("Part 2: {}", solve(&input, true));
 }
