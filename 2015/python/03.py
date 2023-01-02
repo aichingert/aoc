@@ -1,43 +1,29 @@
 # Advent of Code 2015, day 3
 # (c) aichingert
 
-def part1(inp):
-    x,y = 0,0
-    p = [(x,y)]
-    for i in range(len(inp)):
-        match inp[i]:
-            case '<':
-                x-=1
-            case '>':
-                x+=1
-            case 'v':
-                y-=1
-            case '^':
-                y+=1
-        p.append((x,y))
-    return len(set(p))
+def update(loc, c):
+    match c:
+        case '<':
+            loc[0]-=1
+        case '>':
+            loc[0]+=1
+        case 'v':
+            loc[1]-=1
+        case '^':
+            loc[1]+=1
 
-def part2(inp):
-    loc = [[0,0],[0,0]]
-    s = 0
-    p = [(0,0)]
-
+def solve(inp, part):
+    if part: s=1 
+    else: s=0
+    loc = [[0,0] for _ in range(-1,s)]
+    p = [(loc[s][0],loc[s][1])]
+    
     for i in range(len(inp)):
-        match inp[i]:
-            case '<':
-                loc[s][0]-=1
-            case '>':
-                loc[s][0]+=1
-            case 'v':
-                loc[s][1]-=1
-            case '^':
-                loc[s][1]+=1
+        update(loc[s], inp[i])
         p.append((loc[s][0],loc[s][1]))
-        s = 1 - s
+        if part: s = 1 - s
     return len(set(p))
-
-
 
 inp = open("../input/03").read()
-print("Part 1:",part1(inp))
-print("Part 2:",part2(inp))
+print("Part 1:",solve(inp,False))
+print("Part 2:",solve(inp,True))
