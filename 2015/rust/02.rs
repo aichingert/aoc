@@ -1,3 +1,6 @@
+// Advent of Code 2015, day 2
+// (c) aichingert
+
 fn part1(p: &[(u32,u32,u32)]) -> u32 {
     p.iter().map(|(l,w,h)| 2*l*w + 2*w*h + 2*h*l + l*w).sum::<u32>()
 }

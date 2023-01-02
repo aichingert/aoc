@@ -1,3 +1,6 @@
+// Advent of Code 2015, day 1
+// (c) aichingert
+
 fn solve(lines: &[char], part: bool) -> i32 {
     let mut loc: i32 = 0;
 
