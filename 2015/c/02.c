@@ -1,3 +1,6 @@
+// Advent of Code 2015, day 2
+// (c) aichingert
+
 #include <stdio.h>
 #include <stdlib.h>
 
