@@ -9,7 +9,6 @@ fn part2(p: &[(u32,u32,u32)]) -> u32 {
     p.iter().map(|(l,w,h)| 2*l+2*w + l*w*h).sum::<u32>()
 }
 
-
 fn main() {
     let mut p: Vec<(u32,u32,u32)> = Vec::new();
 

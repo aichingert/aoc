@@ -29,7 +29,6 @@ fn update(loc: &mut (i32,i32), c: &char) {
     };
 }
 
-
 fn main() {
     let input = std::fs::read_to_string("../input/03").unwrap();
 
