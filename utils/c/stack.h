@@ -1,14 +1,14 @@
-// Utility - stack 
+// Utils - Stack
 // (c) aichingert
 
-typedef struct {
-	int data;
-	struct node *next;
-} node;
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct {
-	node *top;
-	size_t malloc_size;
-} stack;
+struct node;
+struct stack;
 
-void push(stack *stack, void *data);
+struct stack *new_stack(size_t malloc_size);
+void s_push(struct stack *stack, void *data);
+int s_pop(struct stack *stack, void *data);
+int s_get_at(struct stack *stack, int index, void *data);
+int s_get_len(struct stack *stack);
