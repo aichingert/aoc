@@ -13,6 +13,7 @@ def part2(p):
 p = []
 
 for l in open("../input/02").read().split('\n'):
+    if l == '': break
     vls = [int(x) for x in l.split('x')]
     vls.sort()
     p.append((vls[0],vls[1],vls[2]))
