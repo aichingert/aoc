@@ -1,3 +1,6 @@
+# Advent of Code, day 1
+# (c) aichingert
+
 def solve(inp, part):
     loc = 0
 

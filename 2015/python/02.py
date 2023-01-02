@@ -1,3 +1,6 @@
+# Advent of Code 2015, day 2
+# (c) aichingert
+
 def part1(p):
     s = 0
     for l,w,h in p:
