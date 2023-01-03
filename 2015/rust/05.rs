@@ -42,18 +42,10 @@ fn part2(inp: &str) -> u32 {
 
         for i in 0..chs.len()-2 {
             for j in i+2..chs.len()-1 {
-                if chs[i] == chs[j] && chs[i+1] == chs[j+1] {
-                    f = true;
-                    break;
-                }
+                if chs[i] == chs[j] && chs[i+1] == chs[j+1] { f = true; }
             }
-        }
 
-        for i in 0..chs.len()-2 {
-            if chs[i] == chs[i+2] {
-                s = true;
-                break;
-            }
+            if chs[i] == chs[i+2] { s = true; }
         }
 
         if f && s { c += 1; }
