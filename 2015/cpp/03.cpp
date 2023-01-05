@@ -20,18 +20,10 @@ void update(int (&loc)[2], char ch)
 {
 	switch (ch)
 	{
-		case '<':
-			loc[0] -= 1;
-			break;
-		case '>':
-			loc[0] += 1;
-			break;
-		case '^':
-			loc[1] += 1;
-			break;
-		case 'v':
-			loc[1] -= 1;
-			break;
+		case '<': loc[0] -= 1; break;
+		case '>': loc[0] += 1; break;
+		case '^': loc[1] += 1; break;
+		case 'v': loc[1] -= 1; break;
 	}
 }
 
