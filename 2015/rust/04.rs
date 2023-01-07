@@ -1,7 +1,7 @@
 // Advent of Code 2015, day 4
 // (c) aichingert
 
-mod md5;
+#[path="../../utils/rust/md5.rs"] mod md5;
 
 fn solve(key: &str, zeros: usize) -> u32 {
     let mut n: u32 = 0;
