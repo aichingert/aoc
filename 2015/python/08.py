@@ -26,15 +26,11 @@ def part2(inp):
     for l in inp:
         c += len(l)
         for i in range(len(l)):
-            if l[i] == "\"":
-                if i == len(l)-1 or i == 0:
-                    n += 3
-                else:
-                    n += 2
-            elif l[i] == "\\":
+            if l[i] == "\"" or l[i] == "\\":
                 n += 2
             else:
                 n += 1
+        n += 2
     return n - c
 
 inp = open('../input/08').read().split('\n')
