@@ -6,15 +6,15 @@
 fn solve(key: &str, zeros: usize) -> u32 {
     let mut n: u32 = 0;
     
-    loop {
+    'md5: loop {
         n+=1;
         let s: Vec<char> = md5::md5_utf8((key.to_owned() + &n.to_string()).as_str()).chars().collect();
-        if s[..zeros].iter().map(|ch| match ch {
-            '0' => 0,
-            _ => 1,
-        }).sum::<i32>() == 0 {
-            return n;
+
+        for ch in s[..zeros].iter() {
+            if ch != &'0' { continue 'md5}
         }
+
+        return n;
     }
 }
 
