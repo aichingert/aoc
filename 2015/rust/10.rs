@@ -30,5 +30,5 @@ fn main() {
     let mut cur = inp.trim().chars().collect::<Vec<char>>();
 
     println!("Part 1: {}", solve(&mut cur, 40));
-    println!("Part 1: {}", solve(&mut cur, 10)); 
+    println!("Part 2: {}", solve(&mut cur, 10)); 
 }
