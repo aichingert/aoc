@@ -21,7 +21,7 @@ fn part1(ch: &[char]) -> i32 {
 fn part2() {}
 
 fn main() {
-	let inp = std::fs::read_to_string("../input/12").unwrap();
+    let inp = std::fs::read_to_string("../input/12").unwrap();
     let inp = inp.trim().chars().collect::<Vec<char>>();
 
     println!("Part 1: {}", part1(&inp));

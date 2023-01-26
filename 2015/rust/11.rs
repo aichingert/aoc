@@ -49,7 +49,7 @@ fn solve(cur: &mut Vec<char>) -> String {
 }
 
 fn main() {
-	let inp = std::fs::read_to_string("../input/11").unwrap();
+    let inp = std::fs::read_to_string("../input/11").unwrap();
     let mut inp = inp.trim().chars().collect::<Vec<char>>();
 
     println!("Part 1: {}", solve(&mut inp));
