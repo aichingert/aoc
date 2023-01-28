@@ -29,7 +29,9 @@ fn part2(ch: &[char], cur: &mut usize) -> i32 {
                 if ch[*cur] == '{' { cc+=1; }
                 else if ch[*cur] == '}' { cc-=1; }
 
-                *cur += 1;
+                if cc > -1 {
+                    *cur += 1;
+                }
             }
             return 0;
         }
@@ -40,10 +42,6 @@ fn part2(ch: &[char], cur: &mut usize) -> i32 {
             '[' => array(ch, cur),
             _ => 0
         };
-
-        if *cur == ch.len() {
-            break;
-        }
 
         if V.contains(&ch[*cur]) {
             s.push(ch[*cur]);
@@ -70,9 +68,6 @@ fn array(ch: &[char], cur: &mut usize) -> i32 {
             _ => 0
         };
 
-        if *cur == ch.len() {
-            break;
-        }
 
         if V.contains(&ch[*cur]) {
             s.push(ch[*cur]);
