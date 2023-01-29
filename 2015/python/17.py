@@ -16,7 +16,7 @@ def solve(con,part):
                 ans += 1
     return ans
 
-con = [int(c) for c in open("../input/17").read().split('\n')]
+con = [int(c) for c in open("../input/17").read().strip().split('\n')]
 
 print("Part 1:",solve(con, False))
 print("Part 2:",solve(con, True))
