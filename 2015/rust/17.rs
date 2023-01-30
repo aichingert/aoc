@@ -8,13 +8,11 @@ fn solve(cont: &Vec<i32>, part: bool) -> u32 {
     let mut ans = 0;
 
     for s in 1..cont.len() {
-        let mut combs = combinations(s, cont);
-
         if part && ans != 0 {
             return ans;
         }
 
-        for comb in combs {
+        for comb in combinations(s, cont) {
             if comb.iter().sum::<i32>() == 150 {
                 ans += 1;
             }
@@ -23,8 +21,6 @@ fn solve(cont: &Vec<i32>, part: bool) -> u32 {
 
     ans
 }
-
-fn part2() {}
 
 fn main() {
     let inp = std::fs::read_to_string("../input/17").unwrap();
