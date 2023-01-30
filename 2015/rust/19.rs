@@ -53,7 +53,34 @@ fn part1(possibilities: &HashMap<String, Vec<String>>, cur: &Vec<char>) -> usize
     ans.len()
 }
 
-fn part2() {}
+fn part2(possibilities: &HashMap<String, Vec<String>>, calculated: &mut HashSet<String>, finish: &String, cur: String, steps: usize) -> Option<usize> {
+    if calculated.contains(&cur) || cur.len() > finish.len() {
+        return None;
+    }
+    let this = cur.chars().collect::<Vec<char>>();
+
+    for k in possibilities.keys() {
+        let pat = k.chars().collect::<Vec<char>>();
+        for i in 0..possibilities[k].len() {
+            let mut pos = 0usize;
+            let with = possibilities[k][i].chars().collect::<Vec<char>>(); 
+
+            while let Some(rep) = replace_pos(pos, &pat, &with, &this) {
+                if &rep == finish {
+                    return Some(steps);
+                } else {
+                    if let Some(stps) = part2(possibilities, calculated, finish, rep.clone(), steps+1) {
+                        return Some(stps);
+                    }
+                    calculated.insert(rep);
+                }
+                pos += 1;
+            }
+        }
+    }
+
+    None
+}
 
 fn parse() -> (HashMap<String, Vec<String>>, String) {
     let bind = std::fs::read_to_string("../input/19").unwrap();
@@ -79,5 +106,5 @@ fn main() {
     let (possibilities, start) = parse();
 
     println!("Part 1: {}", part1(&possibilities, &start.chars().collect::<Vec<char>>()));
-    //println!("Part 2: {}", part2());
+    println!("Part 2: {:?}", part2(&possibilities, &mut HashSet::new(), &start.to_string(), "e".to_string(), 1));
 }
