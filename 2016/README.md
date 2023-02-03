@@ -6,7 +6,3 @@
 | Rust     | [x](/2016/rust/01.rs) | [x](/2016/rust/02.rs) | [x](/2016/rust/03.rs) | [x](/2016/rust/04.rs) | [x](/2016/rust/05.rs) | [x](/2016/rust/06.rs) | [x](/2016/rust/07.rs) | [x](/2016/rust/08.rs) |
 | Python   | [x](/2016/python/01.py) | [x](/2016/python/02.py) | [x](/2016/python/03.py) | [x](/2016/python/04.py) | [x](/2016/python/05.py) | [x](/2016/python/06.py) | [x](/2016/python/07.py) |
 | Go       | [x](/2016/go/01.go) | [x](/2016/go/02.go) |  
-
-# Progress
-
-<img src="/img/progress-2016.png" />

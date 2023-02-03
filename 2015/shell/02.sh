@@ -19,17 +19,9 @@ while read a b ; do
 			n3="$n"
 		fi
 	done
-
-	l=$(expr $(expr "2" \* "$n1") \* "$n2")
-	b=$(expr $(expr "2" \* "$n2") \* "$n3")
-	w=$(expr $(expr "2" \* "$n1") \* "$n3")
-	e=$(expr "$n1" \* "$n2")
-
-	f=$(expr $(expr "$n1" + "$n1") + $(expr "$n2" + "$n2"))
-	ri=$(expr $(expr "$n1" \* "$n2") \* "$n3")
 	
-	p1=$(expr "$p1" + $(expr "$e" + $(expr $(expr "$l" + "$b") + "$w")))
-	p2=$(expr "$p2" + $(expr "$f" + "$ri"))
+	p1=$(($p1 + 2 * $n1 * $n2 + 2 * $n2 * $n3 + 2 * $n1 * $n3 + $n1 * $n2))
+	p2=$(($p2 + $n1 + $n1 + $n2 + $n2 + $n1 * $n2 * $n3))
 done
 
 echo "Part 1: $p1"

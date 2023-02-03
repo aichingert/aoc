@@ -6,4 +6,3 @@
 | Rust     | [x](/2017/rust/01.rs) | [x](/2017/rust/02.rs) |
 | Python   | [x](/2017/python/01.py) | 
 
-<img src="/img/progress-2017.png" />
