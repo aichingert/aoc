@@ -10,7 +10,7 @@ d=$(sed 's/[^)]//g' "../input/01")
 
 p1=$(expr ${#u} - ${#d})
 
-for ch in `echo "$inp" | fold -w1`; do
+for ch in $(echo "$inp" | fold -w1); do
 	loc=$(expr $loc + 1)
 
 	if test $ch = "(" ; then 
