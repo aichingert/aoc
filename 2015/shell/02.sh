@@ -24,8 +24,13 @@ while read a b ; do
 	b=$(expr $(expr "2" \* "$n2") \* "$n3")
 	w=$(expr $(expr "2" \* "$n1") \* "$n3")
 	e=$(expr "$n1" \* "$n2")
+
+	f=$(expr $(expr "$n1" + "$n1") + $(expr "$n2" + "$n2"))
+	ri=$(expr $(expr "$n1" \* "$n2") \* "$n3")
 	
-	p1=$(expr "$p1" + $(expr $e + $(expr $(expr "$l" + "$b") + "$w")))
+	p1=$(expr "$p1" + $(expr "$e" + $(expr $(expr "$l" + "$b") + "$w")))
+	p2=$(expr "$p2" + $(expr "$f" + "$ri"))
 done
 
 echo "Part 1: $p1"
+echo "Part 2: $p2"
