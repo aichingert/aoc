@@ -1,3 +1,6 @@
+# Advent of Code 2015, day 1
+# (c) aichingert
+
 open("../input/01","r") do file
 	i = 0
 	d = 0
@@ -16,7 +19,7 @@ open("../input/01","r") do file
 		if d < 0 && p2 == 0
 			p2 = i
 		end
-    	end
+    end
 	
 	println("Part 1: " * string(d))
 	println("Part 2: " * string(p2))
