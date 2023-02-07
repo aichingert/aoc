@@ -9,4 +9,4 @@
 | C        | [x](/2015/c/01.c) | [x](/2015/c/02.c) | [x](/2015/c/03.c) | [x](/2015/c/04.c) | [x](/2015/c/05.c) |
 | Cpp      | [x](/2015/cpp/01.cpp) | [x](/2015/cpp/02.cpp) | [x](/2015/cpp/03.cpp) | [~](/2015/cpp/04.sh) |
 | Shell    | [x](/2015/shell/01.sh) | [x](/2015/shell/02.sh) | [x](/2015/shell/03.sh) | [x](/2015/shell/04.sh) |
-| Julia    | [x](/2015/julia/01.jl) | [x](/2015/julia/02.jl) | [x](/2015/julia/03.jl) |
+| Julia    | [x](/2015/julia/01.jl) | [x](/2015/julia/02.jl) | [x](/2015/julia/03.jl) | [x](/2015/julia/04.jl) |
