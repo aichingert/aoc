@@ -10,15 +10,13 @@ open("../input/01","r") do file
 		ch = read(file, Char)
 		i += 1
 		
-		if ch == '('
-			d += 1
-		else
-			d -= 1
-		end
+        if ch == '(' 
+            d += 1 
+        else 
+            d -= 1 
+        end
 
-		if d < 0 && p2 == 0
-			p2 = i
-		end
+		if d < 0 && p2 == 0 p2 = i end
     end
 	
 	println("Part 1: " * string(d))
