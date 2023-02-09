@@ -6,6 +6,7 @@ I = ["ab","cd","pq","xy"]
 def part1(lines):
     c = 0
     for s in lines:
+        if s == "": continue
         if s[-1] == 'a' or s[-1] == 'e' or s[-1] == 'i' or s[-1] == 'o' or s[-1] == 'u': vc = 1
         else: vc = 0
         v = True
