@@ -12,7 +12,7 @@ function part1(lines::Vector{String})
 
         if contains(l, r"ab|cd|pq|xy") continue end
 
-        for i in 1:length(l)
+        for i in eachindex(l)
             if contains(string(l[i]), r"a|e|i|o|u") vc += 1 end
             if i+1 <= length(l) && l[i] == l[i+1] dd = true end
         end
