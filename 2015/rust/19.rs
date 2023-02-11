@@ -9,7 +9,7 @@ fn replace_pos(pos: usize, pat: &[char], with: &[char], cur: &[char]) -> Option<
     
     'out: for i in 0..cur.len() {
         for j in i..i+pat.len() {
-            if cur[j] != pat[j-i] { 
+            if j<cur.len() && cur[j] != pat[j-i] { 
                 new.push(cur[i]);
                 continue 'out;
             }
@@ -52,15 +52,22 @@ fn part1(possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>, cur: &Vec<char>) ->
 }
 
 fn part2(possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>, calculated: &mut HashSet<Vec<char>>, finish: &Vec<char>, cur: &Vec<char>, steps: usize) -> Option<usize> {
-    if calculated.contains(cur) || cur.len() > finish.len() {
+    if calculated.contains(cur) {
         return None;
     }
 
     for k in possibilities.keys() {
         for i in 0..possibilities[k].len() {
+            if k[0] == 'e' && cur.len() > 3 {
+                continue;
+            }
             let mut pos = 0usize;
 
-            while let Some(rep) = replace_pos(pos, k, &possibilities[k][i], cur) {
+            while let Some(rep) = replace_pos(pos, &possibilities[k][i], k, cur) {
+                if &rep == cur {
+                    return None;
+                }
+
                 if &rep == finish {
                     return Some(steps);
                 } else {
@@ -102,5 +109,5 @@ fn main() {
     let (possibilities, start) = parse();
 
     println!("Part 1: {}", part1(&possibilities, &start));
-    println!("Part 2: {:?}", part2(&possibilities, &mut HashSet::new(), &start, &"e".chars().collect::<Vec<char>>(), 1));
+    println!("Part 2: {:?}", part2(&possibilities, &mut HashSet::new(), &"e".chars().collect::<Vec<char>>(), &start, 1));
 }
