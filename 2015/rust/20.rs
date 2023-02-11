@@ -37,6 +37,7 @@ fn part2(inp: u32) ->  u32 {
 
 fn main() {
     let inp = std::fs::read_to_string("../input/20").unwrap().trim().parse::<u32>().unwrap();
+    println!("{:?}", fact(20));
 
     println!("Part 1: {}", part1(inp));
     println!("Part 2: {}", part2(inp));
