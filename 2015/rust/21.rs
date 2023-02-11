@@ -24,15 +24,18 @@ impl Entity {
     }
 }
 
-fn part1(player: &mut Entity, boss: &Entity) -> i32 {
-    let mut ans = i32::MAX;
+fn solve(player: &mut Entity, boss: &Entity, part:bool) -> i32 {
+    let mut ans = match part {
+        true => i32::MAX,
+        false => 0,
+    };
 
     for i in 0..WEAPONS.len() {
         for j in 0..ARMORS.len() {
             for k in 0..RINGS.len() {
                 for l in 0..RINGS.len() {
-                    player.damage = WEAPONS[i].1;
-                    player.armor = ARMORS[j].1;
+                    player.damage = WEAPONS[i].1 + RINGS[l].1;
+                    player.armor = ARMORS[j].1 + RINGS[l].2;
                     
                     let cost = if k != l {
                         player.damage += RINGS[k].1;
@@ -41,11 +44,11 @@ fn part1(player: &mut Entity, boss: &Entity) -> i32 {
                     } else {
                         0
                     };
-                    player.damage += RINGS[l].1;
-                    player.armor += RINGS[l].2;
-                    if player.fight(boss) {
-                        ans = ans.min(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0);
-                    }
+
+                    match part {
+                        true => { if player.fight(boss) { ans = ans.min(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0); } },
+                        false => { if !player.fight(boss) { ans = ans.max(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0); } },
+                    };
                 }
             }
         }
@@ -53,8 +56,6 @@ fn part1(player: &mut Entity, boss: &Entity) -> i32 {
 
     ans
 }
-
-fn part2() {}
 
 fn parse() -> (Entity, Entity) {
     let inp = std::fs::read_to_string("../input/21").unwrap();
@@ -71,6 +72,6 @@ fn parse() -> (Entity, Entity) {
 fn main() {
     let (boss, mut player) = parse();
 
-    println!("Part 1: {}", part1(&mut player, &boss));
-    //println!("Part 2: {}", part2());
+    println!("Part 1: {}", solve(&mut player, &boss, true));
+    println!("Part 2: {}", solve(&mut player, &boss, false));
 }
