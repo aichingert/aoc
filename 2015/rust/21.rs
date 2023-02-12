@@ -17,10 +17,8 @@ impl Entity {
     }
     
     fn fight(&self, other: &Self) -> bool {
-        let player_hits: f32 = (other.hp as f32 / (self.damage as f32 - other.armor as f32).max(1.)).ceil();
-        let boss_hits: f32 = (self.hp as f32 / (other.damage as f32 - self.armor as f32).max(1.)).ceil();
-
-        player_hits <= boss_hits
+        // Player hits <= Boss hits
+        (other.hp as f32 / (self.damage as f32 - other.armor as f32).max(1.)).ceil() <= (self.hp as f32 / (other.damage as f32 - self.armor as f32).max(1.)).ceil()
     }
 }
 
@@ -41,9 +39,7 @@ fn solve(player: &mut Entity, boss: &Entity, part:bool) -> i32 {
                         player.damage += RINGS[k].1;
                         player.armor += RINGS[k].2;
                         RINGS[k].0
-                    } else {
-                        0
-                    };
+                    } else { 0 };
 
                     match part {
                         true => { if player.fight(boss) { ans = ans.min(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0); } },
