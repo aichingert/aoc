@@ -25,7 +25,7 @@ impl Spell {
         match self {
             Spell::MagicMissile => 1,
             Spell::Drain => 1,
-            Spell::Shield => 7,
+            Spell::Shield => 6,
             Spell::Poison => 6,
             Spell::Recharge => 5,
         }
@@ -116,7 +116,6 @@ fn part1(player: &Player, boss: &Boss, effects: &Vec<Effect>, cur: i32) -> Optio
 
         sim_player.mana -= spell.cost();
         sim_effects.push(Effect::new(*spell));
-        
         update(&mut sim_player, &mut sim_boss, &mut sim_effects);
 
         if sim_boss.hp <= 0 { 
@@ -136,7 +135,43 @@ fn part1(player: &Player, boss: &Boss, effects: &Vec<Effect>, cur: i32) -> Optio
     wins.into_iter().min()
 }
 
-fn part2() {}
+fn part2(player: &Player, boss: &Boss, effects: &Vec<Effect>, cur: i32) -> Option<i32> {
+    let mut wins: Vec<i32> = Vec::new();
+
+    for spell in SPELLS.iter() {
+        let mut sim_player = player.clone();
+        let mut sim_boss = boss.clone();
+        let mut sim_effects = effects.clone();
+        
+        sim_player.hp -= 1;
+        if sim_player.hp <= 0 { return None; }
+
+        update(&mut sim_player, &mut sim_boss, &mut sim_effects);
+        
+        if sim_boss.hp <= 0 { return Some(cur); }
+        if sim_player.mana - spell.cost() < 0 || contains_spell(&sim_effects, spell) { continue; }
+
+        sim_player.mana -= spell.cost();
+        sim_effects.push(Effect::new(*spell));
+
+        update(&mut sim_player, &mut sim_boss, &mut sim_effects);
+
+        if sim_boss.hp <= 0 { 
+            wins.push(cur + spell.cost());
+            continue;
+        }
+        
+        sim_player.hp -= (sim_boss.damage - sim_player.armor).max(1);
+
+        if sim_player.hp <= 0 { continue; }
+
+        if let Some(mana) = part2(&sim_player, &sim_boss, &sim_effects, cur + spell.cost()) {
+            wins.push(mana);
+        }
+    }
+
+    wins.into_iter().min()
+}
 
 fn parse() -> (Player, Boss) {
     let inp = std::fs::read_to_string("../input/22").unwrap();
@@ -148,17 +183,9 @@ fn parse() -> (Player, Boss) {
 }
 
 fn main() {
-    let (mut player, mut boss) = parse();
-    let (mut p, mut b): (Player, Boss) = (Player { hp: 10, mana: 250, armor: 0 }, Boss { hp: 14, damage: 8 });
+    let (player, boss) = parse();
+    //let (p, b): (Player, Boss) = (Player { hp: 10, mana: 250, armor: 0 }, Boss { hp: 14, damage: 8 });
 
-    /*
-    let mut e = vec![Effect::new(Spell::Shield), Effect::new(Spell::Poison)];
-    println!("{:?} - {:?} - {:?}", player.armor, boss.hp, e);
-    while e.len() > 0 {
-        update(&mut player, &mut boss, &mut e);
-        println!("{:?} - {:?} - {:?}", player.armor, boss.hp, e);
-    }
-    */
     println!("Part 1: {:?}", part1(&player, &boss, &vec![], 0));
-    //println!("Part 2: {}", part2());
+    println!("Part 2: {:?}", part2(&player, &boss, &vec![], 0));
 }
