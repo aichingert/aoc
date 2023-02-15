@@ -39,6 +39,6 @@ fn part2(inp: &str) -> u32 {
 
 fn main() {
     let inp = std::fs::read_to_string("../input/08").unwrap();
-    println!("{:?}", part1(&inp));
-    println!("{:?}", part2(&inp));
+    println!("Part 1: {:?}", part1(&inp));
+    println!("Part 2: {:?}", part2(&inp));
 }
