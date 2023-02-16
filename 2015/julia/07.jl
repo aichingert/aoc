@@ -12,13 +12,13 @@ function solve(instr::Dict{Any,Any}, cur::String)
 
     values = split(instr[cur], " ")
 
-    if length(values) == 1 global calc[cur] = solve(instr,String(values[1])) end
-    if length(values) == 2 global calc[cur] = ~solve(instr,String(values[2])) 
-    elseif length(values) == 3
-        if values[2] == "AND" global calc[cur] = solve(instr,String(values[1])) & solve(instr,String(values[3])) end
-        if values[2] == "OR" global calc[cur] = solve(instr,String(values[1])) | solve(instr,String(values[3])) end
-        if values[2] == "LSHIFT" global calc[cur] = solve(instr,String(values[1])) << solve(instr,String(values[3]))
-    	elseif values[2] == "RSHIFT" global calc[cur] = solve(instr,String(values[1])) >> solve(instr,String(values[3])) end
+    if length(values) == 1 global calc[cur] = solve(instr,String(values[1]))
+    elseif length(values) == 2 global calc[cur] = ~solve(instr,String(values[2])) 
+    else
+        if values[2] == "AND" global calc[cur] = solve(instr,String(values[1])) & solve(instr,String(values[3]))
+	elseif values[2] == "OR" global calc[cur] = solve(instr,String(values[1])) | solve(instr,String(values[3]))
+	elseif values[2] == "LSHIFT" global calc[cur] = solve(instr,String(values[1])) << solve(instr,String(values[3]))
+    	else global calc[cur] = solve(instr,String(values[1])) >> solve(instr,String(values[3])) end
     end
 
     return calc[cur] 
