@@ -7,15 +7,15 @@ pub fn permutations<T: Display + Clone>(size: usize, vec: &mut Vec<T>, perms: &m
     if size == 1 {
         perms.push(vec.clone());
     } else {
-        permutations(size - 1, vec, perms);
+        permutations(size - 1, &mut vec.clone(), perms);
 
         for i in 0..size-1 {
-            if i & 1 == 0 {
+            if i % 2 == 0 {
                 vec.swap(i, size-1)
             } else {
                 vec.swap(0, size-1)
-            }
-            permutations(size-1, vec, perms);
+            } 
+            permutations(size-1, &mut vec.clone(), perms);
         }
     }
 }
