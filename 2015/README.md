@@ -3,10 +3,10 @@
 # Languages
 | rs <img height="25" src="https://user-images.githubusercontent.com/25181517/192599922-3a8ceb1c-ff1d-40bc-b73c-99ea1182d8ad.png"> | jl | py | go | c | sh | hs |
 | -- | -- | -- | -- | - | -- | -- |
-| [01.rs](/2015/rust/01.rs) | [01.jl](/2015/julia/01.jl) | [01.py](/2015/python/01.py) | [01.go](/2015/go/01.go) | [01.c](/2015/c/01.c) | [01.sh](/2015/sh/01.sh) | [01.hs](/2015/haskell/01.hs) |
-| [02.rs](/2015/rust/02.rs) | [02.jl](/2015/julia/02.jl) | [02.py](/2015/python/02.py) | [02.go](/2015/go/02.go) | [02.c](/2015/c/02.c) | [02.sh](/2015/sh/02.sh) |
-| [03.rs](/2015/rust/03.rs) | [03.jl](/2015/julia/03.jl) | [03.py](/2015/python/03.py) | [03.go](/2015/go/03.go) | [03.c](/2015/c/03.c) | [03.sh](/2015/sh/03.sh) |
-| [04.rs](/2015/rust/04.rs) | [04.jl](/2015/julia/04.jl) | [04.py](/2015/python/04.py) | [04.go](/2015/go/04.go) | [04.c](/2015/c/04.c) | [04.sh](/2015/sh/04.sh) |
+| [01.rs](/2015/rust/01.rs) | [01.jl](/2015/julia/01.jl) | [01.py](/2015/python/01.py) | [01.go](/2015/go/01.go) | [01.c](/2015/c/01.c) | [01.sh](/2015/shell/01.sh) | [01.hs](/2015/haskell/01.hs) |
+| [02.rs](/2015/rust/02.rs) | [02.jl](/2015/julia/02.jl) | [02.py](/2015/python/02.py) | [02.go](/2015/go/02.go) | [02.c](/2015/c/02.c) | [02.sh](/2015/shell/02.sh) |
+| [03.rs](/2015/rust/03.rs) | [03.jl](/2015/julia/03.jl) | [03.py](/2015/python/03.py) | [03.go](/2015/go/03.go) | [03.c](/2015/c/03.c) | [03.sh](/2015/shell/03.sh) |
+| [04.rs](/2015/rust/04.rs) | [04.jl](/2015/julia/04.jl) | [04.py](/2015/python/04.py) | [04.go](/2015/go/04.go) | [04.c](/2015/c/04.c) | [04.sh](/2015/shell/04.sh) |
 | [05.rs](/2015/rust/05.rs) | [05.jl](/2015/julia/05.jl) | [05.py](/2015/python/05.py) | [05.go](/2015/go/05.go) | [05.c](/2015/c/05.c) |
 | [06.rs](/2015/rust/06.rs) | [06.jl](/2015/julia/06.jl) | [06.py](/2015/python/06.py) | [06.go](/2015/go/06.go) |
 | [07.rs](/2015/rust/07.rs) | [07.jl](/2015/julia/07.jl) | [07.py](/2015/python/07.py) | [07.go](/2015/go/07.go) |
