@@ -5,7 +5,7 @@
 use intcode::Computer;
 
 fn part1(opcodes: &Vec<i32>) -> i32 {
-    let mut computer: Computer = Computer::new(opcodes.clone(), 0);
+    let mut computer: Computer = Computer::new(opcodes.clone(), vec![0]);
 
     computer.run();
     computer.opcodes[0]
@@ -17,7 +17,7 @@ fn part2(opcodes: &mut Vec<i32>) -> i32 {
             opcodes[1] = noun;
             opcodes[2] = verb;
 
-            let mut computer: Computer = Computer::new(opcodes.clone(), 0);
+            let mut computer: Computer = Computer::new(opcodes.clone(), vec![0]);
             
             computer.run();
             

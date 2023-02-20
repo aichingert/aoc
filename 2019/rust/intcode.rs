@@ -3,12 +3,13 @@
 
 pub struct Computer {
     pub opcodes: Vec<i32>,
-    input: i32,
+    input: Vec<i32>,
+    pub output: Vec<i32>,
 }
 
 impl Computer {
-    pub fn new(opcodes: Vec<i32>, input: i32) -> Self {
-        Self { opcodes, input }
+    pub fn new(opcodes: Vec<i32>, input: Vec<i32>) -> Self {
+        Self { opcodes, input, output: Vec::<i32>::new() }
     }
 
     fn get_vals(&self, index: &mut usize, mode: &Vec<usize>) -> (usize,i32,i32) {
@@ -53,6 +54,7 @@ impl Computer {
 
     pub fn run(&mut self) {
         let mut index = 0usize;
+        let mut input = 0usize;
 
         while index < self.opcodes.len() {
             let mut commands = self.opcodes[index].to_string().chars().map(|ch| ch.to_digit(10).unwrap() as usize).collect::<Vec<usize>>();
@@ -70,11 +72,12 @@ impl Computer {
                 },
                 3 => {
                     let at = self.get_io(&mut index,&commands);
-                    self.opcodes[at] = self.input;
+                    self.opcodes[at] = self.input[input];
+                    input += 1;
                 },
                 4 => {
                     let at = self.get_io(&mut index,&commands);
-                    println!("{:?}", self.opcodes[at]);
+                    self.output.push(self.opcodes[at]);
                 },
                 5 => {
                     let (at,val) = self.get_jump(&mut index,&commands);
