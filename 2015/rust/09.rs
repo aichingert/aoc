@@ -10,9 +10,8 @@ fn solve(dist: &HashMap<(String,String), u32>, cities: &HashSet<String>, part: b
         true => u32::MAX,
         false => 0,
     };
-    let mut perms: Vec<Vec<String>> = Vec::new();
     let mut vec: Vec<String> = cities.iter().map(|s| s.to_string()).collect();
-    permutations(vec.len(), &mut vec, &mut perms);
+    let perms = permutations(vec.len(), &mut vec);
 
     for perm in perms {
         match part {

@@ -7,8 +7,7 @@ use permutations::permutations;
 
 fn solve(hap: &HashMap<(String, String), i32>, ppl: &HashSet<String>) -> i32 {
     let mut ans = 0;
-    let mut perms: Vec<Vec<String>> = Vec::new();
-    permutations(ppl.len(), &mut ppl.iter().map(|p| p.clone()).collect::<Vec<String>>(), &mut perms);
+    let perms = permutations(ppl.len(), &mut ppl.iter().map(|p| p.clone()).collect::<Vec<String>>());
 
     for perm in perms {
         let mut cur = 0;
