@@ -36,6 +36,21 @@ impl Computer {
         }
     }
 
+    fn get_jump(&self, index: &mut usize, mode: &Vec<usize>) -> (usize,i32) {
+        let mut locations = Vec::<usize>::new();
+
+        for i in 2..4 {
+            match mode[3 - i] {
+                0 => locations.push(self.opcodes[*index+i-1] as usize),
+                1 => locations.push(*index+i-1),
+                _ => panic!("Invalid mode: {}", mode[i]),
+            }
+        }
+
+        *index += 3;
+        (self.opcodes[locations[1]] as usize,self.opcodes[locations[0]])
+    }
+
     pub fn run(&mut self) {
         let mut index = 0usize;
 
@@ -61,7 +76,29 @@ impl Computer {
                     let at = self.get_io(&mut index,&commands);
                     println!("{:?}", self.opcodes[at]);
                 },
-                99 => { break; }
+                5 => {
+                    let (at,val) = self.get_jump(&mut index,&commands);
+                    if val != 0 { index = at; }
+                },
+                6 => {
+                    let (at,val) = self.get_jump(&mut index,&commands);
+                    if val == 0 { index = at; }
+                },
+                7 => {
+                    let (at,a,b) = self.get_vals(&mut index, &commands);
+                    match a < b { 
+                        true => self.opcodes[at] = 1,
+                        false => self.opcodes[at] = 0,
+                    };
+                },
+                8 => {
+                    let (at,a,b) = self.get_vals(&mut index, &commands);
+                    match a == b { 
+                        true => self.opcodes[at] = 1,
+                        false => self.opcodes[at] = 0,
+                    };
+                },
+                99 => break,
                 _ => panic!("Invalid opcode {}", opcode)
             }
         }

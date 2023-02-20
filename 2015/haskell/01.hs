@@ -24,5 +24,3 @@ main = do
   print $ part1 input 0
   putStr "Part 2: "
   print $ part2 input 0 0
-
-
