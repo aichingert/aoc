@@ -9,11 +9,13 @@ pub enum Instr {
     Dec(String),
     Jnz(String,String),
     Tgl(String),
+    Out(String),
 }
 
 pub struct Runner {
     pub reg: HashMap<String, i128>,
     code: Vec<Instr>,
+    pub out: Vec<i128>,
 }
 
 impl Runner {
@@ -29,11 +31,12 @@ impl Runner {
                 "dec" => code.push(Instr::Dec(values[1].to_string())),
                 "jnz" => code.push(Instr::Jnz(values[1].to_string(), values[2].to_string())),
                 "tgl" => code.push(Instr::Tgl(values[1].to_string())),
+                "out" => code.push(Instr::Out(values[1].to_string())),
                 _ => (),
             }
         }
 
-        Self { reg: HashMap::from([("a".to_string(),0),("b".to_string(),0),("c".to_string(),0),("d".to_string(),0)]), code }
+        Self { reg: HashMap::from([("a".to_string(),0),("b".to_string(),0),("c".to_string(),0),("d".to_string(),0)]), code, out: Vec::<i128>::new() }
     }
 
     fn jnz(&self, cur: usize, option: &String) -> usize {
@@ -56,6 +59,7 @@ impl Runner {
             Instr::Dec(a) => self.code[loc] = Instr::Inc(a.clone()),
             Instr::Jnz(a,b) => self.code[loc] = Instr::Cpy(a.clone(), b.clone()),
             Instr::Tgl(a) => self.code[loc] = Instr::Inc(a.clone()),
+            Instr::Out(a) => self.code[loc] = Instr::Inc(a.clone()),
         };
     }
 
@@ -77,8 +81,14 @@ impl Runner {
                 Instr::Tgl(a) => match a.parse::<i128>() {
                     Ok(val) => { self.tgl(pointer, val); },
                     Err(_e) => { self.tgl(pointer, self.reg[a]); }
-                }
+                },
+                Instr::Out(a) => match a.parse::<i128>() {
+                    Ok(val) => self.out.push(val),
+                    Err(_e) => self.out.push(self.reg[a]),
+                },
             }
+
+            if self.out.len() > 999 { return 0; }
 
             pointer += 1;
         }

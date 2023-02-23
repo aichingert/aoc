@@ -21,8 +21,8 @@ fn part1(row: u64, col: u64) -> u64 {
     cur
 }
 
-fn part2() -> String {
-    "Merry chirstmas".to_string()
+fn part2<'a>() -> &'a str {
+    "Merry chirstmas"
 }
 
 fn parse() -> (u64, u64) {
