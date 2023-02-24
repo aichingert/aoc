@@ -2,7 +2,7 @@
 // (c) aichingert
 
 fn solve(cal: &Vec<u32>, to: usize) -> u32 {
-    (1..=to).map(|i| cal[cal.len() - i]).sum::<u32>()
+    cal[cal.len()-to..].iter().sum::<u32>()
 }
 
 fn main() {
