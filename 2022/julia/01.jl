@@ -4,7 +4,7 @@
 module Day1
 
 function solve(vec,to)
-	return sum([vec[i] for i in 1:to])
+	return sum(vec[1:to])
 end
 
 inp = []
