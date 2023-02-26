@@ -3,14 +3,15 @@
 
 module Day3
 
-function getchar(s,fst,scn)
+function getvalue(s,fst,scn)
 	ch = '_'
 
 	for c in s
 		if c in fst && c in scn ch = c end
 	end
 
-	return ch
+	if isuppercase(ch) return 27 + Int(ch) - Int('A') 
+	else return 1 + Int(ch) - Int('a') end
 end
 
 function part1(inp::Vector{String})
@@ -18,10 +19,7 @@ function part1(inp::Vector{String})
 
 	for s in inp
 		half = length(s)÷2
-		ch = getchar(s,s[begin:half],s[half+1:end])
-
-		if isuppercase(ch) ans += 27 + Int(ch) - Int('A') 
-		else ans += 1 + Int(ch) - Int('a') end
+		ans += getvalue(s,s[begin:half],s[half+1:end])
 	end
 
 	return ans
@@ -31,13 +29,10 @@ function part2(inp::Vector{String})
 	ans = 0
 
 	for i in 1:3:length(inp)
-		ch = getchar(inp[i],inp[i+1],inp[i+2])
-		
-		if isuppercase(ch) ans += 27 + Int(ch) - Int('A') 
-		else ans += 1 + Int(ch) - Int('a') end
+		ans += getvalue(inp[i],inp[i+1],inp[i+2])
 	end
 
-	ans
+	return ans
 end
 
 inp = readlines("../input/03")
