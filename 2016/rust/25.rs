@@ -5,16 +5,16 @@
 use asm::Runner;
 use std::collections::HashMap;
 
-fn part1(inp: &String) -> i128 {
+fn part1(inp: &String) -> i32 {
     let mut runner = Runner::new(inp);
-    let mut a: i128 = 0;
+    let mut a: i32 = 0;
 
     'part1: loop {
         a += 1;
 
-        runner.reg = HashMap::from([("a".to_string(),a),("b".to_string(),0),("c".to_string(),0),("d".to_string(),0)]);
+        runner.reg = HashMap::from([("a",a),("b",0),("c",0),("d",0)]);
         runner.out.clear();
-        runner.exec(&String::from("a"));
+        runner.exec("a");
 
         for i in 0..runner.out.len() {
             match i & 1 == 0 {

@@ -4,15 +4,15 @@
 #[path="asm.rs"] mod asm;
 use asm::Runner;
 
-fn part1(inp: &String) -> i128 {
+fn part1(inp: &String) -> i32 {
     let mut runner = Runner::new(inp);
-    runner.exec(&String::from("a"))
+    runner.exec("a")
 }
 
-fn part2(inp: &String) -> i128 {
+fn part2(inp: &String) -> i32 {
     let mut runner = Runner::new(inp);
-    *runner.reg.get_mut(&String::from("c")).unwrap() = 1;
-    runner.exec(&String::from("a"))
+    *runner.reg.get_mut("c").unwrap() = 1;
+    runner.exec("a")
 }
 
 fn main() {

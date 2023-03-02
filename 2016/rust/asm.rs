@@ -13,9 +13,9 @@ pub enum Instr<'i> {
 }
 
 pub struct Runner<'r> {
-    pub reg: HashMap<&'r str, i128>,
+    pub reg: HashMap<&'r str, i32>,
     code: Vec<Instr<'r>>,
-    pub out: Vec<i128>,
+    pub out: Vec<i32>,
 }
 
 impl<'r> Runner<'r> {
@@ -36,22 +36,22 @@ impl<'r> Runner<'r> {
             }
         }
 
-        Self { reg: HashMap::from([("a",0),("b",0),("c",0),("d",0)]), code, out: Vec::<i128>::new() }
+        Self { reg: HashMap::from([("a",0),("b",0),("c",0),("d",0)]), code, out: Vec::<i32>::new() }
     }
 
     fn jnz(&self, cur: usize, option: &'r str) -> usize {
-        match option.parse::<i128>() {
-            Ok(val) => (cur as i128 + val - 1) as usize,
-            Err(_) => (cur as i128 + self.reg[&option] - 1) as usize,
+        match option.parse::<i32>() {
+            Ok(val) => (cur as i32 + val - 1) as usize,
+            Err(_) => (cur as i32 + self.reg[&option] - 1) as usize,
         }
     }
 
-    fn tgl(&mut self, cur: usize, offset: i128) {
-        if cur as i128 + offset < 0 || (cur as i128 + offset) as usize >= self.code.len() {
+    fn tgl(&mut self, cur: usize, offset: i32) {
+        if cur as i32 + offset < 0 || (cur as i32 + offset) as usize >= self.code.len() {
             return;
         }
     
-        let loc = (cur as i128 + offset) as usize;
+        let loc = (cur as i32 + offset) as usize;
 
         match &self.code[loc] {
             Instr::Cpy(a,b) => self.code[loc] = Instr::Jnz(a,b),
@@ -63,26 +63,26 @@ impl<'r> Runner<'r> {
         };
     }
 
-    pub fn exec(&mut self, out: &'r str) -> i128 {
+    pub fn exec(&mut self, out: &'r str) -> i32 {
         let mut pointer: usize = 0;
 
         while pointer < self.code.len() {
             match &self.code[pointer] {
-                Instr::Cpy(a, b) => if b.parse::<i128>().is_err() { *self.reg.get_mut(b).unwrap() = match a.parse::<i128>() {
+                Instr::Cpy(a, b) => if b.parse::<i32 >().is_err() { *self.reg.get_mut(b).unwrap() = match a.parse::<i32>() {
                     Ok(res) => res,
                     Err(_) => self.reg[a],
                 }},
                 Instr::Inc(a) => *self.reg.get_mut(a).unwrap() += 1,
                 Instr::Dec(a) => *self.reg.get_mut(a).unwrap() -= 1,
-                Instr::Jnz(a,b) => pointer = match a.parse::<i128>() {
+                Instr::Jnz(a,b) => pointer = match a.parse::<i32>() {
                     Ok(res) => if res != 0 { self.jnz(pointer, b) } else { pointer },
                     Err(_e) => if self.reg[a] != 0 { self.jnz(pointer, b) } else { pointer },
                 },
-                Instr::Tgl(a) => match a.parse::<i128>() {
+                Instr::Tgl(a) => match a.parse::<i32>() {
                     Ok(val) => { self.tgl(pointer, val); },
                     Err(_e) => { self.tgl(pointer, self.reg[a]); }
                 },
-                Instr::Out(a) => match a.parse::<i128>() {
+                Instr::Out(a) => match a.parse::<i32>() {
                     Ok(val) => self.out.push(val),
                     Err(_e) => self.out.push(self.reg[a]),
                 },
