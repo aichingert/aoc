@@ -3,46 +3,46 @@
 
 use std::collections::HashMap;
 
-pub enum Instr {
-    Cpy(String, String),
-    Inc(String),
-    Dec(String),
-    Jnz(String,String),
-    Tgl(String),
-    Out(String),
+pub enum Instr<'i> {
+    Cpy(&'i str, &'i str),
+    Inc(&'i str),
+    Dec(&'i str),
+    Jnz(&'i str, &'i str),
+    Tgl(&'i str),
+    Out(&'i str),
 }
 
-pub struct Runner {
-    pub reg: HashMap<String, i128>,
-    code: Vec<Instr>,
+pub struct Runner<'r> {
+    pub reg: HashMap<&'r str, i128>,
+    code: Vec<Instr<'r>>,
     pub out: Vec<i128>,
 }
 
-impl Runner {
-    pub fn new(string: &String) -> Self {
-        let mut code = Vec::<Instr>::new();
+impl<'r> Runner<'r> {
+    pub fn new(string: &'r String) -> Self {
+        let mut code = Vec::<Instr<'r>>::new();
 
         for line in string.lines() {
-            let values = line.split(' ').collect::<Vec<&str>>();
+            let values = line.split(' ').collect::<Vec<&'r str>>();
 
             match values[0] {
-                "cpy" => code.push(Instr::Cpy(values[1].to_string(), values[2].to_string())),
-                "inc" => code.push(Instr::Inc(values[1].to_string())),
-                "dec" => code.push(Instr::Dec(values[1].to_string())),
-                "jnz" => code.push(Instr::Jnz(values[1].to_string(), values[2].to_string())),
-                "tgl" => code.push(Instr::Tgl(values[1].to_string())),
-                "out" => code.push(Instr::Out(values[1].to_string())),
+                "cpy" => code.push(Instr::Cpy(values[1], values[2])),
+                "inc" => code.push(Instr::Inc(values[1])),
+                "dec" => code.push(Instr::Dec(values[1])),
+                "jnz" => code.push(Instr::Jnz(values[1], values[2])),
+                "tgl" => code.push(Instr::Tgl(values[1])),
+                "out" => code.push(Instr::Out(values[1])),
                 _ => (),
             }
         }
 
-        Self { reg: HashMap::from([("a".to_string(),0),("b".to_string(),0),("c".to_string(),0),("d".to_string(),0)]), code, out: Vec::<i128>::new() }
+        Self { reg: HashMap::from([("a",0),("b",0),("c",0),("d",0)]), code, out: Vec::<i128>::new() }
     }
 
-    fn jnz(&self, cur: usize, option: &String) -> usize {
+    fn jnz(&self, cur: usize, option: &'r str) -> usize {
         match option.parse::<i128>() {
             Ok(val) => (cur as i128 + val - 1) as usize,
-            Err(_) => (cur as i128 + self.reg[option] - 1) as usize,
+            Err(_) => (cur as i128 + self.reg[&option] - 1) as usize,
         }
     }
 
@@ -54,16 +54,16 @@ impl Runner {
         let loc = (cur as i128 + offset) as usize;
 
         match &self.code[loc] {
-            Instr::Cpy(a,b) => self.code[loc] = Instr::Jnz(a.clone(),b.clone()),
-            Instr::Inc(a) => self.code[loc] = Instr::Dec(a.clone()),
-            Instr::Dec(a) => self.code[loc] = Instr::Inc(a.clone()),
-            Instr::Jnz(a,b) => self.code[loc] = Instr::Cpy(a.clone(), b.clone()),
-            Instr::Tgl(a) => self.code[loc] = Instr::Inc(a.clone()),
-            Instr::Out(a) => self.code[loc] = Instr::Inc(a.clone()),
+            Instr::Cpy(a,b) => self.code[loc] = Instr::Jnz(a,b),
+            Instr::Inc(a) => self.code[loc] = Instr::Dec(a),
+            Instr::Dec(a) => self.code[loc] = Instr::Inc(a),
+            Instr::Jnz(a,b) => self.code[loc] = Instr::Cpy(a, b),
+            Instr::Tgl(a) => self.code[loc] = Instr::Inc(a),
+            Instr::Out(a) => self.code[loc] = Instr::Inc(a),
         };
     }
 
-    pub fn exec(&mut self, out: &String) -> i128 {
+    pub fn exec(&mut self, out: &'r str) -> i128 {
         let mut pointer: usize = 0;
 
         while pointer < self.code.len() {
@@ -93,6 +93,6 @@ impl Runner {
             pointer += 1;
         }
 
-        self.reg[out]
+        self.reg[&out]
     }
 }
