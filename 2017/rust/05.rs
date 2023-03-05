@@ -9,14 +9,12 @@ fn solve(inp: &mut Vec<i32>, part_two: bool) -> i32 {
         let prev = loc;
         loc = (loc as i32 + inp[loc]) as usize;
 
-        match part_two {
-            true => match inp[prev] > 2 {
-                true => inp[prev] -= 1,
-                false => inp[prev] += 1,
-            },
-            false => inp[prev] += 1,
-        };
-
+        if inp[prev] < 3 || !part_two {
+            inp[prev] += 1;
+        } else {
+            inp[prev] -= 1;
+        }
+        
         ans += 1;
     }
 
