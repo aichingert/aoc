@@ -1,4 +1,5 @@
 // Permutations
+// Heaps algorithm (iterative)
 
 use std::fmt::Display;
 
