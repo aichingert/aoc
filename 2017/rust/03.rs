@@ -63,7 +63,6 @@ fn part2(n: i32) -> i32 {
 fn main() {
     let inp = std::fs::read_to_string("../input/03").unwrap().trim().parse::<i32>().unwrap();
 
-
     println!("Part 1: {}", part1(inp));
     println!("Part 2: {}", part2(inp));
 }
