@@ -35,18 +35,21 @@ end
 
 function part2(m::UInt32)
 	spiral = Dict((0,0) => 1)
+
 	for i in UInt32(2):m
-		spiral = global spiral
 		x,y = ulam_spiral_distance(i)
 		acc = 0
 
-		for xx in -1:2
-			for yy in -1:2
-				if haskey(spiral, (x+xx,y+yy)) acc += sprial[(x+xx,y+yy)] end
+		for xx in -1:1
+			for yy in -1:1
+				if (x+xx,y+yy) in keys(spiral) 
+					val = spiral[(x+xx,y+yy)]
+					acc += val 
+				end
 			end
 		end
 
-		if acc > m return i end
+		if acc > m return acc end
 		push!(spiral, (x,y) => acc)
 	end
 
