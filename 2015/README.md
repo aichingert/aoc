@@ -10,7 +10,7 @@
 | [05.rs](/2015/rust/05.rs) | [05.jl](/2015/julia/05.jl) | [05.py](/2015/python/05.py) | [05.go](/2015/go/05.go) | [05.c](/2015/c/05.c) |
 | [06.rs](/2015/rust/06.rs) | [06.jl](/2015/julia/06.jl) | [06.py](/2015/python/06.py) | [06.go](/2015/go/06.go) |
 | [07.rs](/2015/rust/07.rs) | [07.jl](/2015/julia/07.jl) | [07.py](/2015/python/07.py) | [07.go](/2015/go/07.go) |
-| [08.rs](/2015/rust/08.rs) | | [08.py](/2015/python/08.py) |
+| [08.rs](/2015/rust/08.rs) | [08.jl](/2015/julia/08.jl) | [08.py](/2015/python/08.py) |
 | [09.rs](/2015/rust/09.rs) | | [09.py](/2015/python/09.py) |
 | [10.rs](/2015/rust/10.rs) | | [10.py](/2015/python/10.py) |
 | [11.rs](/2015/rust/11.rs) | | [11.py](/2015/python/11.py) |
