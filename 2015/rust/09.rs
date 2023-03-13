@@ -5,22 +5,17 @@
 use permutations::permutations;
 use std::collections::{HashMap, HashSet};
 
-fn solve(dist: &HashMap<(String,String), u32>, cities: &HashSet<String>, part: bool) -> u32 {
-    let mut ans: u32 = match part {
-        true => u32::MAX,
-        false => 0,
-    };
+fn solve(dist: &HashMap<(String,String), u32>, cities: &HashSet<String>) -> (u32,u32) {
+    let (mut part_one, mut part_two) = (u32::MAX, 0u32);
     let mut vec: Vec<String> = cities.iter().map(|s| s.to_string()).collect();
     let perms = permutations(vec.len(), &mut vec);
 
     for perm in perms {
-        match part {
-            true => ans = ans.min(dist[&(perm[0].clone(),perm[1].clone())] + dist[&(perm[1].clone(), perm[2].clone())]),
-            false => ans = ans.max(dist[&(perm[0].clone(),perm[1].clone())] + dist[&(perm[1].clone(), perm[2].clone())]),
-        };
+        part_one = part_one.min((0..perm.len()-1).map(|i| dist[&(perm[i].clone(),perm[i+1].clone())]).sum::<u32>());
+        part_two = part_two.max((0..perm.len()-1).map(|i| dist[&(perm[i].clone(),perm[i+1].clone())]).sum::<u32>());
     }
 
-    ans
+    (part_one, part_two)
 }
 
 fn parse() -> (HashMap<(String, String), u32>, HashSet<String>) {
@@ -41,7 +36,8 @@ fn parse() -> (HashMap<(String, String), u32>, HashSet<String>) {
 
 fn main() {
     let (dist, cities) = parse();
+    let (part_one, part_two) = solve(&dist, &cities);
 
-    println!("Part 1: {}", solve(&dist, &cities, true));
-    println!("Part 2: {}", solve(&dist, &cities, false));
+    println!("Part 1: {part_one}");
+    println!("Part 2: {part_two}");
 }
