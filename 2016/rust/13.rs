@@ -36,12 +36,14 @@ fn part1(fav: i32, dist: &mut HashMap<(i32,i32), i32>) -> i32 {
 
     *dist.get(&(31,39)).unwrap()
 }
-fn part2() {}
+fn part2(dist: &HashMap<(i32,i32), i32>) -> usize {
+    dist.values().filter(|&steps| *steps <= 50).count()
+}
 
 fn main() {
     let fav: i32 = include_str!("../input/13").trim().parse::<i32>().unwrap();
     let mut dist = HashMap::from([((1,1), 0)]);
 
     println!("Part 1: {}", part1(fav, &mut dist));
-    //println!("Part 2: {}", part2(&inp));
+    println!("Part 2: {}", part2(&dist));
 }
