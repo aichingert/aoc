@@ -1,7 +1,7 @@
 // Advent of Code 2016, day 15
 // (c) aichingert
 
-fn part1(disks: &Vec<(u32,u32)>) -> u32 {
+fn solve(disks: &Vec<(u32,u32)>) -> u32 {
     let mut time: u32 = 0;
 
     'sim: loop {
@@ -26,15 +26,16 @@ fn parse() -> Vec<(u32, u32)> {
     
     for line in inp.lines() {
         let vls = line.split(' ').collect::<Vec<&str>>();
-        disks.push((vls[3].parse::<u32>().unwrap(), 
-                    vls[vls.len()-1][..vls[vls.len()-1].len()-1].parse::<u32>().unwrap()));
+        disks.push((vls[3].parse::<u32>().unwrap(), vls[vls.len()-1][..vls[vls.len()-1].len()-1].parse::<u32>().unwrap()));
     }
 
     disks
 }
 
 fn main() {
-    let disks = parse();
+    let mut disks = parse();
 
-    println!("Part 1: {}", part1(&disks));
+    println!("Part 1: {}", solve(&disks));
+    disks.push((11,0));
+    println!("Part 2: {}", solve(&disks));
 }
