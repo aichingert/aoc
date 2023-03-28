@@ -41,7 +41,7 @@ fn part2(dist: &HashMap<(i32,i32), i32>) -> usize {
 }
 
 fn main() {
-    let fav: i32 = include_str!("../input/13").trim().parse::<i32>().unwrap();
+    let fav: i32 = std::fs::read_to_string("../input/13").unwrap().trim().parse::<i32>().unwrap();
     let mut dist = HashMap::from([((1,1), 0)]);
 
     println!("Part 1: {}", part1(fav, &mut dist));
