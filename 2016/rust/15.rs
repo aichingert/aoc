@@ -5,12 +5,8 @@ fn solve(disks: &Vec<(u32,u32)>) -> u32 {
     let mut time: u32 = 0;
 
     'sim: loop {
-        let mut simulation = time;
-
         for i in 0..disks.len() {
-            simulation += 1;
-
-            if (disks[i].1 + simulation) % disks[i].0 != 0 {
+            if (disks[i].1 + time + (i as u32) + 1) % disks[i].0 != 0 {
                 time += 1;
                 continue 'sim;
             }
