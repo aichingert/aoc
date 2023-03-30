@@ -43,17 +43,24 @@ fn solve(start: String, loc: (i32,i32), paths: &mut Vec<String>) {
     }
 }
 
+
 fn main() {
     let inp = std::fs::read_to_string("../input/17").unwrap().trim().to_string();
     let mut paths = Vec::<String>::new();
     let mut part1: (usize, usize) = (0,usize::MAX);
+    let mut part2: usize = 0;
+
     solve(inp.clone(), (0,0), &mut paths);
 
     for i in 0..paths.len() {
         if paths[i].len() < part1.1 {
             part1 = (i, paths[i].len());
         }
+        if paths[i].len() > part2 {
+            part2 = paths[i].len();
+        }
     }
 
     println!("Part 1: {}", &paths[part1.0][inp.len()..]);
+    println!("Part 2: {}", part2 - inp.len());
 }
