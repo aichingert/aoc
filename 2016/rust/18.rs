@@ -8,8 +8,7 @@ fn solve(start: &mut Vec<Vec<char>>, steps: usize) -> usize {
             let left = loc>0 && start[gen][loc-1] == '^';
             let right = loc+1<start[gen].len() && start[gen][loc+1] == '^';
 
-            if start[gen][loc] == '^' && ((left && !right) || (!left && right))
-            || start[gen][loc] != '^' && ((left && !right) || (!left && right)){
+            if (left && !right) || (!left && right) || (left && !right) || (!left && right) {
                 start[gen+1].push('^');
             } else {
                 start[gen+1].push('.');
