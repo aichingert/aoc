@@ -30,7 +30,6 @@ fn add(ip: Range, firewall: &Vec<Range>) -> Vec<Range> {
     out
 }
 
-
 fn main() {
     let mut firewall = Vec::new();
     std::fs::read_to_string("../input/20").unwrap()
@@ -41,5 +40,5 @@ fn main() {
         });
 
     println!("Part 1: {}", firewall[0].1+1);
-    //println!("Part 2: {}", part2(&firewall));
+    println!("Part 2: {}", u32::MAX as u64 - firewall[firewall.len()-1].1 + firewall.windows(2).map(|entry| entry[1].0 - entry[0].1 - 1).sum::<u64>());
 }
