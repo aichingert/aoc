@@ -1,13 +1,13 @@
 // Advent of Code 2017, day 24
 // (c) aichingert
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 struct Component {
     ports: [u32;2],
-    used: [bool;2]
+    used: [bool;2],
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 struct Bridge {
     connections: Vec<Component>,
 }
@@ -48,32 +48,25 @@ impl Bridge {
     }
 }
 
-fn part1(comps: &mut Vec<Component>) -> u32 {
+fn solve(comps: &mut Vec<Component>) -> (u32,u32) {
     let mut possible = Vec::<Bridge>::new();
-    let mut starting = Vec::<Component>::new();
-    let mut i: usize = 0;
+    let mut start = Bridge::new();
+    let mut solve = (0,0,0); // part1, part2, len
 
-    while i < comps.len() {
-        if comps[i].ports[0] == 0 {
-            starting.push(comps.remove(i));
-        } else {
-            i += 1;
+    start.add(Component::new([0,0]));
+    rec_find(comps, &mut start, &mut possible);
+    
+    for pos in possible {
+        solve.0 = solve.0.max(pos.strength());
+        if pos.connections.len() > solve.2 {
+            solve.1 = pos.strength();
+            solve.2 = pos.connections.len();
+        } else if pos.connections.len() == solve.2 {
+            solve.1 = solve.1.max(pos.strength());
         }
     }
 
-    for start in starting {
-        let mut cur: Bridge = Bridge::new();
-        cur.add(start.clone());
-        rec_find(comps, &mut cur, &mut possible);
-    }
-    
-    let mut ans = 0;
-
-    for pos in possible {
-        ans = ans.max(pos.strength());
-    }
-
-    ans
+    (solve.0,solve.1)
 }
 
 fn rec_find(comps: &mut Vec<Component>, cur: &mut Bridge, bridges: &mut Vec<Bridge>) {
@@ -93,14 +86,13 @@ fn rec_find(comps: &mut Vec<Component>, cur: &mut Bridge, bridges: &mut Vec<Brid
     }
 }
 
-fn part2() {}
-
 fn main() {
     let mut inp = std::fs::read_to_string("../input/24").unwrap()
         .lines()
         .map(|l| {let p = l.split_once('/').unwrap(); Component::new([p.0.parse::<u32>().unwrap(),p.1.parse::<u32>().unwrap()])})
         .collect::<Vec<Component>>();
+    let (part1,part2) = solve(&mut inp); 
 
-    println!("Part 1: {}", part1(&mut inp));
-    //println!("Part 2: {}", part2());
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
 }
