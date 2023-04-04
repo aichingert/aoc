@@ -4,8 +4,9 @@
 #[path="../../utils/rust/permutations.rs"] mod permutations;
 use std::collections::HashMap;
 
-fn part1(map: &Vec<Vec<char>>) -> u32 {
+fn solve(map: &Vec<Vec<char>>) -> (u32,u32) {
     let mut steps: u32 = u32::MAX;
+    let mut steps_with_return: u32 = u32::MAX;
     let mut positions: HashMap<char, (usize,usize)> = HashMap::new();
     let mut dists: HashMap<(char,char), u32> = HashMap::new();
 
@@ -22,22 +23,25 @@ fn part1(map: &Vec<Vec<char>>) -> u32 {
 
     for perm in perms.iter_mut() {
         perm.insert(0, '0');
-        let mut s = 0;
+        steps = steps.min(perm_dist(perm, &mut dists, &positions, map));
 
-        for i in 0..perm.len()-1 {
-            if !dists.contains_key(&(perm[i],perm[i+1])) {
-                let dist = find_dist(perm[i], perm[i+1], &positions, map);
-                dists.insert((perm[i],perm[i+1]), dist);
-                dists.insert((perm[i+1],perm[i]), dist);
-            }
-
-            s += dists[&(perm[i], perm[i+1])];
-        }
-
-        steps = steps.min(s);
+        perm.push('0');
+        steps_with_return = steps_with_return.min(perm_dist(perm, &mut dists, &positions, map));
     }
 
-    steps
+    (steps, steps_with_return)
+}
+
+fn perm_dist(perm: &Vec<char>, dists: &mut HashMap<(char,char), u32>, positions: &HashMap<char, (usize,usize)>, map: &Vec<Vec<char>>) -> u32 {
+    (0..perm.len()-1).map(|i| {
+        if !dists.contains_key(&(perm[i],perm[i+1])) {
+            let dist = find_dist(perm[i], perm[i+1], &positions, map);
+            dists.insert((perm[i],perm[i+1]), dist);
+            dists.insert((perm[i+1],perm[i]), dist);
+        }
+
+        dists[&(perm[i], perm[i+1])]
+    }).sum::<u32>()
 }
 
 fn find_dist(start: char, end: char, positions: &HashMap<char, (usize,usize)>, map: &Vec<Vec<char>>) -> u32 {
@@ -72,14 +76,13 @@ fn find_dist(start: char, end: char, positions: &HashMap<char, (usize,usize)>, m
     *dists.get(&to).unwrap()
 }
 
-//fn part2() {}
-
 fn main() {
     let inp = std::fs::read_to_string("../input/24").unwrap().trim()
         .lines()
         .map(|l| l.chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
+    let (part1,part2) = solve(&inp);
 
-    println!("Part 1: {}", part1(&inp));
-    //println!("Part 2: {}", part2());
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
 }
