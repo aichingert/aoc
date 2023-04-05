@@ -3,68 +3,47 @@
 
 use std::collections::HashMap;
 
-fn part1(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, (String,u32,String,u32)>, part_one: bool) -> u32 {
+fn solve(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, Vec<(String,u32)>>, part_one: bool) -> u32 {
     let mut output: HashMap<u32, Vec<u32>> = HashMap::new();
 
     loop {
-        let mut next: u32 = 0;
+        let next: Option<u32> = robots.keys().find(|&&key| robots[&key].len() == 2).copied();
 
-        for key in robots.keys() {
-            if robots[key].len() == 2 {
-                next = *key;
-                break;
-            }
-        }
+        let next = match next {
+            None => return output[&0][0] * output[&1][0] * output[&2][0],
+            Some(n) => n,
+        };
 
         let cur: &mut Vec<u32> = robots.entry(next).or_default();
 
-        match part_one {
-            true => if cur[0] == 61 && cur[1] == 17 || cur[0] == 17 && cur[1] == 61 {
-                return next;
-            },
-            false => if cur.len() == 0 {
-                return output[&0][0] * output[&1][0] * output[&2][0];
-            }
+        if part_one && (cur[0] == 61 && cur[1] == 17 || cur[0] == 17 && cur[1] == 61) {
+            return next;
         }
-        
 
-        let (low,high) = if cur[0] > cur[1] {
-            (cur[1],cur[0])
-        } else {
-            (cur[0],cur[1])
+        let low_and_high = match cur[0] > cur[1] {
+            true => vec![cur.remove(1),cur.remove(0)],
+            false => vec![cur.remove(0),cur.remove(0)],
         };
-        cur.remove(0);
-        cur.remove(0);
 
-        match rules[&next].0.as_str() {
-            "bot" => {
-                let robo = robots.entry(rules[&next].1).or_default();
-                robo.push(low);
-            },
-            "output" => {
-                let out = output.entry(rules[&next].1).or_insert(Vec::new());
-                out.push(low);
-            },
-            _ => unreachable!()
-        }
-
-        match rules[&next].2.as_str() {
-            "bot" => {
-                let robo = robots.entry(rules[&next].3).or_default();
-                robo.push(high);
-            },
-            "output" => {
-                let out = output.entry(rules[&next].3).or_insert(Vec::new());
-                out.push(high);
-            },
-            _ => unreachable!()
+        for i in 0..2 {
+            match rules[&next][i].0.as_str() {
+                "bot" => {
+                    let robo = robots.entry(rules[&next][i].1).or_insert(Vec::new());
+                    robo.push(low_and_high[i]);
+                },
+                "output" => {
+                    let out = output.entry(rules[&next][i].1).or_insert(Vec::new());
+                    out.push(low_and_high[i]);
+                },
+                _ => unreachable!()
+            }
         }
     }
 }
 
-fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, (String,u32,String,u32)>) {
+fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, Vec<(String,u32)>>) {
     let mut robots: HashMap<u32, Vec<u32>> = HashMap::new();
-    let mut rules: HashMap<u32, (String,u32,String,u32)> = HashMap::new();
+    let mut rules: HashMap<u32, Vec<(String,u32)>> = HashMap::new();
 
     for line in std::fs::read_to_string("../input/10").unwrap().lines() {
         let vls: Vec<&str> = line.split(' ').collect();
@@ -75,7 +54,7 @@ fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, (String,u32,String,u32)>) {
                 cur.push(vls[1].parse().unwrap());
             },
             "bot" => {
-                rules.insert(vls[1].parse().unwrap(), (vls[5].to_string(), vls[6].parse().unwrap(),vls[10].to_string(),vls[11].parse().unwrap()));
+                rules.insert(vls[1].parse().unwrap(), vec![(vls[5].to_string(),vls[6].parse().unwrap()),(vls[10].to_string(),vls[11].parse().unwrap())]);
             },
             _ => panic!("invalid input for day 10")
         }
@@ -87,6 +66,6 @@ fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, (String,u32,String,u32)>) {
 fn main() {
     let (mut robots,rules) = parse();
 
-    println!("Part 1: {}", part1(&mut robots.clone(), &rules, true));
-    println!("Part 2: {}", part1(&mut robots, &rules, false));
+    println!("Part 1: {}", solve(&mut robots.clone(), &rules, true));
+    println!("Part 2: {}", solve(&mut robots, &rules, false));
 }
