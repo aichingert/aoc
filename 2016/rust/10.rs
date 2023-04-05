@@ -3,21 +3,22 @@
 
 use std::collections::HashMap;
 
-fn solve(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, Vec<(String,u32)>>, part_one: bool) -> u32 {
+fn solve(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, Vec<(String,u32)>>, part_one: bool) -> (u32,u32) {
     let mut output: HashMap<u32, Vec<u32>> = HashMap::new();
+    let mut ans: u32 = 0;
 
     loop {
         let next: Option<u32> = robots.keys().find(|&&key| robots[&key].len() == 2).copied();
 
         let next = match next {
-            None => return output[&0][0] * output[&1][0] * output[&2][0],
+            None => return (ans, output[&0][0] * output[&1][0] * output[&2][0]),
             Some(n) => n,
         };
 
         let cur: &mut Vec<u32> = robots.entry(next).or_default();
 
-        if part_one && (cur[0] == 61 && cur[1] == 17 || cur[0] == 17 && cur[1] == 61) {
-            return next;
+        if cur[0] == 61 && cur[1] == 17 || cur[0] == 17 && cur[1] == 61 {
+            ans = next;
         }
 
         let low_and_high = match cur[0] > cur[1] {
@@ -65,7 +66,8 @@ fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, Vec<(String,u32)>>) {
 
 fn main() {
     let (mut robots,rules) = parse();
+    let (part1,part2) = solve(&mut robots, &rules, true);
 
-    println!("Part 1: {}", solve(&mut robots.clone(), &rules, true));
-    println!("Part 2: {}", solve(&mut robots, &rules, false));
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
 }
