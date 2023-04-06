@@ -3,7 +3,7 @@
 
 use std::collections::HashMap;
 
-fn solve(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, Vec<(String,u32)>>, part_one: bool) -> (u32,u32) {
+fn solve(robots: &mut HashMap<u32, Vec<u32>>, rules: &HashMap<u32, Vec<(String,u32)>>) -> (u32,u32) {
     let mut output: HashMap<u32, Vec<u32>> = HashMap::new();
     let mut ans: u32 = 0;
 
