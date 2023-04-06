@@ -2,14 +2,15 @@
 // (c) aichingert
 
 use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
 
-#[derive(Clone)]
+#[derive(Clone,Hash, Eq, PartialEq)]
 struct Tower {
     floors: Vec<Floor>,
     elevator: usize,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Eq,PartialEq)]
 struct Floor {
     microchips: HashSet<Item>,
     generators: HashSet<Item>,
@@ -30,11 +31,12 @@ impl Tower {
             let mut iter = line.split(' ').skip(5);
 
             while let Some(word) = iter.next() {
-                if word == "a" || word == "and" || word == "relevant." || word.starts_with("micro") || word.starts_with("gener") {
+                if word == "a" || word == "and" || word == "relevant." 
+                    || word.starts_with("micro") || word.starts_with("gener") {
                     continue;
                 }
 
-                if let Some((lhs,rhs)) = word.split_once('-') {
+                if let Some((lhs,_)) = word.split_once('-') {
                     floor.microchips.insert(Item::Microchip(lhs.to_string()));
                 } else {
                     floor.generators.insert(Item::Generator(word.to_string()));
@@ -109,6 +111,23 @@ impl Tower {
 
         towers
     }
+
+    fn finished(&self) -> bool {
+        for i in 0..self.floors.len()-1 {
+            if !(self.floors[i].microchips.is_empty() && self.floors[i].generators.is_empty()) {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+impl Hash for Floor {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.microchips.len().hash(state);
+        self.generators.len().hash(state);
+    }
 }
 
 impl Floor {
@@ -154,9 +173,35 @@ impl Item {
     }
 }
 
-fn part1() {}
-fn part2() {}
+fn part1(starting: &Tower) -> u32 {
+    let mut batch = vec![starting.clone()];
+    let mut next_batch = Vec::new();
+    let mut dist = 0;
+    let mut seen = HashSet::new();
+
+    loop {
+        for st in batch {
+            for n in st.next() {
+                if seen.contains(&n) {
+                    continue;
+                }
+
+                if n.finished() {
+                    return dist + 1;
+                }
+
+                next_batch.push(n.clone());
+                seen.insert(n);
+            }
+        }
+
+        batch = next_batch.clone();
+        next_batch.clear();
+        dist += 1;
+    }
+}
 
 fn main() {
     let tower = Tower::from_str();
+    println!("Part 1: {}", part1(&tower));
 }
