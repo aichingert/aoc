@@ -1,7 +1,8 @@
 // Advent of Code 2016, day 21
 // (c) aichingert
 
-#[derive(Debug)]
+#[path="../../utils/rust/permutations.rs"] mod permutations;
+
 enum Command {
     SwapPosition(usize,usize),
     SwapLetter(char,char),
@@ -49,13 +50,13 @@ impl Command {
                 let y = (0..password.len()).find(|&i| &password[i] == b).unwrap();
                 Command::SwapPosition(x,y).scramble(password);
             },
-            Command::Rotate(dir,steps) => {
+            Command::Rotate(dir,steps) => for _ in 0..(steps % password.len()) {
                 match dir {
-                    true => for _ in 0..(steps % password.len()) {
+                    true => {
                         let ch = password.pop().unwrap();
                         password.insert(0,ch);
                     },
-                    false => for _ in 0..(steps % password.len()) {
+                    false => {
                         let ch = password.remove(0);
                         password.push(ch);
                     },
@@ -91,11 +92,29 @@ fn part1(commands: &Vec<Command>) -> String {
 
     starting.iter().collect::<String>()
 }
-fn part2() {}
+
+fn part2(commands: &Vec<Command>) -> String {
+    let mut starting: Vec<char> = "abcdefgh".chars().collect::<Vec<char>>();
+    let password: Vec<char> = "fbgdceah".chars().collect::<Vec<char>>();
+    let perms = permutations::permutations(starting.len(), &mut starting);
+
+    for perm in perms.iter() {
+        let mut scrambling = perm.clone();
+        for i in 0..commands.len() {
+            commands[i].scramble(&mut scrambling);
+        }
+
+        if scrambling == password {
+            return perm.iter().collect::<String>();
+        }
+    }
+
+    panic!("no solution")
+}
 
 fn main() {
     let commands = Command::parse();
 
     println!("Part 1: {}", part1(&commands));
-    //println!("Part 2: {}", part2(&inp));
+    println!("Part 2: {}", part2(&commands));
 }
