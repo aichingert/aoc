@@ -1,7 +1,7 @@
 // Advent of Code 2016, day 2
 // (c) aichingert
 
-use std::collections::HashSet;
+use std::collections::{HashSet,HashMap};
 use std::hash::{Hash, Hasher};
 
 #[derive(Clone,Hash, Eq, PartialEq)]
@@ -10,7 +10,7 @@ struct Tower {
     elevator: usize,
 }
 
-#[derive(Clone,Eq,PartialEq)]
+#[derive(Clone,Eq)]
 struct Floor {
     microchips: HashSet<Item>,
     generators: HashSet<Item>,
@@ -123,6 +123,12 @@ impl Tower {
     }
 }
 
+impl PartialEq for Floor {
+    fn eq(&self, other: &Self) -> bool {
+        self.microchips.len() == other.microchips.len() && self.generators.len() == other.generators.len()
+    }
+}
+
 impl Hash for Floor {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.microchips.len().hash(state);
@@ -173,35 +179,85 @@ impl Item {
     }
 }
 
-fn part1(starting: &Tower) -> u32 {
-    let mut batch = vec![starting.clone()];
-    let mut next_batch = Vec::new();
-    let mut dist = 0;
-    let mut seen = HashSet::new();
+fn solve(starting: &Tower) -> u32 {
+    let mut q: HashSet<Tower> = HashSet::new();
+    let mut index: HashMap<Tower, usize> = HashMap::new();
+    let mut dist: HashMap<Tower, usize> = HashMap::new();
+    let mut prev: HashMap<Tower, Option<Tower>> = HashMap::new();
+    let mut target = None;
 
-    loop {
-        for st in batch {
-            for n in st.next() {
-                if seen.contains(&n) {
-                    continue;
+    let mut cur = 1;
+    index.insert(starting.clone(), 0);
+    prev.insert(starting.clone(), None);
+    q.insert(starting.clone());
+    dist.insert(starting.clone(), 0);
+
+    while !q.is_empty() {
+        let u = {
+            let mut best = usize::MAX;
+            let mut found = None;
+
+            for u in &q {
+                let v = dist.get(u).unwrap();
+                if *v < best {
+                    best = *v;
+                    found = Some(u.clone());
                 }
-
-                if n.finished() {
-                    return dist + 1;
-                }
-
-                next_batch.push(n.clone());
-                seen.insert(n);
             }
+
+            found.unwrap()
+        };
+
+        if u.finished() {
+            target = Some(u);
+            break;
         }
 
-        batch = next_batch.clone();
-        next_batch.clear();
-        dist += 1;
+        q.remove(&u);
+
+        for m in u.next() {
+            let v = if q.contains(&m) {
+                m
+            } else if !index.contains_key(&m) {
+                index.insert(m.clone(), cur);
+                cur += 1;
+                dist.insert(m.clone(), usize::MAX);
+                prev.insert(m.clone(), None);
+                q.insert(m.clone());
+                m
+            } else {
+                continue;
+            };
+
+            let alt = dist.get(&u).unwrap() + 1;
+            
+            if alt < *dist.get(&v).unwrap() {
+                dist.insert(v.clone(), alt);
+                prev.insert(v.clone(), Some(u.clone()));
+            }
+        }
     }
+
+    let mut count = 0;
+    let mut u = &Some(target.unwrap());
+
+    while let Some(state) = u {
+        count += 1;
+        u = prev.get(state).unwrap();
+    }
+
+    count - 1
 }
 
 fn main() {
-    let tower = Tower::from_str();
-    println!("Part 1: {}", part1(&tower));
+    let mut tower = Tower::from_str();
+
+    println!("Part 1: {}", solve(&tower));
+
+    tower.floors[0].microchips.insert(Item::Microchip("elerium".to_string()));
+    tower.floors[0].generators.insert(Item::Generator("elerium".to_string()));
+    tower.floors[0].microchips.insert(Item::Microchip("dilithium".to_string()));
+    tower.floors[0].generators.insert(Item::Generator("dilithium".to_string()));
+
+    println!("Part 2: {}", solve(&tower));
 }
