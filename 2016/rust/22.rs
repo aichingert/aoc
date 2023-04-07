@@ -3,15 +3,14 @@
 
 #[derive(Debug)]
 struct Node {
-    x: u32,
     y: u32,
     size: u32,
     used: u32,
 }
 
 impl Node {
-    fn new(x: u32, y: u32, size: u32, used: u32) -> Self {
-        Self { x, y, size, used }
+    fn new(y: u32, size: u32, used: u32) -> Self {
+        Self { y, size, used }
     }
 }
 
@@ -23,7 +22,6 @@ fn parse() -> Vec<Node> {
         let loc = vls[0].split('-').collect::<Vec<&str>>();
 
         nodes.push(Node::new(
-                loc[1][1..].parse().unwrap(),
                 loc[2][1..].parse().unwrap(), 
                 vls[1][..vls[1].len()-1].parse().unwrap(),
                 vls[2][..vls[2].len()-1].parse().unwrap()));
@@ -47,8 +45,18 @@ fn part1(nodes: &Vec<Node>) -> usize {
     sum
 }
 
+fn part2(nodes: &Vec<Node>) {
+    for i in 0..nodes.len() {
+        if nodes[i].y == 0 { println!(); }
+        if nodes[i].used >= 490 { print!("#"); }
+        else if nodes[i].used == 0 { print!("_"); }
+        else { print!("."); }
+    }
+}
+
 fn main() {
     let nodes = parse();
 
     println!("Part 1: {}", part1(&nodes));
+    part2(&nodes);
 }
