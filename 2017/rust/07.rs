@@ -4,40 +4,57 @@
 use std::collections::HashMap;
 
 fn part1(towers: &HashMap<String, (Vec<String>, u32)>) -> String {
-    let mut clone: HashMap<String, (Vec<String>, u32)> = towers.clone();
-    let mut keys = clone.keys().collect::<Vec<&String>>();
-    let mut i: usize = 0;
-    let mut dependant: Vec<&str> = Vec::new();
+    let keys = towers.keys().collect::<Vec<&String>>();
+    let mut bottom: &String = keys[0];
+    let mut dependant: bool = true;
 
-    while i < keys.len() {
-        if clone[keys[i]].0.len() == 0 {
-            dependant.push(keys[i]);
-            i+=1;
-            continue;
-        }
+    while dependant {
+        dependant = false;
 
-        let mut j = 0usize;
-
-        while j < clone[keys[i]].0.len() {
-            let name = &clone[keys[i]].0[j];
-            dependant.push(name);
-            j += 1;
-        }
-        i += 1;
-    }
-
-    let mut bottom = "".to_string();
-    for key in clone.keys() {
-        if !dependant.contains(&key.as_str()) {
-            bottom = key.clone();
-            break;
+        for key in 1..keys.len() {
+            if towers[keys[key]].0.contains(bottom) {
+                dependant = true;
+                bottom = keys[key];
+            }
         }
     }
 
-    bottom
+    bottom.to_string()
 }
 
-fn part2() {}
+fn part2(towers: &HashMap<String, (Vec<String>,u32)>, top: &String) -> u32 {
+    let mut weights = Vec::<(&String,u32)>::new();
+    let mut prev = Vec::<(&String,u32)>::new();
+    let mut finished = false;
+    let mut next = top;
+
+    while !finished {
+        for tower in towers[next].0.iter() {
+            weights.push((&tower, weight(towers, &tower)));
+        }
+
+        weights.sort_by(|a,b| b.1.cmp(&a.1));
+        if weights.len() < 2 || weights[0].1 == weights[1].1 {
+            finished = true;
+        } else {
+            next = weights[0].0;
+            prev = weights.clone();
+            weights.clear();
+        }
+    }
+
+    towers[prev[0].0].1 - (prev[0].1 - prev[1].1)
+}
+
+fn weight(towers: &HashMap<String, (Vec<String>,u32)>, current: &String) -> u32 {
+    let mut sum = towers[current].1;
+
+    for tower in towers[current].0.iter() {
+        sum += weight(towers, &tower);
+    }
+
+    sum
+}
 
 fn parse() -> HashMap<String, (Vec<String>, u32)> {
     let mut towers = HashMap::new();
@@ -61,7 +78,8 @@ fn parse() -> HashMap<String, (Vec<String>, u32)> {
 
 fn main() {
     let towers: HashMap<String, (Vec<String>, u32)> = parse();
+    let top = part1(&towers);
 
-    println!("Part 1: {}", part1(&towers));
-    //println!("Part 2: {}", part2());
+    println!("Part 1: {}", &top);
+    println!("Part 2: {}", part2(&towers, &top));
 }
