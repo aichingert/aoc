@@ -11,26 +11,18 @@ fn solve() -> (i32,i32) {
     for line in lines.lines() {
         let vals = line.split(' ').collect::<Vec<&str>>();
         
-        match vals[5] {
-            ">" => if *reg.entry(vals[4]).or_insert(0) > vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
-            "<" => if *reg.entry(vals[4]).or_insert(0) < vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
-            ">=" => if *reg.entry(vals[4]).or_insert(0) >= vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
-            "<=" => if *reg.entry(vals[4]).or_insert(0) <= vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
-            "==" => if *reg.entry(vals[4]).or_insert(0) == vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
-            "!=" => if *reg.entry(vals[4]).or_insert(0) != vals[6].parse().unwrap() {
-                update(&mut reg, &vals, &mut sol);
-            },
+        let cond = match vals[5] {
+            ">" => *reg.entry(vals[4]).or_insert(0) > vals[6].parse().unwrap(),
+            "<" => *reg.entry(vals[4]).or_insert(0) < vals[6].parse().unwrap(),
+            ">="=> *reg.entry(vals[4]).or_insert(0) >= vals[6].parse().unwrap(),
+            "<="=> *reg.entry(vals[4]).or_insert(0) <= vals[6].parse().unwrap(),
+            "=="=> *reg.entry(vals[4]).or_insert(0) == vals[6].parse().unwrap(),
+            "!="=> *reg.entry(vals[4]).or_insert(0) != vals[6].parse().unwrap(),
             _ => panic!("invalid operation")
+        };
+
+        if cond {
+            update(&mut reg, &vals, &mut sol);
         }
     }
 
