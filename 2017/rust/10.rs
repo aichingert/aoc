@@ -37,7 +37,6 @@ fn part2(hash: &str) -> String {
         }
     }
 
-
     for i in 0..dense_hash.len() {
         knot_hash.push_str(&format!("{:#04x}", dense_hash[i])[2..]);
     }
