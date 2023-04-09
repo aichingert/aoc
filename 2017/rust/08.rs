@@ -11,7 +11,7 @@ fn solve() -> (i32,i32) {
     for line in lines.lines() {
         let vals = line.split(' ').collect::<Vec<&str>>();
         
-        let cond = match vals[5] {
+        if match vals[5] {
             ">" => *reg.entry(vals[4]).or_insert(0) > vals[6].parse().unwrap(),
             "<" => *reg.entry(vals[4]).or_insert(0) < vals[6].parse().unwrap(),
             ">="=> *reg.entry(vals[4]).or_insert(0) >= vals[6].parse().unwrap(),
@@ -19,10 +19,16 @@ fn solve() -> (i32,i32) {
             "=="=> *reg.entry(vals[4]).or_insert(0) == vals[6].parse().unwrap(),
             "!="=> *reg.entry(vals[4]).or_insert(0) != vals[6].parse().unwrap(),
             _ => panic!("invalid operation")
-        };
+        } {
+            let cur = reg.entry(vals[0]).or_insert(0);
 
-        if cond {
-            update(&mut reg, &vals, &mut sol);
+            match vals[1] {
+                "inc" => *cur += vals[2].parse::<i32>().unwrap(),
+                "dec" => *cur -= vals[2].parse::<i32>().unwrap(),
+                _ => unreachable!()
+            };
+
+            sol.1 = sol.1.max(*cur);
         }
     }
 
@@ -31,18 +37,6 @@ fn solve() -> (i32,i32) {
     }
 
     sol
-}
-
-fn update<'a>(reg: &mut HashMap<&'a str, i32>, vals: &Vec<&'a str>, sol: &mut (i32,i32)) {
-    let cur = reg.entry(vals[0]).or_insert(0);
-
-    match vals[1] {
-        "inc" => *cur += vals[2].parse::<i32>().unwrap(),
-        "dec" => *cur -= vals[2].parse::<i32>().unwrap(),
-        _ => unreachable!()
-    };
-
-    sol.1 = sol.1.max(*cur);
 }
 
 fn main() {
