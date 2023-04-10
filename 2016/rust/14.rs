@@ -8,7 +8,7 @@ fn generate_hash(salt: &str, streching: bool) -> Vec<char> {
         true => {
             let mut hash = md5::md5_utf8(salt);
 
-            for i in 0..2016 { hash = md5::md5_utf8(&hash); }
+            for _ in 0..2016 { hash = md5::md5_utf8(&hash); }
             hash.chars().collect::<Vec<char>>()
         },
         false => md5::md5_utf8(salt).chars().collect::<Vec<char>>()

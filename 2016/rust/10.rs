@@ -66,7 +66,7 @@ fn parse() -> (HashMap<u32, Vec<u32>>, HashMap<u32, Vec<(String,u32)>>) {
 
 fn main() {
     let (mut robots,rules) = parse();
-    let (part1,part2) = solve(&mut robots, &rules, true);
+    let (part1,part2) = solve(&mut robots, &rules);
 
     println!("Part 1: {}", part1);
     println!("Part 2: {}", part2);
