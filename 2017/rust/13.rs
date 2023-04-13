@@ -13,6 +13,21 @@ fn part1(obsticles: &Vec<(i32,i32)>) -> i32 {
     ans
 }
 
+fn part2(obsticles: &Vec<(i32,i32)>) -> i32 {
+    let mut delay: i32 = 0;
+
+    'outer: loop {
+        for i in 0..obsticles.len() {
+            if (obsticles[i].0 + delay) % ((obsticles[i].1 - 1) * 2) == 0 {
+                delay += 1;
+                continue 'outer;
+            }
+        }
+
+        return delay;
+    }
+}
+
 fn main() {
     let inp = std::fs::read_to_string("../input/13").unwrap()
         .lines()
@@ -22,5 +37,5 @@ fn main() {
         }).collect::<Vec<(i32,i32)>>();
 
     println!("Part 1: {}", part1(&inp));
-    //println!("Part 2: {}", part2(&inp));
+    println!("Part 2: {}", part2(&inp));
 }
