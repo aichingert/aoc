@@ -1,7 +1,7 @@
 // Advent of Code 2017, day 14
 // (c) aichingert
 
-#[path="./lib.rs"] mod lib;
+#[path="lib.rs"] mod lib;
 use std::collections::HashSet;
 
 fn solve(inp: &String) -> (u32, u32) {

@@ -1,7 +1,7 @@
 // Advent of Code 2017, day 10
 // (c) aichingert
 
-#[path="./lib.rs"] mod lib;
+#[path="lib.rs"] mod lib;
 use lib::SIZE;
 
 fn main() {
