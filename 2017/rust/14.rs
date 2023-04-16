@@ -1,7 +1,7 @@
 // Advent of Code 2017, day 14
 // (c) aichingert
 
-#[path="./knot_hash.rs"] mod knot_hash;
+#[path="./lib.rs"] mod lib;
 use std::collections::HashSet;
 
 fn solve(inp: &String) -> (u32, u32) {
@@ -10,7 +10,7 @@ fn solve(inp: &String) -> (u32, u32) {
     let mut regions: u32 = 0;
 
     for i in 0..128 {
-        grid.push((&format!("{:#b}", u128::from_str_radix(&knot_hash::knot_hash(&format!("{inp}-{i}")), 16).unwrap())[2..]).chars().rev().collect::<Vec<char>>());
+        grid.push((&format!("{:#b}", u128::from_str_radix(&lib::knot_hash(&format!("{inp}-{i}")), 16).unwrap())[2..]).chars().rev().collect::<Vec<char>>());
 
         let len = grid.len()-1;
         for _ in grid[len].len()..128 {
