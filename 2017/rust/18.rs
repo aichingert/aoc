@@ -1,17 +1,23 @@
 // Advent of Code 2017, day 18
 // (c) aichingert
 
+use std::collections::VecDeque;
+
+#[derive(Clone)]
 pub struct VM {
-    pub reg: Vec<i64>,
+    reg: Vec<i64>,
     asm: Vec<Instr>,
     ip: usize,
-    sounds: Vec<i64>,
-    rec: Option<i64>,
+    sounds: VecDeque<i64>,
+    frq: Option<i64>,
+    rec_reg: Option<char>,
+    sended: i64,
 }
 
+#[derive(Clone)]
 pub enum Instr {
     Snd(Value),
-    Rcv(Value),
+    Rcv(char),
     Set(char, Value),
     Add(char, Value),
     Mul(char, Value),
@@ -19,6 +25,7 @@ pub enum Instr {
     Jgz(Value, Value),
 }
 
+#[derive(Clone)]
 pub enum Value {
     Reg(char),
     Val(i64),
@@ -49,7 +56,7 @@ impl VM {
 
             asm.push(match vls[0] {
                 "snd" => Instr::Snd(Value::parse(vls[1])),
-                "rcv" => Instr::Rcv(Value::parse(vls[1])),
+                "rcv" => Instr::Rcv(vls[1].first_char()),
                 "set" => Instr::Set(vls[1].first_char(),Value::parse(vls[2])),
                 "add" => Instr::Add(vls[1].first_char(),Value::parse(vls[2])),
                 "mul" => Instr::Mul(vls[1].first_char(),Value::parse(vls[2])),
@@ -63,8 +70,10 @@ impl VM {
             reg: vec![0;26],
             asm,
             ip: 0,
-            sounds: Vec::new(),
-            rec: None,
+            sounds: VecDeque::new(),
+            frq: None,
+            rec_reg: None,
+            sended: 0,
         }
     }
 
@@ -76,6 +85,17 @@ impl VM {
         self.reg[(reg as u8 - b'a') as usize]
     }
 
+    fn pop(&mut self) -> Option<i64> {
+        self.sounds.pop_front()
+    }
+
+    fn receive(&mut self, val: i64) {
+        if let Some(reg) = self.rec_reg {
+            self.set(reg, val);
+        }
+        self.rec_reg = None;
+    }
+
     pub fn step(&mut self) -> bool {
         if self.ip >= self.asm.len() {
             return false;
@@ -83,9 +103,17 @@ impl VM {
         self.ip += 1;
 
         match &self.asm[self.ip-1] {
-            Instr::Snd(s) => self.sounds.push(s.value(&self.reg)),
-            Instr::Rcv(x) => if x.value(&self.reg) != 0 { 
-                self.rec = Some(self.sounds[self.sounds.len()-1]); 
+            Instr::Snd(s) => {
+                self.sounds.push_back(s.value(&self.reg));
+                self.sended += 1;
+            },
+            Instr::Rcv(reg) => {
+                if self.get(*reg) != 0 { 
+                    if let Some(&frq) = self.sounds.back() {
+                        self.frq = Some(frq);
+                    }
+                }
+                self.rec_reg = Some(*reg);
             },
             Instr::Set(x,y) => self.set(*x, y.value(&self.reg)),
             Instr::Add(x,y) => self.set(*x, self.get(*x) + y.value(&self.reg)),
@@ -111,15 +139,49 @@ impl FirstChar for &str {
 }
 
 fn part1(vm: &mut VM) -> i64 {
-    while vm.rec == None {
+    while vm.frq.is_none() {
         vm.step();
     }
 
-    vm.rec.unwrap()
+    vm.frq.unwrap()
+}
+
+fn part2(vm: &VM) -> i64 {
+    let mut vm0 = vm.clone();
+    let mut vm1 = vm.clone();
+    vm1.reg[(b'p' - b'a') as usize] = 1;
+    let mut stop = false;
+
+    while !stop {
+        while vm0.rec_reg.is_none() {
+            if !vm0.step() {
+                break;
+            }
+        }
+
+        while vm1.rec_reg.is_none() {
+            if !vm1.step() {
+                break;
+            }
+        }
+
+        stop = true;
+        if let Some(val) = vm1.pop() {
+            vm0.receive(val);
+            stop = false;
+        }
+        if let Some (val) = vm0.pop() {
+            vm1.receive(val);
+            stop = false;
+        }
+    }
+
+    vm1.sended
 }
 
 fn main() {
-    let mut vm = VM::new(&std::fs::read_to_string("../input/18").unwrap());
+    let vm = VM::new(&std::fs::read_to_string("../input/18").unwrap());
 
-    println!("Part 1: {}", part1(&mut vm));
+    println!("Part 1: {}", part1(&mut vm.clone()));
+    println!("Part 2: {}", part2(&vm));
 }
