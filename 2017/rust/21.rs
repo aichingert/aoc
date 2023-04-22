@@ -3,6 +3,22 @@
 
 use std::collections::{HashMap,HashSet};
 
+trait A {
+    fn flip(&self) -> Self;
+    fn rotate(&self) -> Self;
+}
+
+impl A for Vec<Vec<char>> {
+    fn flip(&self) -> Vec<Vec<char>> {
+        let mut vec = vec![vec!['.';self.len()];self.len()];
+
+        Vec::new()
+    }
+    fn rotate(&self) -> Vec<Vec<char>> {
+        Vec::new()
+    }
+}
+
 #[derive(Clone)]
 struct Grid {
     points: HashSet<(i32,i32)>,
@@ -14,10 +30,12 @@ impl Grid {
         Self { points, size }
     }
 
-    fn sub_grids(&mut self) {
+    fn sub_grids(&mut self) -> Vec<Self> {
+        let mut sub_grids = Vec::<Self>::new();
         let lines = self.to_string();
-        let lines = lines.split('/').collect::<Vec<&str>>();
-        println!("{:?}", lines);
+        let lines = lines.split('/')
+            .map(|s| s.chars().collect::<Vec<char>>())
+            .collect::<Vec<Vec<char>>>();
 
         let len = if self.size & 1 == 0 {
             2
@@ -25,8 +43,23 @@ impl Grid {
             3
         };
 
-        let mut sub_grids = vec![Grid::new(HashSet::new(),len);lines.len() / (len as usize)];
-        println!("{:?}", sub_grids.len());
+        for row in (0..self.size).step_by(len) {
+            for col in (0..self.size).step_by(len) {
+                let mut points: HashSet<(i32,i32)> = HashSet::new();
+
+                for i in 0..len as i32 {
+                    for j in 0..len as i32 {
+                        if lines[(row + i) as usize][(col + j) as usize] == '#' {
+                            points.insert((i,j));
+                        }
+                    }
+                }
+
+                sub_grids.push(Self::new(points, len as i32));
+            }
+        }
+
+        sub_grids
     }
 
     fn to_vec(&self) -> Vec<Vec<char>> {
@@ -80,6 +113,9 @@ fn parse() -> HashMap<String,String> {
 fn main() {
     let rules = parse();
     let mut grid = Grid::new(HashSet::from([(0,0),(0,3),(3,0),(3,3)]), 4);
-    println!("{:?}", grid.to_vec());
-    grid.sub_grids();
+
+    let s = grid.sub_grids();
+    for i in 0..s.len() {
+        println!("{:?}", s[i].points);
+    }
 }
