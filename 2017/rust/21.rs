@@ -122,7 +122,7 @@ impl Grid {
     }
 
     fn merge(sub_grids: &Vec<Self>) -> Self {
-        let mut grid: Self = Self::new(HashSet::new(), sub_grids.len() as i32);
+        let mut grid: Self = Self::new(HashSet::new(), sub_grids[0].size * (sub_grids.len() as f64).sqrt() as i32);
         let mut row = 0;
         let mut col = 0;
 
@@ -135,13 +135,12 @@ impl Grid {
                 }
             }
             col += sub_grids[i].size;
-            if (i + 1) & 1 == 0 {
+            if col >= (sub_grids.len() as f64).sqrt() as i32 * sub_grids[i].size {
                 row += sub_grids[i].size;
                 col = 0;
             }
         }
 
-        grid.size = row;
         grid
     }
 
@@ -175,7 +174,7 @@ fn parse() -> HashMap<String,String> {
     rules
 }
 
-fn part1(rules: &HashMap<String,String>, start: &Grid) -> usize {
+fn solve(rules: &HashMap<String,String>, start: &Grid, times: u32) -> usize {
     let mut v = start.to_vec();
     let mut pattern = String::new();
 
@@ -191,9 +190,8 @@ fn part1(rules: &HashMap<String,String>, start: &Grid) -> usize {
         v = v.flip();
     }
 
-
     let mut n = Grid::from_str(&pattern).sub_grids();
-    for _ in 0..2 {
+    for _ in 0..times-1 {
         for i in 0..n.len() {
             v = n[i].to_vec();
             'outer: for _ in 0..2 {
@@ -210,13 +208,8 @@ fn part1(rules: &HashMap<String,String>, start: &Grid) -> usize {
             
             n[i] = Grid::from_str(&pattern);
         }
-        println!();
 
-        v = Grid::merge(&n).to_vec();
         n = Grid::merge(&n).sub_grids();
-        for i in 0..v.len() {
-            println!("{:?}", v[i]);
-        }
     }
         
     Grid::merge(&n).points.len()
@@ -226,5 +219,6 @@ fn main() {
     let rules = parse();
     let mut grid = Grid::new(HashSet::from([(0,1),(1,2),(2,0),(2,1),(2,2)]), 3);
 
-    println!("Part 1: {}", part1(&rules, &mut grid));
+    println!("Part 1: {}", solve(&rules, &mut grid, 5));
+    println!("Part 2: {}", solve(&rules, &mut grid, 18));
 }
