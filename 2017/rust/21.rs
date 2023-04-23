@@ -6,16 +6,55 @@ use std::collections::{HashMap,HashSet};
 trait A {
     fn flip(&self) -> Self;
     fn rotate(&self) -> Self;
+    fn to_string(&self) -> String;
 }
 
 impl A for Vec<Vec<char>> {
     fn flip(&self) -> Vec<Vec<char>> {
-        let mut vec = vec![vec!['.';self.len()];self.len()];
+        let mut vec = self.clone();
 
-        Vec::new()
+        for i in 0..self.len() {
+            vec[i][0] = self[i][self.len()-1];
+            vec[i][self.len()-1] = self[i][0];
+        }
+
+        vec
     }
+    
     fn rotate(&self) -> Vec<Vec<char>> {
-        Vec::new()
+        let mut vec = self.clone();
+
+        if self.len() == 2 {
+            vec[0][0] = self[1][0];
+            vec[0][1] = self[0][0];
+            vec[1][0] = self[1][1];
+            vec[1][1] = self[0][1];
+        } else {
+            vec[0][0] = self[2][0];
+            vec[1][0] = self[2][1];
+            vec[2][0] = self[2][2];
+            vec[0][1] = self[1][0];
+            vec[2][1] = self[1][2];
+            vec[0][2] = self[0][0];
+            vec[1][2] = self[0][1];
+            vec[2][2] = self[0][2];
+        }
+
+        vec
+    }
+
+    fn to_string(&self) -> String {
+        let mut s = String::new();
+
+        for i in 0..self.len() {
+            for j in 0..self.len() {
+                s.push(self[i][j]);
+            }
+            s.push('/');
+        }
+        s.pop();
+
+        s
     }
 }
 
@@ -30,9 +69,29 @@ impl Grid {
         Self { points, size }
     }
 
+    fn from_str(s: &str) -> Self {
+        let l = s.split('/')
+            .map(|s| s.chars().collect::<Vec<char>>())
+            .collect::<Vec<Vec<char>>>();
+        let mut points = HashSet::new();
+        let mut size = 0;
+
+        for i in 0..l.len() {
+            for j in 0..l.len() {
+                if l[i][j] == '#' {
+                    points.insert((i as i32,j as i32));
+                }
+            }
+            
+            size += 1;
+        }
+
+        Self { points, size }
+    }
+
     fn sub_grids(&mut self) -> Vec<Self> {
         let mut sub_grids = Vec::<Self>::new();
-        let lines = self.to_string();
+        let lines = self.to_vec().to_string();
         let lines = lines.split('/')
             .map(|s| s.chars().collect::<Vec<char>>())
             .collect::<Vec<Vec<char>>>();
@@ -62,6 +121,30 @@ impl Grid {
         sub_grids
     }
 
+    fn merge(sub_grids: &Vec<Self>) -> Self {
+        let mut grid: Self = Self::new(HashSet::new(), sub_grids.len() as i32);
+        let mut row = 0;
+        let mut col = 0;
+
+        for i in 0..sub_grids.len() {
+            for r in 0..sub_grids[i].size {
+                for c in 0..sub_grids[i].size {
+                    if sub_grids[i].points.contains(&(r,c)) {
+                        grid.points.insert((row+r,col+c));
+                    }
+                }
+            }
+            col += sub_grids[i].size;
+            if (i + 1) & 1 == 0 {
+                row += sub_grids[i].size;
+                col = 0;
+            }
+        }
+
+        grid.size = row;
+        grid
+    }
+
     fn to_vec(&self) -> Vec<Vec<char>> {
         let mut vec = Vec::new();
 
@@ -79,24 +162,6 @@ impl Grid {
 
         vec
     }
-
-    fn to_string(&self) -> String {
-        let mut s = String::new();
-
-        for i in 0..self.size {
-            for j in 0..self.size {
-                s.push(if self.points.contains(&(i,j)) {
-                    '#'
-                } else {
-                    '.'
-                });
-            }
-            s.push('/');
-        }
-        s.pop();
-
-        s
-    }
 }
 
 fn parse() -> HashMap<String,String> {
@@ -110,12 +175,56 @@ fn parse() -> HashMap<String,String> {
     rules
 }
 
+fn part1(rules: &HashMap<String,String>, start: &Grid) -> usize {
+    let mut v = start.to_vec();
+    let mut pattern = String::new();
+
+    'outer: for _ in 0..2 {
+        for _ in 0..4 {
+            let s = v.to_string();
+            if rules.contains_key(&s) {
+                pattern = rules[&s].clone();
+                break 'outer;
+            }
+            v = v.rotate();
+        }
+        v = v.flip();
+    }
+
+
+    let mut n = Grid::from_str(&pattern).sub_grids();
+    for _ in 0..2 {
+        for i in 0..n.len() {
+            v = n[i].to_vec();
+            'outer: for _ in 0..2 {
+                for _ in 0..4 {
+                    let s = v.to_string();
+                    if rules.contains_key(&s) {
+                        pattern = rules[&s].clone();
+                        break 'outer;
+                    }
+                    v = v.rotate();
+                }
+                v = v.flip();
+            }
+            
+            n[i] = Grid::from_str(&pattern);
+        }
+        println!();
+
+        v = Grid::merge(&n).to_vec();
+        n = Grid::merge(&n).sub_grids();
+        for i in 0..v.len() {
+            println!("{:?}", v[i]);
+        }
+    }
+        
+    Grid::merge(&n).points.len()
+}
+
 fn main() {
     let rules = parse();
-    let mut grid = Grid::new(HashSet::from([(0,0),(0,3),(3,0),(3,3)]), 4);
+    let mut grid = Grid::new(HashSet::from([(0,1),(1,2),(2,0),(2,1),(2,2)]), 3);
 
-    let s = grid.sub_grids();
-    for i in 0..s.len() {
-        println!("{:?}", s[i].points);
-    }
+    println!("Part 1: {}", part1(&rules, &mut grid));
 }
