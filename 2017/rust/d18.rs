@@ -5,9 +5,9 @@ use std::collections::VecDeque;
 
 #[derive(Clone)]
 pub struct VM {
-    reg: Vec<i64>,
-    asm: Vec<Instr>,
-    ip: usize,
+    pub reg: Vec<i64>,
+    pub asm: Vec<Instr>,
+    pub ip: usize,
     sounds: VecDeque<i64>,
     frq: Option<i64>,
     rec_reg: Option<char>,
@@ -20,8 +20,10 @@ pub enum Instr {
     Rcv(char),
     Set(char, Value),
     Add(char, Value),
+    Sub(char, Value),
     Mul(char, Value),
     Mod(char, Value),
+    Jnz(Value, Value),
     Jgz(Value, Value),
 }
 
@@ -59,8 +61,10 @@ impl VM {
                 "rcv" => Instr::Rcv(vls[1].first_char()),
                 "set" => Instr::Set(vls[1].first_char(),Value::parse(vls[2])),
                 "add" => Instr::Add(vls[1].first_char(),Value::parse(vls[2])),
+                "sub" => Instr::Sub(vls[1].first_char(),Value::parse(vls[2])),
                 "mul" => Instr::Mul(vls[1].first_char(),Value::parse(vls[2])),
                 "mod" => Instr::Mod(vls[1].first_char(),Value::parse(vls[2])),
+                "jnz" => Instr::Jnz(Value::parse(vls[1]),Value::parse(vls[2])),
                 "jgz" => Instr::Jgz(Value::parse(vls[1]),Value::parse(vls[2])),
                 _ => panic!("invalid instr"),
             });
@@ -117,11 +121,15 @@ impl VM {
             },
             Instr::Set(x,y) => self.set(*x, y.value(&self.reg)),
             Instr::Add(x,y) => self.set(*x, self.get(*x) + y.value(&self.reg)),
+            Instr::Sub(x,y) => self.set(*x, self.get(*x) - y.value(&self.reg)),
             Instr::Mul(x,y) => self.set(*x, self.get(*x) * y.value(&self.reg)),
             Instr::Mod(x,y) => self.set(*x, self.get(*x) % y.value(&self.reg)),
             Instr::Jgz(x,y) => if x.value(&self.reg) > 0 {
                 self.ip = (self.ip as i64 + y.value(&self.reg)) as usize - 1;
-            }
+            },
+            Instr::Jnz(x,y) => if x.value(&self.reg) != 0 {
+                self.ip = (self.ip as i64 + y.value(&self.reg)) as usize - 1;
+            },
         }
 
         true
