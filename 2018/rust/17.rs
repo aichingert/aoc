@@ -3,14 +3,20 @@
 
 use std::collections::HashSet;
 
-fn part1(walls: &HashSet<(i32,i32)>, lowest: i32, y: i32) -> usize {
-    let start = (500,0);
-    let mut water: HashSet<(i32,i32)> = HashSet::new();
-    
-    fill(start, walls, &mut water, y);
-    pr(walls, &water);
+fn part1(walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i32)>, lowest: i32, y: i32) -> usize {
+    fill((500,0), walls, water, y);
+    water.iter().filter(|(_,y)| *y > lowest).count()
+}
 
-    water.iter().filter(|(x,y)| *y > lowest).count()
+fn part2(walls: &HashSet<(i32,i32)>, water: &HashSet<(i32,i32)>) -> usize {
+    let this = water.iter().filter(|(x,y)| {
+        (water.contains(&(*x-1,*y)) || water.contains(&(*x+1,*y)) || 
+        walls.contains(&(*x-1,*y)) || walls.contains(&(*x+1,*y))) &&
+        check_direction(walls, &mut water.clone(), &mut (*x, *y), 1) &&
+        check_direction(walls, &mut water.clone(), &mut (*x, *y), -1)
+    }).collect::<HashSet<&(i32,i32)>>();
+
+    this.len()
 }
 
 fn fill(start: (i32,i32), walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i32)>, y: i32) {
@@ -37,30 +43,22 @@ fn fill(start: (i32,i32), walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i
     let right = check_direction(walls, water, &mut rp, 1);
     let left  = check_direction(walls, water, &mut lp, -1);
 
-    match (left,right) {
-        (true,true) => fill((cur.0, cur.1 - 1), walls, water, y),
-        (true,false) => if walls.contains(&(rp.0-1,rp.1+1)) {
-                fill(rp, walls, water, y);
-            } else {
-                water.remove(&rp);
-            },
-        (false,true) => if walls.contains(&(lp.0+1,lp.1+1)) {
-                fill(lp, walls, water, y);
-            } else {
-                water.remove(&lp);
-            },
-        (false,false) => {
-            if walls.contains(&(rp.0-1,rp.1+1)) {
-                fill(rp, walls, water, y);
-            } else {
-                water.remove(&rp);
-            }
-            if walls.contains(&(lp.0+1,lp.1+1)) {
-                fill(lp, walls, water, y);
-            } else {
-                water.remove(&lp);
-            }
-        },
+    if left && right {
+        fill((cur.0, cur.1 - 1), walls, water, y);
+    }
+    if !left {
+        if walls.contains(&(lp.0+1,lp.1+1)) {
+            fill(lp, walls, water, y);
+        } else {
+            water.remove(&lp);
+        }
+    }
+    if !right {
+        if walls.contains(&(rp.0-1,rp.1+1)) {
+            fill(rp, walls, water, y);
+        } else {
+            water.remove(&rp);
+        }
     }
 } 
 
@@ -81,21 +79,6 @@ fn check_direction(walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i32)>, p
     }
 
     blocked
-}
-
-fn pr(walls: &HashSet<(i32,i32)>, water: &HashSet<(i32,i32)>) {
-    for i in 0..1915 {
-        for j in 330..650 {
-            if water.contains(&(j,i)) {
-                print!("|");
-            } else if walls.contains(&(j,i)) {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!("");
-    }
 }
 
 fn parse() -> (HashSet<(i32,i32)>, i32, i32) {
@@ -126,7 +109,8 @@ fn parse() -> (HashSet<(i32,i32)>, i32, i32) {
 
 fn main() {
     let (walls, lowest, y) = parse();
-    println!("{:?}", lowest);
+    let mut water: HashSet<(i32,i32)> = HashSet::new();
 
-    println!("Part 1: {}", part1(&walls, lowest, y));
+    println!("Part 1: {}", part1(&walls, &mut water, lowest, y));
+    println!("Part 2: {}", part2(&walls, &mut water));
 }
