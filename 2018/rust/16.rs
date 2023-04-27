@@ -6,6 +6,19 @@ use std::collections::{HashSet,HashMap};
 const OPCODES: [Opcode;16] = [Opcode::Addr,Opcode::Addi,Opcode::Mulr,Opcode::Muli,Opcode::Banr,
                     Opcode::Bani,Opcode::Borr,Opcode::Bori,Opcode::Setr,Opcode::Seti,Opcode::Gtir,
                     Opcode::Gtri,Opcode::Gtrr,Opcode::Eqir,Opcode::Eqri,Opcode::Eqrr];
+
+struct Inp {
+    before: Vec<i32>,
+    after: Vec<i32>,
+    codes: Vec<i32>,
+}
+
+impl Inp {
+    fn new(before: Vec<i32>, after: Vec<i32>, codes: Vec<i32>) -> Self {
+        Self { before, after, codes }
+    }
+}
+
 #[derive(Debug,Clone,Copy)]
 enum Opcode {
     Addr,
@@ -102,8 +115,29 @@ impl Opcode {
     }
 }
 
-fn part1() -> i32 {
+fn part1(inps: &mut Vec<Inp>) -> i32 {
     let mut ans = 0;
+
+    for i in 0..inps.len() {
+        let mut count = 0;
+
+        for j in 0..OPCODES.len() {
+            if OPCODES[j].execute(
+                &mut inps[i].before.clone(), 
+                &inps[i].after, 
+                inps[i].codes[1], inps[i].codes[2],inps[i].codes[3]
+            ) {
+                count += 1;
+            }
+        }
+
+        if count > 2 {
+            ans += 1;
+        }
+    }
+
+    ans 
+    /*
     let inp = std::fs::read_to_string("../input/16").unwrap();
     let (inp,exmpl) = inp.split_once("\n\n\n\n").unwrap();
     let inp = inp.split("\n\n").collect::<Vec<&str>>();
@@ -114,7 +148,8 @@ fn part1() -> i32 {
         for i in 0..inp.len() {
             let lines = inp[i].lines().collect::<Vec<&str>>();
             let (_,arr) = lines[0].split_once('[').unwrap();
-            let cur = arr[..arr.len()-1]
+
+            let mut cur = arr[..arr.len()-1]
                 .split(", ")
                 .map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>();
             let (_,arr) = lines[2].split_once('[').unwrap();
@@ -127,13 +162,19 @@ fn part1() -> i32 {
             let mut codes = Vec::<usize>::new();
 
             for opcode in 0..OPCODES.len() {
-                let mut this = cur.clone();
-                if OPCODES[opcode].execute(&mut this, &exp, abc[1], abc[2], abc[3]) 
+                if OPCODES[opcode].execute(&mut cur.clone(), &exp, abc[1], abc[2], abc[3]) 
                     && !known.contains(&opcode) {
                     codes.push(opcode);
                 }
+
+                if OPCODES[opcode].execute(&mut cur, &exp, abc[1], abc[2], abc[3]) {
+                    count += 1;
+                }
             }
 
+            if count > 2 {
+                ans += 1;
+            }
 
             if codes.len() == 1 {
                 known.insert(codes[0]);
@@ -149,9 +190,41 @@ fn part1() -> i32 {
         mapping[&r[0]].execute(&mut reg, &[], r[1],r[2],r[3]);
     }
 
-    reg[0]
+    (mapping, ans)
+    */
+}
+
+fn parse() -> (Vec<Inp>, String) {
+    let mut inps = Vec::<Inp>::new();
+    let inp = std::fs::read_to_string("../input/16").unwrap();
+    let (inp,example) = inp.split_once("\n\n\n\n").unwrap();
+
+    let inp = inp.split("\n\n").collect::<Vec<&str>>();
+
+    for i in 0..inp.len() {
+        let lines = inp[i].lines().collect::<Vec<&str>>();
+        let mut regs = Vec::new();
+
+        for j in (0..3).step_by(2) {
+            let (_,arr) = lines[j].split_once('[').unwrap();
+
+            regs.push(arr[..arr.len()-1]
+                .split(", ")
+                .map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>());
+        }
+
+        inps.push(Inp::new(
+                regs[0].clone(), regs[1].clone(), 
+                lines[1].split(' ').map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>())
+        );
+    }
+
+
+    (inps, example.to_string())
 }
 
 fn main() {
-    println!("Part 1: {}", part1());
+    let (mut inps, example) = parse();
+
+    println!("Part 1: {}", part1(&mut inps));
 }
