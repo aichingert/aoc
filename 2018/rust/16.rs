@@ -115,7 +115,7 @@ impl Opcode {
     }
 }
 
-fn part1(inps: &mut Vec<Inp>) -> i32 {
+fn part1(inps: &Vec<Inp>) -> i32 {
     let mut ans = 0;
 
     for i in 0..inps.len() {
@@ -137,61 +137,42 @@ fn part1(inps: &mut Vec<Inp>) -> i32 {
     }
 
     ans 
-    /*
-    let inp = std::fs::read_to_string("../input/16").unwrap();
-    let (inp,exmpl) = inp.split_once("\n\n\n\n").unwrap();
-    let inp = inp.split("\n\n").collect::<Vec<&str>>();
-    let mut known: HashSet<usize> = HashSet::new();
-    let mut mapping: HashMap<i32, Opcode> = HashMap::new();
+}
+
+fn part2(inps: &Vec<Inp>, example: &String) -> i32 {
+    let mut known = HashSet::<usize>::new();
+    let mut mapping = HashMap::<i32, Opcode>::new();
 
     while known.len() < 16 {
-        for i in 0..inp.len() {
-            let lines = inp[i].lines().collect::<Vec<&str>>();
-            let (_,arr) = lines[0].split_once('[').unwrap();
-
-            let mut cur = arr[..arr.len()-1]
-                .split(", ")
-                .map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>();
-            let (_,arr) = lines[2].split_once('[').unwrap();
-            let exp = arr[..arr.len()-1]
-                .split(", ")
-                .map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>();
-
-            let abc = lines[1].split(' ').map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>();
-            let mut count = 0;
+        for i in 0..inps.len() {
             let mut codes = Vec::<usize>::new();
 
             for opcode in 0..OPCODES.len() {
-                if OPCODES[opcode].execute(&mut cur.clone(), &exp, abc[1], abc[2], abc[3]) 
-                    && !known.contains(&opcode) {
+                if OPCODES[opcode].execute(
+                    &mut inps[i].before.clone(), 
+                    &inps[i].after, 
+                    inps[i].codes[1], inps[i].codes[2],inps[i].codes[3]
+                ) && !known.contains(&opcode) {
                     codes.push(opcode);
                 }
-
-                if OPCODES[opcode].execute(&mut cur, &exp, abc[1], abc[2], abc[3]) {
-                    count += 1;
-                }
             }
 
-            if count > 2 {
-                ans += 1;
-            }
-
-            if codes.len() == 1 {
-                known.insert(codes[0]);
-                mapping.insert(abc[0], OPCODES[codes[0]]);
+            if codes.len() == 1 { 
+                known.insert(codes[0]); 
+                mapping.insert(inps[i].codes[0], OPCODES[codes[0]]);
             }
         }
+
     }
 
     let mut reg = [0,0,0,0];
 
-    for l in exmpl.lines() {
+    for l in example.lines() {
         let r = l.split(' ').map(|n| n.parse::<i32>().unwrap()).collect::<Vec<i32>>();
         mapping[&r[0]].execute(&mut reg, &[], r[1],r[2],r[3]);
     }
 
-    (mapping, ans)
-    */
+    reg[0]
 }
 
 fn parse() -> (Vec<Inp>, String) {
@@ -224,7 +205,8 @@ fn parse() -> (Vec<Inp>, String) {
 }
 
 fn main() {
-    let (mut inps, example) = parse();
+    let (inps, example) = parse();
 
-    println!("Part 1: {}", part1(&mut inps));
+    println!("Part 1: {}", part1(&inps));
+    println!("Part 2: {}", part2(&inps, &example));
 }
