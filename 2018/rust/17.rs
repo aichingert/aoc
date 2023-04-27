@@ -9,14 +9,12 @@ fn part1(walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i32)>, lowest: i32
 }
 
 fn part2(walls: &HashSet<(i32,i32)>, water: &HashSet<(i32,i32)>) -> usize {
-    let this = water.iter().filter(|(x,y)| {
+    water.iter().filter(|(x,y)| {
         (water.contains(&(*x-1,*y)) || water.contains(&(*x+1,*y)) || 
         walls.contains(&(*x-1,*y)) || walls.contains(&(*x+1,*y))) &&
         check_direction(walls, &mut water.clone(), &mut (*x, *y), 1) &&
         check_direction(walls, &mut water.clone(), &mut (*x, *y), -1)
-    }).collect::<HashSet<&(i32,i32)>>();
-
-    this.len()
+    }).count()
 }
 
 fn fill(start: (i32,i32), walls: &HashSet<(i32,i32)>, water: &mut HashSet<(i32,i32)>, y: i32) {
