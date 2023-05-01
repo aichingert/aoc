@@ -3,7 +3,8 @@
 
 use std::collections::{HashSet,HashMap};
 
-fn part1(cur: &mut HashSet<i32>, rules: &HashMap<String, String>, steps: u64) -> i32 {
+fn solve(cur: &HashSet<isize>, rules: &HashMap<String, String>, steps: u64) -> isize {
+    let mut cur = cur.clone();
     let mut min = -5;
     let mut max = 900;
 
@@ -25,21 +26,20 @@ fn part1(cur: &mut HashSet<i32>, rules: &HashMap<String, String>, steps: u64) ->
 
         min -= 3;
         max += 3;
-        *cur = next;
+        cur = next;
     }
-    println!("{min} {max}");
 
     cur.iter().fold(0, |c,i| c + *i)
 }
 
-fn parse() -> (HashSet<i32>, HashMap<String, String>) {
+fn parse() -> (HashSet<isize>, HashMap<String, String>) {
     let inp = std::fs::read_to_string("../input/12").unwrap();
     let inp = inp.lines().collect::<Vec<&str>>();
     let mut cur = HashSet::new();
     let mut rules = HashMap::new();
 
     for (i,c) in inp[0].split(' ').collect::<Vec<&str>>()[2].chars().collect::<Vec<char>>().iter().enumerate() {
-        if *c == '#' { cur.insert(i as i32); }
+        if *c == '#' { cur.insert(i as isize); }
     }
 
     for i in 2..inp.len() {
@@ -53,7 +53,8 @@ fn parse() -> (HashSet<i32>, HashMap<String, String>) {
 fn main() {
     let (mut cur, rules) = parse();
 
-    //println!("Part 1: {}", part1(&mut cur, &rules, 20));
-    println!("1000: {}", part1(&mut cur.clone(), &rules, 1000));
-    println!("2000: {}", part1(&mut cur, &rules, 2000));
+    println!("Part 1: {}", solve(&cur, &rules, 20));
+
+    let th = solve(&cur, &rules, 200);
+    println!("Part 2: {}", (500000000 - 2) * (solve(&cur, &rules, 300) - th) + th);
 }
