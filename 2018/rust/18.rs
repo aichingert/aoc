@@ -108,4 +108,5 @@ fn main() {
         ).collect::<Vec<Vec<Type>>>();
 
     println!("Part 1: {}", solve(&inp, 10));
+    println!("Part 2: {}", solve(&inp, 1028));
 }
