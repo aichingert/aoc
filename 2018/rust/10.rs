@@ -34,12 +34,14 @@ impl Star {
 
 fn solve(stars: &mut Vec<Star>) {
     let mut rng = 0;
+    let mut ans = 0;
 
     loop {
         for i in 0..stars.len() {
             stars[i].update();
         }
 
+        ans += 1;
         let (lx,rx,by,ty) = Star::dist(&stars);
 
         if (lx.abs() - rx.abs()).abs() < 100 && (by.abs() - ty.abs()).abs() < 100 {
@@ -63,6 +65,7 @@ fn solve(stars: &mut Vec<Star>) {
                 }
                 println!();
             }
+            println!("Seconds: {ans}");
         }
 
         if rng > 4 {
