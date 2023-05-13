@@ -44,8 +44,12 @@ impl Opcode {
         }
     }
 
-    fn execute(&self, reg: &mut [i32; 6], n: &Vec<i32>) {
+    fn execute(&self, reg: &mut [i64; 6], n: &Vec<i64>) {
         reg[n[2] as usize] = match self {
+            Opcode::Addr => reg[n[0] as usize] + reg[n[1] as usize],
+            Opcode::Addi => reg[n[0] as usize] + n[1],
+            Opcode::Seti => n[0],
+            Opcode::Setr => reg[n[0] as usize],
             Opcode::Mulr => reg[n[0] as usize] * reg[n[1] as usize],
             Opcode::Muli => reg[n[0] as usize] * n[1],
             Opcode::Banr => reg[n[0] as usize] & reg[n[1] as usize],
@@ -94,20 +98,28 @@ impl Opcode {
                     0
                 }
             }
-            Opcode::Addr => reg[n[0] as usize] + reg[n[1] as usize],
-            Opcode::Addi => reg[n[0] as usize] + n[1],
-            Opcode::Seti => n[0],
-            Opcode::Setr => reg[n[0] as usize],
         }
     }
 }
 
-fn part1(bound: usize, instr: &Vec<(Opcode, Vec<i32>)>) -> i32 {
-    let mut reg = [0i32; 6];
+fn solve(start: i64, bound: usize, instr: &Vec<(Opcode, Vec<i64>)>) -> i64 {
+    let mut reg = [0i64; 6];
+    reg[0] = start;
     let mut ip: usize = 0;
 
     while ip < instr.len() {
-        reg[bound] = ip as i32;
+        if ip == 3 {
+            if reg[2] % reg[1] == 0 {
+                reg[0] = reg[1] + reg[0];
+            }
+
+            reg[4] = reg[2];
+            reg[5] = 0;
+            ip = 12;
+            continue;
+        }
+
+        reg[bound] = ip as i64;
         instr[ip].0.execute(&mut reg, &instr[ip].1);
         ip = reg[bound] as usize + 1;
     }
@@ -115,15 +127,11 @@ fn part1(bound: usize, instr: &Vec<(Opcode, Vec<i32>)>) -> i32 {
     reg[0]
 }
 
-fn part2() -> i32 {
-    0
-}
-
-fn parse() -> (usize, Vec<(Opcode, Vec<i32>)>) {
+fn parse() -> (usize, Vec<(Opcode, Vec<i64>)>) {
     let inp = std::fs::read_to_string("../input/19").unwrap();
     let inp = inp.lines().collect::<Vec<&str>>();
 
-    let mut instr = Vec::<(Opcode, Vec<i32>)>::new();
+    let mut instr = Vec::<(Opcode, Vec<i64>)>::new();
     let bound = inp[0][4..5].parse::<usize>().unwrap();
 
     for i in 1..inp.len() {
@@ -133,7 +141,7 @@ fn parse() -> (usize, Vec<(Opcode, Vec<i32>)>) {
             vals[1..]
                 .iter()
                 .map(|i| i.parse().unwrap())
-                .collect::<Vec<i32>>(),
+                .collect::<Vec<i64>>(),
         ));
     }
 
@@ -143,5 +151,6 @@ fn parse() -> (usize, Vec<(Opcode, Vec<i32>)>) {
 fn main() {
     let (bound, instr) = parse();
 
-    println!("Part 1: {}", part1(bound, &instr));
+    println!("Part 1: {}", solve(0, bound, &instr));
+    println!("Part 2: {}", solve(1, bound, &instr));
 }
