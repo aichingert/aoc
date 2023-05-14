@@ -5,135 +5,116 @@ use std::collections::{HashMap, HashSet};
 
 type Map = HashMap<(i32, i32), HashSet<(i32, i32)>>;
 
-fn part1(map: &Map) -> i32 {
-    let mut dist: HashMap<(i32, i32), i32> = HashMap::new();
-
-    0
+enum Direction {
+    North,
+    South,
+    East,
+    West,
 }
 
-fn calc_dists(map: &Map, dists: &mut HashMap<(i32, i32), i32>, s: (i32, i32), dist: i32) {
-    if dists.contains_key(&s) {
-        return;
+impl Direction {
+    fn from_char(ch: char) -> Self {
+        match ch {
+            'N' => Direction::North,
+            'S' => Direction::South,
+            'E' => Direction::East,
+            'W' => Direction::West,
+            _ => panic!("nope"),
+        }
     }
 
-    dists.insert(s, dist);
-
-    let mut cur = s;
+    fn update(&self) -> (i32, i32) {
+        match self {
+            Direction::North => (0, -1),
+            Direction::South => (0, 1),
+            Direction::East => (1, 0),
+            Direction::West => (-1, 0),
+        }
+    }
 }
 
-fn parse() -> Map {
-    let inp = std::fs::read_to_string("../input/20").unwrap();
-    let inp = inp[1..inp.len() - 1].chars().collect::<Vec<char>>();
-    let mut map: Map = HashMap::new();
-
-    create_map(&inp, 0, (0, 0), &mut map);
-
-    map
+struct RegularMap {
+    map: Map,
 }
 
-fn create_map(regex: &Vec<char>, pos: usize, sloc: (i32, i32), map: &mut Map) {
-    let mut loc = sloc;
-    let mut pos = pos;
-    if !map.contains_key(&loc) {
-        map.insert(loc, HashSet::new());
+impl RegularMap {
+    fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+        }
     }
 
-    while pos < regex.len() {
-        match regex[pos] {
-            'N' => {
-                map.get_mut(&loc).map(|val| val.insert((loc.0, loc.1 - 1)));
-                loc.1 -= 1;
-            }
-            'S' => {
-                map.get_mut(&loc).map(|val| val.insert((loc.0, loc.1 + 1)));
-                loc.1 += 1;
-            }
-            'E' => {
-                map.get_mut(&loc).map(|val| val.insert((loc.0 + 1, loc.1)));
-                loc.0 += 1;
-            }
-            'W' => {
-                map.get_mut(&loc).map(|val| val.insert((loc.0 - 1, loc.1)));
-                loc.0 -= 1;
-            }
-            '(' => {
-                pos += 1;
-                create_map(regex, pos, loc, map);
+    fn create_map(&mut self, regex: &Vec<char>, s: (i32, i32)) {
+        let mut loc: usize = 0;
+        let mut cur: (i32, i32) = s;
+        self.map.insert(cur, HashSet::new());
 
-                let mut brackets: i32 = 1;
-                while brackets > 0 {
-                    if regex[pos] == '(' {
-                        brackets += 1;
-                    } else if regex[pos] == ')' {
-                        brackets -= 1;
+        while loc < regex.len() {
+            match regex[loc] {
+                'N' | 'S' | 'E' | 'W' => {
+                    let dir = Direction::from_char(regex[loc]).update();
+                    self.map
+                        .get_mut(&cur)
+                        .map(|val| val.insert((cur.0 + dir.0, cur.1 + dir.1)));
+                    cur = (cur.0 + dir.0, cur.1 + dir.1);
+                }
+                '(' => {
+                    loc = self.execute_regex(loc, cur, regex);
+                }
+                ')' => (),
+                s => panic!("invalid token: {}", s),
+            }
+
+            loc += 1;
+        }
+    }
+
+    fn execute_regex(&mut self, sloc: usize, pos: (i32, i32), regex: &Vec<char>) -> usize {
+        let mut done = false;
+        let mut brackets: u32 = 0;
+        let mut splits = Vec::<usize>::new();
+        let mut loc = sloc;
+
+        while !done {
+            match regex[loc] {
+                '(' => brackets += 1,
+                ')' => brackets -= 1,
+                '|' => {
+                    if brackets == 1 {
+                        splits.push(loc);
                     }
-
-                    pos += 1;
                 }
+                _ => (),
             }
-            '|' => {
-                create_map(regex, pos + 1, sloc, map);
+            loc += 1;
 
-                let mut done = false;
-                let mut brackets = 1;
-                while !done {
-                    pos += 1;
-
-                    if regex[pos] == '(' {
-                        brackets += 1;
-                    } else if regex[pos] == ')' {
-                        brackets -= 1;
-                    }
-
-                    done = (regex[pos] == '|' && brackets == 1) || brackets == 0;
-                }
-            }
-            _ => (),
+            done = brackets == 0;
         }
 
-        if !map.contains_key(&loc) {
-            map.insert(loc, HashSet::new());
-        }
-        pos += 1;
+        //println!("{:?}", &regex[1 + sloc..splits[0]]);
+        //println!("{:?}", &regex[1 + splits[0]..loc]);
+
+        self.create_map(&regex[1 + sloc..splits[0]].to_vec(), pos);
+        self.create_map(&regex[1 + splits[0]..loc].to_vec(), pos);
+
+        loc
     }
 }
 
-fn path_exists(s: (i32, i32), g: (i32, i32), map: &Map, already: &mut HashSet<(i32, i32)>) -> bool {
-    if s == g {
-        return true;
-    }
+fn parse() -> RegularMap {
+    let inp = std::fs::read_to_string("../input/20")
+        .unwrap()
+        .chars()
+        .collect::<Vec<char>>();
+    let mut regular_map: RegularMap = RegularMap::new();
 
-    if already.contains(&s) {
-        return false;
-    }
+    regular_map.create_map(&inp[1..inp.len() - 1].to_vec(), (0, 0));
+    for 
+    println!("{:?}", regular_map.map);
 
-    let mut cur = s;
-    while already.insert(cur) {
-        let cons = &map[&cur];
-
-        if cons.len() == 0 {
-            return false;
-        }
-        if cons.len() == 1 {
-            cur = *cons.iter().clone().take(1).next().unwrap();
-
-            if cur == g {
-                return true;
-            }
-        } else {
-            let mut iter = cons.iter().clone();
-            while let Some(p) = iter.next() {
-                if path_exists(*p, g, map, already) {
-                    return true;
-                }
-            }
-        }
-    }
-
-    false
+    regular_map
 }
 
 fn main() {
     let m = parse();
-    println!("{}", path_exists((0, 0), (3, -3), &m, &mut HashSet::new()));
 }
