@@ -1,5 +1,5 @@
-#!/bin/sh 
+#!/bin/sh
 
 exe="$(basename $1 .rs)"
-rustc $1 && ./$exe
+rustc -O $1 && ./$exe
 rm $exe
