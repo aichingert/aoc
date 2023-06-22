@@ -8,21 +8,28 @@ fn part1(inp: &str) -> u32 {
             let mut i: usize = 0;
             let mut c: u32 = 0;
 
-            while i < ch.len()-1 {
+            while i < ch.len() - 1 {
                 match ch[i] {
-                    '\\' => match ch[i+1] {
-                        '\\' | '"' => { i+=1; c+=1; },
-                        'x' => { i+=3; c+=1 },
+                    '\\' => match ch[i + 1] {
+                        '\\' | '"' => {
+                            i += 1;
+                            c += 1;
+                        }
+                        'x' => {
+                            i += 3;
+                            c += 1
+                        }
                         _ => panic!("invalid input"),
                     },
                     '"' => (),
-                    _ => c+=1,
+                    _ => c += 1,
                 };
                 i += 1;
             }
 
             ch.len() as u32 - c
-        }).sum::<u32>() 
+        })
+        .sum::<u32>()
 }
 
 fn part2(inp: &str) -> u32 {
@@ -33,8 +40,12 @@ fn part2(inp: &str) -> u32 {
                 .map(|e| match e {
                     '"' | '\\' => 2,
                     _ => 1,
-                }).sum::<u32>() + 2 - ch.len() as u32
-        }).sum::<u32>()
+                })
+                .sum::<u32>()
+                + 2
+                - ch.len() as u32
+        })
+        .sum::<u32>()
 }
 
 fn main() {

@@ -1,9 +1,16 @@
 // Advent of Code 2015, day 21
 // (c) aichingert
 
-const WEAPONS: [(i32,i32);5] = [(8,4),(10,5),(25,6),(40,7),(74,8)];
-const ARMORS: [(i32,i32);6] = [(0,0),(13,1),(31,2),(53,3),(75,4),(102,5)];
-const RINGS: [(i32,i32,i32);6] = [(25,1,0),(50,2,0),(100,3,0),(20,0,1),(40,0,2),(80,0,3)];
+const WEAPONS: [(i32, i32); 5] = [(8, 4), (10, 5), (25, 6), (40, 7), (74, 8)];
+const ARMORS: [(i32, i32); 6] = [(0, 0), (13, 1), (31, 2), (53, 3), (75, 4), (102, 5)];
+const RINGS: [(i32, i32, i32); 6] = [
+    (25, 1, 0),
+    (50, 2, 0),
+    (100, 3, 0),
+    (20, 0, 1),
+    (40, 0, 2),
+    (80, 0, 3),
+];
 
 struct Entity {
     hp: i32,
@@ -12,17 +19,18 @@ struct Entity {
 }
 
 impl Entity {
-    fn new(hp:i32, damage:i32, armor:i32) -> Self {
+    fn new(hp: i32, damage: i32, armor: i32) -> Self {
         Self { hp, damage, armor }
     }
-    
+
     fn fight(&self, other: &Self) -> bool {
         // Player hits <= Boss hits
-        (other.hp as f32 / (self.damage as f32 - other.armor as f32).max(1.)).ceil() <= (self.hp as f32 / (other.damage as f32 - self.armor as f32).max(1.)).ceil()
+        (other.hp as f32 / (self.damage as f32 - other.armor as f32).max(1.)).ceil()
+            <= (self.hp as f32 / (other.damage as f32 - self.armor as f32).max(1.)).ceil()
     }
 }
 
-fn solve(player: &mut Entity, boss: &Entity, part:bool) -> i32 {
+fn solve(player: &mut Entity, boss: &Entity, part: bool) -> i32 {
     let mut ans = match part {
         true => i32::MAX,
         false => 0,
@@ -34,16 +42,26 @@ fn solve(player: &mut Entity, boss: &Entity, part:bool) -> i32 {
                 for l in 0..RINGS.len() {
                     player.damage = WEAPONS[i].1 + RINGS[l].1;
                     player.armor = ARMORS[j].1 + RINGS[l].2;
-                    
+
                     let cost = if k != l {
                         player.damage += RINGS[k].1;
                         player.armor += RINGS[k].2;
                         RINGS[k].0
-                    } else { 0 };
+                    } else {
+                        0
+                    };
 
                     match part {
-                        true => { if player.fight(boss) { ans = ans.min(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0); } },
-                        false => { if !player.fight(boss) { ans = ans.max(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0); } },
+                        true => {
+                            if player.fight(boss) {
+                                ans = ans.min(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0);
+                            }
+                        }
+                        false => {
+                            if !player.fight(boss) {
+                                ans = ans.max(cost + WEAPONS[i].0 + ARMORS[j].0 + RINGS[l].0);
+                            }
+                        }
                     };
                 }
             }
@@ -62,7 +80,10 @@ fn parse() -> (Entity, Entity) {
         values.push(vls[1].parse::<i32>().unwrap());
     }
 
-    (Entity::new(values[0], values[1], values[2]), Entity::new(100,0,0))
+    (
+        Entity::new(values[0], values[1], values[2]),
+        Entity::new(100, 0, 0),
+    )
 }
 
 fn main() {

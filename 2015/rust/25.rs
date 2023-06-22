@@ -8,8 +8,8 @@ fn part1(row: u64, col: u64) -> u64 {
 
     while row != ry || col != cx {
         if ry == 1 {
-           ry = cx + 1;
-           cx = 1;
+            ry = cx + 1;
+            cx = 1;
         } else {
             ry -= 1;
             cx += 1;
@@ -28,8 +28,11 @@ fn part2<'a>() -> &'a str {
 fn parse() -> (u64, u64) {
     let inp = std::fs::read_to_string("../input/25").unwrap();
     let inp = inp.trim().split(' ').collect::<Vec<&str>>();
-    
-    (inp[16][..inp[16].len()-1].parse::<u64>().unwrap(), inp[18][..inp[18].len()-1].parse::<u64>().unwrap())
+
+    (
+        inp[16][..inp[16].len() - 1].parse::<u64>().unwrap(),
+        inp[18][..inp[18].len() - 1].parse::<u64>().unwrap(),
+    )
 }
 
 fn main() {

@@ -13,9 +13,15 @@ fn solve(ing: &Vec<Vec<i32>>, perms: &Vec<Vec<i32>>, part: bool) -> i32 {
         }
 
         let cal = cur.pop().unwrap();
-        if !part && cal != 500 { continue; }
+        if !part && cal != 500 {
+            continue;
+        }
 
-        ans = ans.max(cur.iter().map(|v| if *v > 0 { *v } else { 0 }).fold(1, |sum, val| sum * val));
+        ans = ans.max(
+            cur.iter()
+                .map(|v| if *v > 0 { *v } else { 0 })
+                .fold(1, |sum, val| sum * val),
+        );
     }
 
     ans
@@ -23,25 +29,35 @@ fn solve(ing: &Vec<Vec<i32>>, perms: &Vec<Vec<i32>>, part: bool) -> i32 {
 
 fn parse() -> (Vec<Vec<i32>>, Vec<Vec<i32>>) {
     let mut ing = Vec::new();
-    let mut perms  = Vec::new();
+    let mut perms = Vec::new();
 
     for l in std::fs::read_to_string("../input/15").unwrap().lines() {
         let vls = l.split(' ').collect::<Vec<&str>>();
-        ing.push(vec![vls[2][..vls[2].len()-1].parse().unwrap(), 
-                 vls[4][..vls[4].len()-1].parse().unwrap(), 
-                 vls[6][..vls[6].len()-1].parse().unwrap(), 
-                 vls[8][..vls[8].len()-1].parse().unwrap(), 
-                 vls[10].parse().unwrap()]);
+        ing.push(vec![
+            vls[2][..vls[2].len() - 1].parse().unwrap(),
+            vls[4][..vls[4].len() - 1].parse().unwrap(),
+            vls[6][..vls[6].len() - 1].parse().unwrap(),
+            vls[8][..vls[8].len() - 1].parse().unwrap(),
+            vls[10].parse().unwrap(),
+        ]);
     }
 
     for i in 1..100 {
         for j in 1..100 {
-            if i + j > 100 { break; }
+            if i + j > 100 {
+                break;
+            }
             for k in 1..100 {
-                if i + j + k > 100 { break; }
+                if i + j + k > 100 {
+                    break;
+                }
                 for l in 1..100 {
-                    if i + j + k + l > 100 { break; }
-                    if i + j + k + l == 100 { perms.push(vec![i,j,k,l]); }
+                    if i + j + k + l > 100 {
+                        break;
+                    }
+                    if i + j + k + l == 100 {
+                        perms.push(vec![i, j, k, l]);
+                    }
                 }
             }
         }

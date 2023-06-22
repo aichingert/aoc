@@ -36,26 +36,38 @@ enum Instr {
     And(String, String),
     Or(String, String),
     LShift(String, u32),
-    RShift(String, u32)
+    RShift(String, u32),
 }
 
 fn parse() -> HashMap<String, Instr> {
     let mut map: HashMap<String, Instr> = HashMap::new();
 
     for l in std::fs::read_to_string("../input/07").unwrap().lines() {
-        let (rhs,lhs): (&str, &str) = l.split_once(" -> ").unwrap();
+        let (rhs, lhs): (&str, &str) = l.split_once(" -> ").unwrap();
         let vls = rhs.split(' ').collect::<Vec<&str>>();
 
         match vls.len() {
             1 => map.insert(lhs.to_string(), Instr::Assign(vls[0].to_string())),
             2 => map.insert(lhs.to_string(), Instr::Not(vls[1].to_string())),
             _ => match vls[1] {
-                    "AND" => map.insert(lhs.to_string(), Instr::And(vls[0].to_string(), vls[2].to_string())),
-                    "OR" => map.insert(lhs.to_string(), Instr::Or(vls[0].to_string(), vls[2].to_string())),
-                    "LSHIFT" => map.insert(lhs.to_string(), Instr::LShift(vls[0].to_string(), vls[2].parse().unwrap())),
-                    "RSHIFT" => map.insert(lhs.to_string(), Instr::RShift(vls[0].to_string(), vls[2].parse().unwrap())),
-                    _ => panic!("Invalid input!"),
-            }
+                "AND" => map.insert(
+                    lhs.to_string(),
+                    Instr::And(vls[0].to_string(), vls[2].to_string()),
+                ),
+                "OR" => map.insert(
+                    lhs.to_string(),
+                    Instr::Or(vls[0].to_string(), vls[2].to_string()),
+                ),
+                "LSHIFT" => map.insert(
+                    lhs.to_string(),
+                    Instr::LShift(vls[0].to_string(), vls[2].parse().unwrap()),
+                ),
+                "RSHIFT" => map.insert(
+                    lhs.to_string(),
+                    Instr::RShift(vls[0].to_string(), vls[2].parse().unwrap()),
+                ),
+                _ => panic!("Invalid input!"),
+            },
         };
     }
 

@@ -2,14 +2,14 @@
 // (c) aichingert
 
 fn update(cur: &mut Vec<char>) -> bool {
-    let len = cur.len()-1;
+    let len = cur.len() - 1;
     for i in 0..cur.len() {
-        match cur[len-i] {
-            'z' => cur[len-i] = 'a',
-            _ => cur[len-i] = ((cur[len-i] as u8) + 1u8) as char,
+        match cur[len - i] {
+            'z' => cur[len - i] = 'a',
+            _ => cur[len - i] = ((cur[len - i] as u8) + 1u8) as char,
         }
 
-        if cur[len-i] != 'a' {
+        if cur[len - i] != 'a' {
             break;
         }
     }
@@ -22,18 +22,20 @@ fn update(cur: &mut Vec<char>) -> bool {
     let mut amt: u8 = 0;
     let mut i = 0usize;
 
-    for i in 0..cur.len()-2 {
-        if (cur[i] as u8) + 1u8 == (cur[i+1] as u8) && (cur[i+1] as u8) + 1u8 == (cur[i+2] as u8) {
+    for i in 0..cur.len() - 2 {
+        if (cur[i] as u8) + 1u8 == (cur[i + 1] as u8)
+            && (cur[i + 1] as u8) + 1u8 == (cur[i + 2] as u8)
+        {
             trip = true;
             break;
         }
     }
 
-    while i < cur.len()-1 {
-        if cur[i+1] == 'l' || cur[i+1] == 'o' || cur[i+1] == 'i' {
+    while i < cur.len() - 1 {
+        if cur[i + 1] == 'l' || cur[i + 1] == 'o' || cur[i + 1] == 'i' {
             return false;
         }
-        if cur[i] == cur[i+1] {
+        if cur[i] == cur[i + 1] {
             amt += 1;
             i += 1;
         }

@@ -8,15 +8,17 @@ fn solve(ans: &mut Vec<char>, steps: u32) -> usize {
 
         while i < ans.len() {
             let mut amt: u8 = 1;
-            for j in i+1..ans.len() {
-                if ans[i] != ans[j] { break; }
+            for j in i + 1..ans.len() {
+                if ans[i] != ans[j] {
+                    break;
+                }
                 amt += 1;
                 i += 1;
             }
             i += 1;
 
             n.append(&mut amt.to_string().chars().collect::<Vec<char>>());
-            n.push(ans[i-1]);
+            n.push(ans[i - 1]);
         }
 
         *ans = n;
@@ -30,5 +32,5 @@ fn main() {
     let mut cur = inp.trim().chars().collect::<Vec<char>>();
 
     println!("Part 1: {}", solve(&mut cur, 40));
-    println!("Part 2: {}", solve(&mut cur, 10)); 
+    println!("Part 2: {}", solve(&mut cur, 10));
 }

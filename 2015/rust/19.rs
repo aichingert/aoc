@@ -6,28 +6,28 @@ use std::collections::{HashMap, HashSet};
 fn replace_pos(pos: usize, pat: &[char], with: &[char], cur: &[char]) -> Option<Vec<char>> {
     let mut new = Vec::new();
     let mut cur_pos = 0usize;
-    
+
     'out: for i in 0..cur.len() {
-        for j in i..i+pat.len() {
-            if j<cur.len() && cur[j] != pat[j-i] { 
+        for j in i..i + pat.len() {
+            if j < cur.len() && cur[j] != pat[j - i] {
                 new.push(cur[i]);
                 continue 'out;
             }
         }
 
         cur_pos += 1;
-            
+
         if cur_pos <= pos {
-            new.push(cur[i]); 
+            new.push(cur[i]);
         } else {
             for j in 0..with.len() {
                 new.push(with[j]);
             }
-            for j in i+pat.len()..cur.len() {
+            for j in i + pat.len()..cur.len() {
                 new.push(cur[j]);
             }
 
-            return Some(new)
+            return Some(new);
         }
     }
 
@@ -51,7 +51,13 @@ fn part1(possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>, cur: &Vec<char>) ->
     ans.len()
 }
 
-fn part2(possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>, calculated: &mut HashSet<Vec<char>>, finish: &Vec<char>, cur: &Vec<char>, steps: usize) -> Option<usize> {
+fn part2(
+    possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>,
+    calculated: &mut HashSet<Vec<char>>,
+    finish: &Vec<char>,
+    cur: &Vec<char>,
+    steps: usize,
+) -> Option<usize> {
     if calculated.contains(cur) {
         return None;
     }
@@ -71,7 +77,7 @@ fn part2(possibilities: &HashMap<Vec<char>, Vec<Vec<char>>>, calculated: &mut Ha
                 if &rep == finish {
                     return Some(steps);
                 } else {
-                    if let Some(stps) = part2(possibilities, calculated, finish, &rep, steps+1) {
+                    if let Some(stps) = part2(possibilities, calculated, finish, &rep, steps + 1) {
                         return Some(stps);
                     }
                     calculated.insert(rep);
@@ -109,5 +115,14 @@ fn main() {
     let (possibilities, start) = parse();
 
     println!("Part 1: {}", part1(&possibilities, &start));
-    println!("Part 2: {:?}", part2(&possibilities, &mut HashSet::new(), &"e".chars().collect::<Vec<char>>(), &start, 1));
+    println!(
+        "Part 2: {:?}",
+        part2(
+            &possibilities,
+            &mut HashSet::new(),
+            &"e".chars().collect::<Vec<char>>(),
+            &start,
+            1
+        )
+    );
 }

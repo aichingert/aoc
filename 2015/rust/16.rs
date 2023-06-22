@@ -3,8 +3,18 @@
 
 use std::collections::HashMap;
 
-const S: [(&'static str, i32); 10] =[("children", 3), ("cats", 7),("samoyeds", 2), ("pomeranians", 3), 
-            ("akitas", 0),("vizslas", 0),("goldfish", 5), ("trees", 3), ("cars", 2), ("perfumes", 1)];
+const S: [(&'static str, i32); 10] = [
+    ("children", 3),
+    ("cats", 7),
+    ("samoyeds", 2),
+    ("pomeranians", 3),
+    ("akitas", 0),
+    ("vizslas", 0),
+    ("goldfish", 5),
+    ("trees", 3),
+    ("cars", 2),
+    ("perfumes", 1),
+];
 
 fn part1(aunts: &Vec<HashMap<String, i32>>) -> usize {
     let mut ans = (0usize, 0i32);
@@ -18,7 +28,7 @@ fn part1(aunts: &Vec<HashMap<String, i32>>) -> usize {
         }
 
         if ans.1 < cur {
-            ans = (i+1, cur);
+            ans = (i + 1, cur);
         }
     }
 
@@ -33,15 +43,27 @@ fn part2(aunts: &Vec<HashMap<String, i32>>) -> usize {
         for key in S.iter() {
             if aunts[i].contains_key(key.0) {
                 match key.0 {
-                    "cats" | "trees" => if key.1 <= aunts[i][key.0] { cur += 1; }
-                    "pomeranians" | "goldfish" => if key.1 >= aunts[i][key.0] { cur += 1; }
-                    _  => if key.1 == aunts[i][key.0] { cur += 1; }
+                    "cats" | "trees" => {
+                        if key.1 <= aunts[i][key.0] {
+                            cur += 1;
+                        }
+                    }
+                    "pomeranians" | "goldfish" => {
+                        if key.1 >= aunts[i][key.0] {
+                            cur += 1;
+                        }
+                    }
+                    _ => {
+                        if key.1 == aunts[i][key.0] {
+                            cur += 1;
+                        }
+                    }
                 };
             }
         }
 
         if ans.1 < cur {
-            ans = (i+1, cur);
+            ans = (i + 1, cur);
         }
     }
 

@@ -1,7 +1,8 @@
 // Advent of Code 2015, day 17
 // (c) aichingert
 
-#[path="../../utils/rust/combinations.rs"] mod combinations;
+#[path = "../../utils/rust/combinations.rs"]
+mod combinations;
 use combinations::combinations;
 
 fn solve(cont: &Vec<i32>, part: bool) -> u32 {
@@ -24,7 +25,10 @@ fn solve(cont: &Vec<i32>, part: bool) -> u32 {
 
 fn main() {
     let inp = std::fs::read_to_string("../input/17").unwrap();
-    let inp = inp.lines().map(|n| n.trim().parse::<i32>().unwrap()).collect::<Vec<i32>>();
+    let inp = inp
+        .lines()
+        .map(|n| n.trim().parse::<i32>().unwrap())
+        .collect::<Vec<i32>>();
 
     println!("Part 1: {}", solve(&inp, false));
     println!("Part 2: {}", solve(&inp, true));

@@ -11,8 +11,8 @@ fn part2(reindeers: &[Reindeer]) -> u32 {
     for time in 1..=2503 {
         let mut fur = 0usize;
         let mut max = 0u32;
-     
-        for (i,r) in reindeers.iter().enumerate() {
+
+        for (i, r) in reindeers.iter().enumerate() {
             let dis = r.position(time);
             if dis >= max {
                 max = dis;
@@ -29,7 +29,7 @@ fn part2(reindeers: &[Reindeer]) -> u32 {
 struct Reindeer {
     speed: u32,
     duration: u32,
-    rest: u32
+    rest: u32,
 }
 
 impl Reindeer {
@@ -42,10 +42,18 @@ impl Reindeer {
 }
 
 fn main() {
-    let reindeers = std::fs::read_to_string("../input/14").unwrap().lines().map(|l| {
-        let vls = l.split(' ').collect::<Vec<&str>>();
-        Reindeer { speed: vls[3].parse().unwrap(), duration: vls[6].parse().unwrap(), rest: vls[13].parse().unwrap() }
-    }).collect::<Vec<Reindeer>>();
+    let reindeers = std::fs::read_to_string("../input/14")
+        .unwrap()
+        .lines()
+        .map(|l| {
+            let vls = l.split(' ').collect::<Vec<&str>>();
+            Reindeer {
+                speed: vls[3].parse().unwrap(),
+                duration: vls[6].parse().unwrap(),
+                rest: vls[13].parse().unwrap(),
+            }
+        })
+        .collect::<Vec<Reindeer>>();
 
     println!("Part 1: {}", part1(&reindeers));
     println!("Part 2: {}", part2(&reindeers));
