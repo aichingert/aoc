@@ -1,3 +1,6 @@
+// Advent of Code 2022, day 14
+// (c) aichingert
+
 use std::collections::HashSet;
 
 type Pos = (i32, i32);

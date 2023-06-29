@@ -1,3 +1,6 @@
+// Advent of Code 2022, day 15
+// (c) aichingert
+
 const Y: i64 = 2000000;
 const BOUNDS: i64 = 4000000;
 
