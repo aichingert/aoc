@@ -1,4 +1,4 @@
-use crate::day::{wrapper::wrapper_vti32, Input, Output};
+use crate::day::{wrapper::unwrap_vti32, Input, Output};
 
 fn part_one(n: &Vec<(i32, i32)>) -> Output {
     Output::Ni32(
@@ -17,7 +17,7 @@ fn part_two(n: &Vec<(i32, i32)>) -> Output {
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let input: Vec<(i32, i32)> = wrapper_vti32(input);
+    let input: Vec<(i32, i32)> = unwrap_vti32(input);
 
     (part_one(&input), part_two(&input))
 }

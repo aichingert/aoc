@@ -5,7 +5,7 @@ fn solve(cal: &Vec<u32>, to: usize) -> Output {
 }
 
 pub fn run(cal: Input) -> (Output, Output) {
-    let cal: Vec<u32> = wrapper::wrapper_vu32(cal);
+    let cal: Vec<u32> = wrapper::unwrap_vu32(cal);
 
     (solve(&cal, 1), solve(&cal, 3))
 }
