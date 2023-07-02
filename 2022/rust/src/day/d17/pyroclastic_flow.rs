@@ -1,12 +1,10 @@
-// Advent of Code 2022, day 17
-// (c) aichingert
-
+use crate::day::{wrapper, Input, Output};
 use std::collections::HashSet;
 
-fn solve(bursts: &Vec<char>, patterns: &Vec<(char, Vec<(i64, i64)>)>, stones: u64) -> i64 {
-    let mut map: HashSet<(i64, i64)> = HashSet::new();
+fn solve(bursts: &Vec<char>, patterns: &Vec<(char, Vec<(i32, i32)>)>, stones: u64) -> Output {
+    let mut map: HashSet<(i32, i32)> = HashSet::new();
     let mut burst: usize = 0;
-    let mut h_y: i64 = -1;
+    let mut h_y: i32 = -1;
     let mut pattern = 0usize;
 
     for _ in 0..stones {
@@ -28,19 +26,19 @@ fn solve(bursts: &Vec<char>, patterns: &Vec<(char, Vec<(i64, i64)>)>, stones: u6
         pattern = (pattern + 1) % patterns.len();
     }
 
-    h_y + 1
+    Output::Ni32(h_y + 1)
 }
 
 fn drop(
-    cords: &Vec<(i64, i64)>,
-    x: i64,
-    h_y: i64,
-    map: &mut HashSet<(i64, i64)>,
+    cords: &Vec<(i32, i32)>,
+    x: i32,
+    h_y: i32,
+    map: &mut HashSet<(i32, i32)>,
     burst: &mut usize,
     bursts: &Vec<char>,
-) -> i64 {
+) -> i32 {
     let (mut x, mut y) = (x, h_y + 4);
-    let mut biggest = -i64::MAX;
+    let mut biggest = -i32::MAX;
 
     for i in 0..cords.len() {
         if cords[i].0 > biggest {
@@ -70,13 +68,13 @@ fn drop(
 }
 
 fn gas_burst(
-    map: &HashSet<(i64, i64)>,
-    cords: &Vec<(i64, i64)>,
+    map: &HashSet<(i32, i32)>,
+    cords: &Vec<(i32, i32)>,
     bursts: &Vec<char>,
     burst: &mut usize,
-    x: &mut i64,
-    y: i64,
-    biggest: i64,
+    x: &mut i32,
+    y: i32,
+    biggest: i32,
 ) {
     match bursts[*burst] {
         '>' => {
@@ -96,11 +94,11 @@ fn gas_burst(
 }
 
 fn check_for_collision(
-    map: &HashSet<(i64, i64)>,
-    cords: &Vec<(i64, i64)>,
-    x: i64,
-    y: i64,
-    dir: (i64, i64),
+    map: &HashSet<(i32, i32)>,
+    cords: &Vec<(i32, i32)>,
+    x: i32,
+    y: i32,
+    dir: (i32, i32),
 ) -> bool {
     for cord in cords {
         if map.contains(&(x + cord.0 + dir.0, y + cord.1 + dir.1)) {
@@ -111,19 +109,24 @@ fn check_for_collision(
     false
 }
 
-fn main() {
-    let input = std::fs::read_to_string("../input/17")
-        .unwrap()
-        .chars()
-        .collect::<Vec<char>>();
-    let patterns = vec![
-        ('-', vec![(0, 0), (1, 0), (2, 0), (3, 0)]),
-        ('+', vec![(0, 0), (1, 0), (2, 0), (1, -1), (1, 1)]),
-        ('L', vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]),
-        ('I', vec![(0, 0), (0, 1), (0, 2), (0, 3)]),
-        ('o', vec![(0, 0), (0, 1), (1, 0), (1, 1)]),
-    ];
+pub fn run(input: Input) -> (Output, Output) {
+    let (bursts, patterns) = wrapper::unwrap_d17(input);
 
-    println!("Part 1: {}", solve(&input, &patterns, 2022));
-    //println!("Part 2: {}", solve(&input, &patterns, 1000000000000));
+    (solve(&bursts, &patterns, 2022), Output::Ni32(-1))
+}
+
+pub fn parse() -> Input {
+    Input::D17((
+        std::fs::read_to_string("../input/17")
+            .unwrap()
+            .chars()
+            .collect::<Vec<char>>(),
+        vec![
+            ('-', vec![(0, 0), (1, 0), (2, 0), (3, 0)]),
+            ('+', vec![(0, 0), (1, 0), (2, 0), (1, -1), (1, 1)]),
+            ('L', vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]),
+            ('I', vec![(0, 0), (0, 1), (0, 2), (0, 3)]),
+            ('o', vec![(0, 0), (0, 1), (1, 0), (1, 1)]),
+        ],
+    ))
 }

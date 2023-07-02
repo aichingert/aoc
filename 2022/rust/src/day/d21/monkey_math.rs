@@ -1,15 +1,15 @@
+use crate::day::{wrapper, Input, Output};
 use std::collections::HashMap;
 
-#[derive(Debug, Eq, PartialEq)]
-enum Operation {
+#[derive(Eq, PartialEq)]
+pub enum Operation {
     Plus,
     Minus,
     Div,
     Mul,
 }
 
-#[derive(Debug)]
-enum Calculation {
+pub enum Calculation {
     Human(i64),
     Value(i64),
     Nested(Box<Calculation>, Operation, Box<Calculation>),
@@ -106,7 +106,7 @@ impl Calculation {
     }
 }
 
-fn part2(root: Calculation) -> i64 {
+fn part_two(root: Calculation) -> Output {
     match root {
         Calculation::Value(_) => (),
         Calculation::Human(_) => (),
@@ -121,14 +121,20 @@ fn part2(root: Calculation) -> i64 {
                 rhs.solve_for_humn(&mut value);
             }
 
-            return value;
+            return Output::Ni64(value);
         }
     };
 
     panic!("no solution found!")
 }
 
-fn parse() -> Calculation {
+pub fn run(input: Input) -> (Output, Output) {
+    let root = wrapper::unwrap_d21(input);
+
+    (Output::Ni64(root.execute()), part_two(root))
+}
+
+pub fn parse() -> Input {
     let inp = std::fs::read_to_string("../input/21").unwrap();
     let mut calculations: HashMap<String, String> = HashMap::new();
 
@@ -137,12 +143,5 @@ fn parse() -> Calculation {
         calculations.insert(lhs.to_string(), rhs.to_string());
     }
 
-    Calculation::build_root(&calculations, "root")
-}
-
-fn main() {
-    let root: Calculation = parse();
-
-    println!("Part 1: {}", root.execute());
-    println!("Part 2: {}", part2(root));
+    Input::D21(Calculation::build_root(&calculations, "root"))
 }

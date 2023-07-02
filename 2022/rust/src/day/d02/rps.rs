@@ -24,7 +24,7 @@ pub fn run(input: Input) -> (Output, Output) {
 
 pub fn parse() -> Input {
     Input::VTi32(
-        std::fs::read_to_string("../../input/02")
+        std::fs::read_to_string("../input/02")
             .unwrap()
             .trim()
             .lines()

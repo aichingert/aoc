@@ -41,7 +41,7 @@ pub fn run(input: Input) -> (Output, Output) {
 
 pub fn parse() -> Input {
     Input::Vstr(
-        std::fs::read_to_string("../../input/03")
+        std::fs::read_to_string("../input/03")
             .unwrap()
             .lines()
             .map(|l| l.to_string())

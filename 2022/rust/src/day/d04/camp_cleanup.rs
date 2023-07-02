@@ -26,7 +26,7 @@ pub fn run(input: Input) -> (Output, Output) {
 
 pub fn parse() -> Input {
     Input::VTLoc(
-        std::fs::read_to_string("../../input/04")
+        std::fs::read_to_string("../input/04")
             .unwrap()
             .lines()
             .map(|l| {

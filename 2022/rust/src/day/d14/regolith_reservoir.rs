@@ -1,18 +1,14 @@
-// Advent of Code 2022, day 14
-// (c) aichingert
-
+use crate::day::{wrapper, Input, Output, Pos};
 use std::collections::HashSet;
 
-type Pos = (i32, i32);
-
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq)]
 enum State {
     Stopped,
     Continue,
     Infinite,
 }
 
-fn solve(cave: &HashSet<Pos>, bottom: i32) -> u32 {
+fn solve(cave: &HashSet<Pos>, bottom: i32) -> Output {
     let mut resting: u32 = 0;
     let mut sand: HashSet<Pos> = HashSet::new();
 
@@ -24,7 +20,7 @@ fn solve(cave: &HashSet<Pos>, bottom: i32) -> u32 {
             state = match drop_sand(cave, &mut sand, bottom, &mut x, &mut y) {
                 State::Stopped => {
                     if x == 500 && y == 0 {
-                        return resting + 1;
+                        return Output::Nu32(resting + 1);
                     }
 
                     resting += 1;
@@ -37,7 +33,7 @@ fn solve(cave: &HashSet<Pos>, bottom: i32) -> u32 {
         }
     }
 
-    resting
+    Output::Nu32(resting)
 }
 
 fn drop_sand(
@@ -84,7 +80,19 @@ fn try_right(cave: &HashSet<Pos>, sand: &HashSet<Pos>, x: &mut i32, y: i32) -> b
     true
 }
 
-fn parse() -> (HashSet<Pos>, i32) {
+pub fn run(input: Input) -> (Output, Output) {
+    let (mut cave, bottom) = wrapper::unwrap_d14(input);
+
+    let part_one = solve(&cave, bottom);
+
+    for x in -1000..1000 {
+        cave.insert((x, bottom + 2));
+    }
+
+    (part_one, solve(&cave, bottom + 2))
+}
+
+pub fn parse() -> Input {
     let inp = std::fs::read_to_string("../input/14").unwrap();
     let mut cave = HashSet::new();
     let mut bottom: i32 = 0;
@@ -119,16 +127,5 @@ fn parse() -> (HashSet<Pos>, i32) {
         }
     }
 
-    (cave, bottom)
-}
-
-fn main() {
-    let (mut cave, bottom) = parse();
-
-    println!("Part 1: {}", solve(&cave, bottom));
-
-    for x in -1000..1000 {
-        cave.insert((x, bottom + 2));
-    }
-    println!("Part 2: {}", solve(&cave, bottom + 2));
+    Input::D14((cave, bottom))
 }

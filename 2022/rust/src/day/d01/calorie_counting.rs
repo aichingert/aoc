@@ -11,7 +11,7 @@ pub fn run(cal: Input) -> (Output, Output) {
 }
 
 pub fn parse() -> Input {
-    let mut inp = std::fs::read_to_string("../../input/01")
+    let mut inp = std::fs::read_to_string("../input/01")
         .unwrap()
         .trim()
         .split("\n\n")

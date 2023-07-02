@@ -1,11 +1,9 @@
-// Advent of Code 2022, day 15
-// (c) aichingert
+use crate::day::{wrapper, Input, Output};
 
 const Y: i64 = 2000000;
 const BOUNDS: i64 = 4000000;
 
-#[derive(Debug)]
-struct Sensor {
+pub struct Sensor {
     x: i64,
     y: i64,
     dist: i64,
@@ -20,7 +18,7 @@ impl Sensor {
         (x1 - x2).abs() + (y1 - y2).abs()
     }
 
-    fn faster(sensors: &Vec<Sensor>, x: &mut i64, y: i64) -> bool {
+    fn in_range(sensors: &Vec<Sensor>, x: &mut i64, y: i64) -> bool {
         for sensor in sensors {
             if Sensor::dist(sensor.x, *x, sensor.y, y) <= sensor.dist {
                 *x = sensor.x + sensor.dist - (sensor.y - y).abs();
@@ -32,30 +30,30 @@ impl Sensor {
     }
 }
 
-fn part_one(sensors: &Vec<Sensor>, x: (i64, i64)) -> i64 {
+fn part_one(sensors: &Vec<Sensor>, x: (i64, i64)) -> Output {
     let mut y_count: i64 = 0;
     let mut cur = x.0;
 
     while cur <= x.1 {
         let cx = cur;
 
-        if Sensor::faster(sensors, &mut cur, Y) {
+        if Sensor::in_range(sensors, &mut cur, Y) {
             y_count += cur - cx + 1;
         }
         cur += 1;
     }
 
-    y_count - 1
+    Output::Ni64(y_count - 1)
 }
 
-fn part_two(sensors: &Vec<Sensor>, beacons: &Vec<(i64, i64)>) -> i64 {
+fn part_two(sensors: &Vec<Sensor>, beacons: &Vec<(i64, i64)>) -> Output {
     let mut i: i64 = 0;
     let mut j: i64 = 0;
 
     'outer: while i < BOUNDS {
         j = 0;
         while j < BOUNDS {
-            if !Sensor::faster(sensors, &mut j, i) && !beacons.contains(&(j, i)) {
+            if !Sensor::in_range(sensors, &mut j, i) && !beacons.contains(&(j, i)) {
                 break 'outer;
             }
             j += 1;
@@ -63,10 +61,16 @@ fn part_two(sensors: &Vec<Sensor>, beacons: &Vec<(i64, i64)>) -> i64 {
         i += 1;
     }
 
-    j * BOUNDS + i
+    Output::Ni64(j * BOUNDS + i)
 }
 
-fn parse() -> (Vec<Sensor>, Vec<(i64, i64)>, (i64, i64)) {
+pub fn run(input: Input) -> (Output, Output) {
+    let (sensors, beacons, x) = wrapper::unwrap_d15(input);
+
+    (part_one(&sensors, x), part_two(&sensors, &beacons))
+}
+
+pub fn parse() -> Input {
     let inp = std::fs::read_to_string("../input/15").unwrap();
     let mut sensors = Vec::<Sensor>::new();
     let mut beacons = Vec::<(i64, i64)>::new();
@@ -95,12 +99,5 @@ fn parse() -> (Vec<Sensor>, Vec<(i64, i64)>, (i64, i64)) {
         max_x = max_x.max(sx + sensors[sensors.len() - 1].dist);
     }
 
-    (sensors, beacons, (min_x, max_x))
-}
-
-fn main() {
-    let (sensors, beacons, x) = parse();
-
-    println!("Part 1: {}", part_one(&sensors, x));
-    println!("Part 2: {}", part_two(&sensors, &beacons));
+    Input::D15((sensors, beacons, (min_x, max_x)))
 }
