@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::fmt;
 
 pub mod d01;
 pub mod d02;
@@ -34,3 +35,31 @@ pub enum Output {
     Ni64(i64),
     Nusize(usize),
 }
+
+pub enum InputError {
+    NoInput,
+    InvalidInput,
+}
+
+impl fmt::Display for InputError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            InputError::NoInput => write!(f, "No input provided"),
+            InputError::InvalidInput => write!(f, "Input is invalid"),
+        }
+    }
+}
+
+impl From<std::io::Error> for InputError {
+    fn from(error: std::io::Error) -> Self {
+        InputError::NoInput
+    }
+}
+
+impl From<std::num::ParseIntError> for InputError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        InputError::InvalidInput
+    }
+}
+
+pub type InputResult<T> = std::result::Result<T, InputError>;

@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Output};
+use crate::day::{wrapper, Input, InputError, InputResult, Output};
 
 fn part_one(inp: &Vec<String>) -> Output {
     Output::Nu32(
@@ -39,12 +39,15 @@ pub fn run(input: Input) -> (Output, Output) {
     (part_one(&input), part_two(&input))
 }
 
-pub fn parse() -> Input {
-    Input::Vstr(
-        std::fs::read_to_string("../input/03")
-            .unwrap()
-            .lines()
-            .map(|l| l.to_string())
-            .collect(),
-    )
+pub fn parse() -> InputResult<Input> {
+    let input: Vec<String> = std::fs::read_to_string("../input/03")?
+        .lines()
+        .map(|l| l.to_string())
+        .collect();
+
+    if input.len() % 3 != 0 {
+        return Err(InputError::InvalidInput);
+    }
+
+    Ok(Input::Vstr(input))
 }

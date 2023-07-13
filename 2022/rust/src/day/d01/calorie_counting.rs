@@ -1,27 +1,41 @@
-use crate::day::{wrapper, Input, Output};
+use crate::day::{wrapper, Input, InputError, InputResult, Output};
+use std::num::ParseIntError;
 
 fn solve(cal: &Vec<u32>, to: usize) -> Output {
     Output::Nu32(cal[cal.len() - to..].iter().sum::<u32>())
 }
 
-pub fn run(cal: Input) -> (Output, Output) {
-    let cal: Vec<u32> = wrapper::unwrap_vu32(cal);
+pub fn run(cals: Input) -> (Output, Output) {
+    let cals: Vec<u32> = wrapper::unwrap_vu32(cals);
 
-    (solve(&cal, 1), solve(&cal, 3))
+    (solve(&cals, 1), solve(&cals, 3))
 }
 
-pub fn parse() -> Input {
-    let mut inp = std::fs::read_to_string("../input/01")
-        .unwrap()
+pub fn parse() -> InputResult<Input> {
+    let mut inp: Vec<u32> = Vec::new();
+
+    for block in std::fs::read_to_string("../input/01")?
         .trim()
         .split("\n\n")
-        .map(|s| {
-            s.split('\n')
-                .map(|n| n.parse::<u32>().unwrap())
-                .sum::<u32>()
-        })
-        .collect::<Vec<u32>>();
+        .collect::<Vec<&str>>()
+        .iter()
+    {
+        if let Ok(cals) = block
+            .split('\n')
+            .map(|n| n.parse::<u32>())
+            .collect::<Result<Vec<u32>, ParseIntError>>()
+        {
+            inp.push(cals.iter().sum());
+        } else {
+            return Err(InputError::InvalidInput);
+        }
+    }
+
+    if inp.len() < 3 {
+        return Err(InputError::InvalidInput);
+    }
+
     inp.sort();
 
-    Input::Vu32(inp)
+    Ok(Input::Vu32(inp))
 }

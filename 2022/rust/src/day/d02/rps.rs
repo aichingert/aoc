@@ -1,4 +1,4 @@
-use crate::day::{wrapper::unwrap_vti32, Input, Output};
+use crate::day::{wrapper::unwrap_vti32, Input, InputError, InputResult, Output};
 
 fn part_one(n: &Vec<(i32, i32)>) -> Output {
     Output::Ni32(
@@ -22,18 +22,18 @@ pub fn run(input: Input) -> (Output, Output) {
     (part_one(&input), part_two(&input))
 }
 
-pub fn parse() -> Input {
-    Input::VTi32(
-        std::fs::read_to_string("../input/02")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let (lhs, rhs) = l.split_once(' ').unwrap();
-                (map_value(lhs), map_value(rhs))
-            })
-            .collect::<Vec<(i32, i32)>>(),
-    )
+pub fn parse() -> InputResult<Input> {
+    let mut input: Vec<(i32, i32)> = Vec::new();
+
+    for line in std::fs::read_to_string("../input/02")?.trim().lines() {
+        if let Some((lhs, rhs)) = line.split_once(' ') {
+            input.push((map_value(lhs), map_value(rhs)));
+        } else {
+            return Err(InputError::InvalidInput);
+        }
+    }
+
+    Ok(Input::VTi32(input))
 }
 
 fn map_value(val: &str) -> i32 {

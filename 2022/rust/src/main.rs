@@ -8,25 +8,31 @@ use day::d14::regolith_reservoir;
 use day::d15::beacon;
 use day::d17::pyroclastic_flow;
 use day::d21::monkey_math;
-use day::{Input, Output};
+use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> Input, fn(Input) -> (Output, Output)); 8] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 3] = [
         (calorie_counting::parse, calorie_counting::run),
         (rps::parse, rps::run),
         (rucksack::parse, rucksack::run),
+        /*
         (camp_cleanup::parse, camp_cleanup::run),
         (regolith_reservoir::parse, regolith_reservoir::run),
         (beacon::parse, beacon::run),
         (pyroclastic_flow::parse, pyroclastic_flow::run),
         (monkey_math::parse, monkey_math::run),
+        */
     ];
+
+    let x: Vec<i32> = vec![1, 2];
+
+    x.iter().step_by(3).for_each(|i| println!("{:?}", i));
 
     println!("======");
     for d in days {
-        let a = d.0();
-
-        println!("{:?}", d.1(a));
-        println!("======");
+        match d.0() {
+            Ok(input) => println!("{:?}", d.1(input)),
+            Err(err) => println!("{}", err),
+        }
     }
 }
