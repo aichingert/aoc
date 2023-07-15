@@ -11,17 +11,15 @@ use day::d21::monkey_math;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 3] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 8] = [
         (calorie_counting::parse, calorie_counting::run),
         (rps::parse, rps::run),
         (rucksack::parse, rucksack::run),
-        /*
         (camp_cleanup::parse, camp_cleanup::run),
         (regolith_reservoir::parse, regolith_reservoir::run),
         (beacon::parse, beacon::run),
         (pyroclastic_flow::parse, pyroclastic_flow::run),
         (monkey_math::parse, monkey_math::run),
-        */
     ];
 
     println!("======");

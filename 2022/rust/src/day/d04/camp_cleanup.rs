@@ -1,4 +1,4 @@
-use crate::day::{Input, Loc, Output, Wrapper};
+use crate::day::{Input, InputError, InputResult, Loc, Output, Wrapper};
 
 fn part_one(inp: &Vec<(Loc, Loc)>) -> Output {
     Output::Nusize(
@@ -24,21 +24,25 @@ pub fn run(input: Input) -> (Output, Output) {
     (part_one(&input), part_two(&input))
 }
 
-pub fn parse() -> Input {
-    Input::VTLoc(
-        std::fs::read_to_string("../input/04")
-            .unwrap()
-            .lines()
-            .map(|l| {
-                let (a, b) = l.split_once(',').unwrap();
-                let (x, y) = a.split_once('-').unwrap();
-                let (sx, sy) = b.split_once('-').unwrap();
+pub fn parse() -> InputResult<Input> {
+    let mut input: Vec<(Loc, Loc)> = Vec::new();
 
-                (
-                    (x.parse().unwrap(), y.parse().unwrap()),
-                    (sx.parse().unwrap(), sy.parse().unwrap()),
-                )
-            })
-            .collect::<Vec<(Loc, Loc)>>(),
-    )
+    for line in std::fs::read_to_string("../input/04")?.lines() {
+        let elements: Vec<&str> = line.split('-').collect();
+
+        if elements.len() != 3 {
+            return Err(InputError::InvalidInput);
+        }
+
+        input.push(if let Some((lhs, rhs)) = elements[1].split_once(',') {
+            (
+                (elements[0].parse()?, lhs.parse()?),
+                (rhs.parse()?, elements[2].parse()?),
+            )
+        } else {
+            return Err(InputError::InvalidInput);
+        });
+    }
+
+    Ok(Input::VTLoc(input))
 }

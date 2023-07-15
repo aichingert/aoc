@@ -1,4 +1,4 @@
-use crate::day::{Input, Output, Pos, Wrapper};
+use crate::day::{Input, InputResult, Output, Pos, Wrapper};
 use std::collections::HashSet;
 
 fn solve(bursts: &Vec<char>, patterns: &Vec<(char, Vec<(i32, i32)>)>, stones: u64) -> Output {
@@ -115,8 +115,8 @@ pub fn run(input: Input) -> (Output, Output) {
     (solve(&bursts, &patterns, 2022), Output::Ni32(-1))
 }
 
-pub fn parse() -> Input {
-    Input::D17((
+pub fn parse() -> InputResult<Input> {
+    Ok(Input::D17((
         std::fs::read_to_string("../input/17")
             .unwrap()
             .chars()
@@ -128,5 +128,5 @@ pub fn parse() -> Input {
             ('I', vec![(0, 0), (0, 1), (0, 2), (0, 3)]),
             ('o', vec![(0, 0), (0, 1), (1, 0), (1, 1)]),
         ],
-    ))
+    )))
 }

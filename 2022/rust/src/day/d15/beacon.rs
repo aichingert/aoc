@@ -1,4 +1,4 @@
-use crate::day::{Input, Output, Wrapper};
+use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 
 const Y: i64 = 2000000;
 const BOUNDS: i64 = 4000000;
@@ -70,34 +70,39 @@ pub fn run(input: Input) -> (Output, Output) {
     (part_one(&sensors, x), part_two(&sensors, &beacons))
 }
 
-pub fn parse() -> Input {
-    let inp = std::fs::read_to_string("../input/15").unwrap();
-    let mut sensors = Vec::<Sensor>::new();
-    let mut beacons = Vec::<(i64, i64)>::new();
-    let mut min_x = i64::MAX;
-    let mut max_x = -i64::MAX;
+pub fn parse() -> InputResult<Input> {
+    let (mut sensors, mut beacons) = (Vec::<Sensor>::new(), Vec::<(i64, i64)>::new());
+    let (mut min_x, mut max_x) = (i64::MAX, -i64::MAX);
 
-    for line in inp.lines() {
-        let (sensor, beacon) = line.split_once(": ").unwrap();
-        let cords_sensor = sensor.split(' ').collect::<Vec<&str>>();
+    for line in std::fs::read_to_string("../input/15")?.lines() {
+        if let Some((sensor, beacon)) = line.split_once(": ") {
+            let elements = vec![
+                sensor.split('=').collect::<Vec<&str>>(),
+                beacon.split('=').collect::<Vec<&str>>(),
+            ];
+            let mut cords: Vec<(i64, i64)> = Vec::new();
 
-        let (_, sx) = cords_sensor[2].split_once("x=").unwrap();
-        let (_, sy) = cords_sensor[3].split_once("y=").unwrap();
-        let sx = sx[..sx.len() - 1].parse::<i64>().unwrap();
-        let sy = sy.parse::<i64>().unwrap();
+            for i in 0..elements.len() {
+                cords.push(if let Some((x, _)) = elements[i][1].split_once(',') {
+                    (x.parse()?, elements[i][2].parse()?)
+                } else {
+                    return Err(InputError::InvalidInput);
+                })
+            }
 
-        let cords_beacon = beacon.split(' ').collect::<Vec<&str>>();
+            sensors.push(Sensor::new(
+                Sensor::dist(cords[0].0, cords[1].0, cords[0].1, cords[1].1),
+                cords[0].0,
+                cords[0].1,
+            ));
+            beacons.push(cords[1]);
 
-        let (_, bx) = cords_beacon[4].split_once("x=").unwrap();
-        let by: i64 = cords_beacon[5].split_once("y=").unwrap().1.parse().unwrap();
-        let bx: i64 = bx[..bx.len() - 1].parse().unwrap();
-
-        sensors.push(Sensor::new(Sensor::dist(sx, bx, sy, by), sx, sy));
-        beacons.push((bx, by));
-
-        min_x = min_x.min(sx - sensors[sensors.len() - 1].dist);
-        max_x = max_x.max(sx + sensors[sensors.len() - 1].dist);
+            min_x = min_x.min(cords[0].0 - sensors[sensors.len() - 1].dist);
+            max_x = max_x.max(cords[0].0 + sensors[sensors.len() - 1].dist);
+        } else {
+            return Err(InputError::InvalidInput);
+        }
     }
 
-    Input::D15((sensors, beacons, (min_x, max_x)))
+    Ok(Input::D15((sensors, beacons, (min_x, max_x))))
 }

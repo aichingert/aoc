@@ -1,4 +1,4 @@
-use crate::day::{Input, Output, Pos, Wrapper};
+use crate::day::{Input, InputError, InputResult, Output, Pos, Wrapper};
 use std::collections::HashSet;
 
 #[derive(PartialEq, Eq)]
@@ -92,40 +92,37 @@ pub fn run(input: Input) -> (Output, Output) {
     (part_one, solve(&cave, bottom + 2))
 }
 
-pub fn parse() -> Input {
-    let inp = std::fs::read_to_string("../input/14").unwrap();
+pub fn parse() -> InputResult<Input> {
     let mut cave = HashSet::new();
     let mut bottom: i32 = 0;
 
-    for line in inp.lines() {
-        let values: Vec<(i32, i32)> = line
-            .split(" -> ")
-            .map(|s| {
-                let xy = s.split_once(',').unwrap();
-                (xy.0.parse().unwrap(), xy.1.parse().unwrap())
-            })
-            .collect();
+    for line in std::fs::read_to_string("../input/14")?.lines() {
+        let mut values = Vec::<(i32, i32)>::new();
 
-        for i in 0..values.len() - 1 {
-            if values[i].0 == values[i + 1].0 {
-                let from = values[i].1.min(values[i + 1].1);
-                let to = values[i].1.max(values[i + 1].1);
+        for element in line.split(" -> ").collect::<Vec<&str>>().iter() {
+            values.push(if let Some((x, y)) = element.split_once(',') {
+                (x.parse()?, y.parse()?)
+            } else {
+                return Err(InputError::InvalidInput);
+            });
+        }
+
+        for i in 0..values.len().saturating_sub(1) {
+            for x in values[i].0.min(values[i + 1].0)..=values[i].0.max(values[i + 1].0) {
+                let (from, to) = if values[i].1 < values[i + 1].1 {
+                    (values[i].1, values[i + 1].1)
+                } else {
+                    (values[i + 1].1, values[i].1)
+                };
 
                 for y in from..=to {
-                    cave.insert((values[i].0, y));
+                    cave.insert((x, y));
                 }
 
                 bottom = bottom.max(to);
-            } else {
-                let from = values[i].0.min(values[i + 1].0);
-                let to = values[i].0.max(values[i + 1].0);
-
-                for x in from..=to {
-                    cave.insert((x, values[i].1));
-                }
             }
         }
     }
 
-    Input::D14((cave, bottom))
+    Ok(Input::D14((cave, bottom)))
 }

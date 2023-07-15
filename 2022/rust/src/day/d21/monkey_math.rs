@@ -1,4 +1,4 @@
-use crate::day::{Input, Output, Wrapper};
+use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 use std::collections::HashMap;
 
 #[derive(Eq, PartialEq)]
@@ -134,14 +134,16 @@ pub fn run(input: Input) -> (Output, Output) {
     (Output::Ni64(root.execute()), part_two(root))
 }
 
-pub fn parse() -> Input {
-    let inp = std::fs::read_to_string("../input/21").unwrap();
+pub fn parse() -> InputResult<Input> {
     let mut calculations: HashMap<String, String> = HashMap::new();
 
-    for line in inp.lines() {
-        let (lhs, rhs) = line.split_once(": ").unwrap();
-        calculations.insert(lhs.to_string(), rhs.to_string());
+    for line in std::fs::read_to_string("../input/21")?.lines() {
+        if let Some((lhs, rhs)) = line.split_once(": ") {
+            calculations.insert(lhs.to_string(), rhs.to_string());
+        } else {
+            return Err(InputError::InvalidInput);
+        }
     }
 
-    Input::D21(Calculation::build_root(&calculations, "root"))
+    Ok(Input::D21(Calculation::build_root(&calculations, "root")))
 }
