@@ -117,8 +117,7 @@ pub fn run(input: Input) -> (Output, Output) {
 
 pub fn parse() -> InputResult<Input> {
     Ok(Input::D17((
-        std::fs::read_to_string("../input/17")
-            .unwrap()
+        std::fs::read_to_string("../input/17")?
             .chars()
             .collect::<Vec<char>>(),
         vec![

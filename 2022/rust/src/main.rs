@@ -28,5 +28,6 @@ fn main() {
             Ok(input) => println!("{:?}", d.1(input)),
             Err(err) => println!("{}", err),
         }
+        println!("======");
     }
 }
