@@ -24,10 +24,6 @@ fn main() {
         */
     ];
 
-    let x: Vec<i32> = vec![1, 2];
-
-    x.iter().step_by(3).for_each(|i| println!("{:?}", i));
-
     println!("======");
     for d in days {
         match d.0() {

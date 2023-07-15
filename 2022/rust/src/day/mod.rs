@@ -13,6 +13,7 @@ pub mod d21;
 use d21::Calculation;
 
 pub mod wrapper;
+pub use wrapper::Wrapper;
 
 pub type Loc = (u32, u32);
 pub type Pos = (i32, i32);

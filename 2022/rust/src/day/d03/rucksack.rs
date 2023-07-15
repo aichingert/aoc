@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, InputError, InputResult, Output};
+use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 
 fn part_one(inp: &Vec<String>) -> Output {
     Output::Nu32(
@@ -34,7 +34,7 @@ fn get_value(fst: &str, scn: &str, thr: &str) -> u32 {
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let input = wrapper::unwrap_vstr(input);
+    let input = input.unwrap();
 
     (part_one(&input), part_two(&input))
 }

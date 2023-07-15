@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Loc, Output};
+use crate::day::{Input, Loc, Output, Wrapper};
 
 fn part_one(inp: &Vec<(Loc, Loc)>) -> Output {
     Output::Nusize(
@@ -19,7 +19,7 @@ fn part_two(inp: &Vec<(Loc, Loc)>) -> Output {
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let input = wrapper::unwrap_vtloc(input);
+    let input = input.unwrap();
 
     (part_one(&input), part_two(&input))
 }

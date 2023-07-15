@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Output};
+use crate::day::{Input, Output, Wrapper};
 use std::collections::HashMap;
 
 #[derive(Eq, PartialEq)]
@@ -129,7 +129,7 @@ fn part_two(root: Calculation) -> Output {
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let root = wrapper::unwrap_d21(input);
+    let root: Calculation = input.unwrap();
 
     (Output::Ni64(root.execute()), part_two(root))
 }

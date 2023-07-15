@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Output};
+use crate::day::{Input, Output, Wrapper};
 
 const Y: i64 = 2000000;
 const BOUNDS: i64 = 4000000;
@@ -65,7 +65,7 @@ fn part_two(sensors: &Vec<Sensor>, beacons: &Vec<(i64, i64)>) -> Output {
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let (sensors, beacons, x) = wrapper::unwrap_d15(input);
+    let (sensors, beacons, x): (Vec<Sensor>, Vec<(i64, i64)>, (i64, i64)) = input.unwrap();
 
     (part_one(&sensors, x), part_two(&sensors, &beacons))
 }

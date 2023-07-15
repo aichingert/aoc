@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Output, Pos};
+use crate::day::{Input, Output, Pos, Wrapper};
 use std::collections::HashSet;
 
 #[derive(PartialEq, Eq)]
@@ -81,7 +81,7 @@ fn try_right(cave: &HashSet<Pos>, sand: &HashSet<Pos>, x: &mut i32, y: i32) -> b
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let (mut cave, bottom) = wrapper::unwrap_d14(input);
+    let (mut cave, bottom): (HashSet<Pos>, i32) = input.unwrap();
 
     let part_one = solve(&cave, bottom);
 

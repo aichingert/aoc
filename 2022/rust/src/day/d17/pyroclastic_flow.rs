@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, Output};
+use crate::day::{Input, Output, Pos, Wrapper};
 use std::collections::HashSet;
 
 fn solve(bursts: &Vec<char>, patterns: &Vec<(char, Vec<(i32, i32)>)>, stones: u64) -> Output {
@@ -110,7 +110,7 @@ fn check_for_collision(
 }
 
 pub fn run(input: Input) -> (Output, Output) {
-    let (bursts, patterns) = wrapper::unwrap_d17(input);
+    let (bursts, patterns): (Vec<char>, Vec<(char, Vec<Pos>)>) = input.unwrap();
 
     (solve(&bursts, &patterns, 2022), Output::Ni32(-1))
 }

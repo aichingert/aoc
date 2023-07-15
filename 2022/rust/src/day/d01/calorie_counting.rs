@@ -1,4 +1,4 @@
-use crate::day::{wrapper, Input, InputError, InputResult, Output};
+use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 use std::num::ParseIntError;
 
 fn solve(cal: &Vec<u32>, to: usize) -> Output {
@@ -6,7 +6,7 @@ fn solve(cal: &Vec<u32>, to: usize) -> Output {
 }
 
 pub fn run(cals: Input) -> (Output, Output) {
-    let cals: Vec<u32> = wrapper::unwrap_vu32(cals);
+    let cals: Vec<u32> = cals.unwrap();
 
     (solve(&cals, 1), solve(&cals, 3))
 }
