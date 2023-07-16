@@ -18,6 +18,7 @@ pub enum Input {
     Vi32(Vec<i32>),
     VDu8(VecDeque<u8>),
     VVch(Vec<Vec<char>>),
+    HchVch(HashMap<char, Vec<char>>),
     D03(Vec<Claim>),
     D04(HashMap<u16, Vec<[u16; 60]>>),
     D06((Vec<Point<i32>>, [i32; 4])),
