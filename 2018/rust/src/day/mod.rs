@@ -3,8 +3,11 @@ pub mod d02;
 pub mod d03;
 pub mod d04;
 pub mod d05;
+pub mod d06;
+pub mod d07;
 
 pub use d03::no_matter::Claim;
+pub use d06::chronal_coordinates::Point;
 
 pub mod wrapper;
 pub use wrapper::Wrapper;
@@ -12,11 +15,12 @@ pub use wrapper::Wrapper;
 use std::collections::{HashMap, VecDeque};
 
 pub enum Input {
-    VDu8(VecDeque<u8>),
     Vi32(Vec<i32>),
+    VDu8(VecDeque<u8>),
     VVch(Vec<Vec<char>>),
     D03(Vec<Claim>),
     D04(HashMap<u16, Vec<[u16; 60]>>),
+    D06((Vec<Point<i32>>, [i32; 4])),
 }
 
 #[derive(Debug)]
