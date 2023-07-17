@@ -1,4 +1,4 @@
-use crate::day::{Input, InputError, InputResult, Output, Wrapper};
+use crate::day::{Input, InputResult, Output, Wrapper};
 
 fn part_one(tree: &Vec<u32>, cur: &mut usize) -> u32 {
     let mut metadata: u32 = 0;

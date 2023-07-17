@@ -2,31 +2,55 @@ use std::collections::VecDeque;
 
 use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 
-fn part_one(players: usize, max: usize) -> u32 {
-    let mut vec_deq: VecDeque<u32> = VecDeque::with_capacity(max);
-    let mut scores: Vec<u32> = vec![0; players];
+struct Marble {
+    idx: usize,
+    next: usize,
+    prev: usize,
+}
+
+impl Marble {
+    fn new(idx: usize, next: usize, prev: usize) -> Self {
+        Self { idx, next, prev }
+    }
+}
+
+fn part_one(players: usize, max: usize) -> usize {
+    let mut scores: Vec<usize> = vec![0; players];
+    let mut buf: VecDeque<Marble> = VecDeque::with_capacity(max);
+    buf.push_back(Marble::new(0, 0, 0));
+
     let mut pt: usize = 0;
-    vec_deq.push_front(0);
 
     for cur in 1..=max {
         if cur % 23 == 0 {
+            let mut rem_idx: usize = pt;
             for _ in 0..7 {
-                if pt > 0 {
-                    pt -= 1;
-                } else {
-                    pt = vec_deq.len() - 1;
-                }
+                rem_idx = buf[rem_idx].prev;
             }
 
-            let mut player = cur % players;
+            let next: usize = buf[rem_idx].next;
+            let prev: usize = buf[rem_idx].prev;
 
+            let mut player = cur % players;
             player = if player == 0 { players - 1 } else { player - 1 };
 
-            scores[player] += cur as u32 + vec_deq.remove(pt).unwrap();
+            scores[player] += cur + buf[rem_idx].idx;
+
+            buf[prev].next = next;
+            buf[next].prev = prev;
+            pt = next;
         } else {
-            pt = if pt + 1 < vec_deq.len() { pt + 1 } else { 0 };
-            pt += 1;
-            vec_deq.insert(pt, cur as u32);
+            let new_marble_idx: usize = buf.len();
+
+            let next_marble_idx: usize = buf[buf[pt].next].next;
+            let prev_marble_idx = buf[next_marble_idx].prev;
+
+            buf[next_marble_idx].prev = new_marble_idx;
+            buf[prev_marble_idx].next = new_marble_idx;
+
+            pt = new_marble_idx;
+            let new_marble: Marble = Marble::new(cur, next_marble_idx, prev_marble_idx);
+            buf.push_back(new_marble);
         }
     }
 
@@ -37,7 +61,7 @@ fn part_one(players: usize, max: usize) -> u32 {
     }
 }
 
-fn part_two(players: usize, max: usize) -> u32 {
+fn part_two(players: usize, max: usize) -> usize {
     part_one(players, max * 100)
 }
 
@@ -46,8 +70,8 @@ pub fn run(input: Input) -> (Output, Output) {
     let (players, max): (usize, usize) = (values[0], values[1]);
 
     (
-        Output::Nu32(part_one(players, max)),
-        Output::Nu32(part_two(players, max)),
+        Output::Nusize(part_one(players, max)),
+        Output::Nusize(part_two(players, max)),
     )
 }
 
