@@ -5,6 +5,8 @@ pub mod d04;
 pub mod d05;
 pub mod d06;
 pub mod d07;
+pub mod d08;
+pub mod d09;
 
 pub use d03::no_matter::Claim;
 pub use d06::chronal_coordinates::Point;
@@ -15,7 +17,9 @@ pub use wrapper::Wrapper;
 use std::collections::{HashMap, VecDeque};
 
 pub enum Input {
+    Vu32(Vec<u32>),
     Vi32(Vec<i32>),
+    Vusize(Vec<usize>),
     VDu8(VecDeque<u8>),
     VVch(Vec<Vec<char>>),
     HchVch(HashMap<char, Vec<char>>),

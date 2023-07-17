@@ -18,7 +18,9 @@ macro_rules! wrapping {
     };
 }
 
+wrapping!(Vu32, Vec<u32>);
 wrapping!(Vi32, Vec<i32>);
+wrapping!(Vusize, Vec<usize>);
 wrapping!(VDu8, VecDeque<u8>);
 wrapping!(VVch, Vec<Vec<char>>);
 wrapping!(HchVch, HashMap<char, Vec<char>>);
