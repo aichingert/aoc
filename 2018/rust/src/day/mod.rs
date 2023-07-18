@@ -8,6 +8,7 @@ pub mod d07;
 pub mod d08;
 pub mod d09;
 pub mod d10;
+pub mod d11;
 
 pub use d03::Claim;
 pub use d06::Point;
@@ -19,6 +20,7 @@ pub use wrapper::Wrapper;
 use std::collections::{HashMap, VecDeque};
 
 pub enum Input {
+    Ni32(i32),
     Vu32(Vec<u32>),
     Vi32(Vec<i32>),
     Vusize(Vec<usize>),

@@ -18,6 +18,7 @@ macro_rules! wrapping {
     };
 }
 
+wrapping!(Ni32, i32);
 wrapping!(Vu32, Vec<u32>);
 wrapping!(Vi32, Vec<i32>);
 wrapping!(Vusize, Vec<usize>);
