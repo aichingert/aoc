@@ -9,10 +9,11 @@ use day::d06::chronal_coordinates;
 use day::d07::sum_of_parts;
 use day::d08::memory_maneuver;
 use day::d09::marble_mania;
+use day::d10::the_stars_align;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 9] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 10] = [
         (chronal_calibration::parse, chronal_calibration::run),
         (inv_management_sys::parse, inv_management_sys::run),
         (no_matter::parse, no_matter::run),
@@ -22,6 +23,7 @@ fn main() {
         (sum_of_parts::parse, sum_of_parts::run),
         (memory_maneuver::parse, memory_maneuver::run),
         (marble_mania::parse, marble_mania::run),
+        (the_stars_align::parse, the_stars_align::run),
     ];
 
     for day in days {

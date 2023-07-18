@@ -1,7 +1,6 @@
-use std::collections::VecDeque;
-
 use crate::day::{Input, InputError, InputResult, Output, Wrapper};
 
+#[derive(Clone, Copy)]
 struct Marble {
     idx: usize,
     next: usize,
@@ -16,10 +15,10 @@ impl Marble {
 
 fn part_one(players: usize, max: usize) -> usize {
     let mut scores: Vec<usize> = vec![0; players];
-    let mut buf: VecDeque<Marble> = VecDeque::with_capacity(max);
-    buf.push_back(Marble::new(0, 0, 0));
+    let mut buf: Vec<Marble> = vec![Marble::new(0, 0, 0); max - max / 23 + 1];
 
     let mut pt: usize = 0;
+    let mut ne: usize = 1;
 
     for cur in 1..=max {
         if cur % 23 == 0 {
@@ -40,7 +39,7 @@ fn part_one(players: usize, max: usize) -> usize {
             buf[next].prev = prev;
             pt = next;
         } else {
-            let new_marble_idx: usize = buf.len();
+            let new_marble_idx: usize = ne;
 
             let next_marble_idx: usize = buf[buf[pt].next].next;
             let prev_marble_idx = buf[next_marble_idx].prev;
@@ -50,7 +49,8 @@ fn part_one(players: usize, max: usize) -> usize {
 
             pt = new_marble_idx;
             let new_marble: Marble = Marble::new(cur, next_marble_idx, prev_marble_idx);
-            buf.push_back(new_marble);
+            buf[ne] = new_marble;
+            ne += 1;
         }
     }
 

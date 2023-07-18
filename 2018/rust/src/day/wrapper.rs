@@ -1,4 +1,4 @@
-use crate::day::{d03::no_matter::Claim, d06::chronal_coordinates::Point, Input};
+use crate::day::{Claim, Input, Point, Star};
 use std::collections::{HashMap, VecDeque};
 
 pub trait Wrapper<T> {
@@ -27,3 +27,4 @@ wrapping!(HchVch, HashMap<char, Vec<char>>);
 wrapping!(D03, Vec<Claim>);
 wrapping!(D04, HashMap<u16, Vec<[u16; 60]>>);
 wrapping!(D06, (Vec<Point<i32>>, [i32; 4]));
+wrapping!(D10, Vec<Star>);

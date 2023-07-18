@@ -1,4 +1,4 @@
-use crate::day::{Input, InputError, InputResult, Output, Wrapper};
+use crate::day::{Claim, Input, InputError, InputResult, Output, Wrapper};
 
 fn part_one(claims: &Vec<Claim>, fabric: &mut [[u16; 1000]; 1000]) -> u32 {
     claims.iter().for_each(|claim| {
@@ -32,13 +32,6 @@ fn part_two(claims: &Vec<Claim>, fabric: &[[u16; 1000]; 1000]) -> Output {
         return Output::Nu32(claims[i].id);
     }
     Output::None
-}
-
-pub struct Claim {
-    id: u32,
-    loc: (usize, usize),
-    width: usize,
-    height: usize,
 }
 
 pub fn run(input: Input) -> (Output, Output) {

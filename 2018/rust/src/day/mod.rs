@@ -7,9 +7,11 @@ pub mod d06;
 pub mod d07;
 pub mod d08;
 pub mod d09;
+pub mod d10;
 
-pub use d03::no_matter::Claim;
-pub use d06::chronal_coordinates::Point;
+pub use d03::Claim;
+pub use d06::Point;
+pub use d10::Star;
 
 pub mod wrapper;
 pub use wrapper::Wrapper;
@@ -26,6 +28,7 @@ pub enum Input {
     D03(Vec<Claim>),
     D04(HashMap<u16, Vec<[u16; 60]>>),
     D06((Vec<Point<i32>>, [i32; 4])),
+    D10(Vec<Star>),
 }
 
 #[derive(Debug)]
