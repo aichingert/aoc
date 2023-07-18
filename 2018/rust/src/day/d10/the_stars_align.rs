@@ -26,7 +26,7 @@ pub fn run(input: Input) -> (Output, Output) {
     let mut input: Vec<Star> = input.unwrap();
     let ans: i32 = solve(&mut input);
 
-    (Output::None, Output::Ni32(ans))
+    (Output::S("Picture".to_string()), Output::Ni32(ans))
 }
 
 pub fn parse() -> InputResult<Input> {
