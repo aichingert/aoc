@@ -11,10 +11,11 @@ use day::d08::memory_maneuver;
 use day::d09::marble_mania;
 use day::d10::the_stars_align;
 use day::d11::chronal_charge;
+use day::d12::subterranean_sustainability as subterranean;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 11] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 12] = [
         (chronal_calibration::parse, chronal_calibration::run),
         (inv_management_sys::parse, inv_management_sys::run),
         (no_matter::parse, no_matter::run),
@@ -26,6 +27,7 @@ fn main() {
         (marble_mania::parse, marble_mania::run),
         (the_stars_align::parse, the_stars_align::run),
         (chronal_charge::parse, chronal_charge::run),
+        (subterranean::parse, subterranean::run),
     ];
 
     for day in days {

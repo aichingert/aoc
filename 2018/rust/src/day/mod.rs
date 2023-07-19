@@ -9,6 +9,7 @@ pub mod d08;
 pub mod d09;
 pub mod d10;
 pub mod d11;
+pub mod d12;
 
 pub use d03::Claim;
 pub use d06::Point;
@@ -17,7 +18,7 @@ pub use d10::Star;
 pub mod wrapper;
 pub use wrapper::Wrapper;
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub enum Input {
     Ni32(i32),
@@ -31,12 +32,14 @@ pub enum Input {
     D04(HashMap<u16, Vec<[u16; 60]>>),
     D06((Vec<Point<i32>>, [i32; 4])),
     D10(Vec<Star>),
+    D12((HashSet<i64>, HashMap<String, String>)),
 }
 
 #[derive(Debug)]
 pub enum Output {
     None,
     Ni32(i32),
+    Ni64(i64),
     Nu16(u16),
     Nu32(u32),
     Nusize(usize),
