@@ -12,10 +12,11 @@ use day::d09::marble_mania;
 use day::d10::the_stars_align;
 use day::d11::chronal_charge;
 use day::d12::subterranean_sustainability as subterranean;
+use day::d13::mine_cart_madness;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 12] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 13] = [
         (chronal_calibration::parse, chronal_calibration::run),
         (inv_management_sys::parse, inv_management_sys::run),
         (no_matter::parse, no_matter::run),
@@ -28,12 +29,13 @@ fn main() {
         (the_stars_align::parse, the_stars_align::run),
         (chronal_charge::parse, chronal_charge::run),
         (subterranean::parse, subterranean::run),
+        (mine_cart_madness::parse, mine_cart_madness::run),
     ];
 
-    for day in days {
-        match day.0() {
+    for i in 0..days.len() {
+        match days[i].0() {
             Ok(input) => {
-                println!("{:?}", day.1(input));
+                println!("{:?} : {:?}", i + 1, days[i].1(input));
             }
             Err(err) => println!("{}", err),
         }

@@ -10,10 +10,12 @@ pub mod d09;
 pub mod d10;
 pub mod d11;
 pub mod d12;
+pub mod d13;
 
 pub use d03::Claim;
 pub use d06::Point;
 pub use d10::Star;
+pub use d13::{Cart, Cell};
 
 pub mod wrapper;
 pub use wrapper::Wrapper;
@@ -33,6 +35,7 @@ pub enum Input {
     D06((Vec<Point<i32>>, [i32; 4])),
     D10(Vec<Star>),
     D12((HashSet<i64>, HashMap<String, String>)),
+    D13((Vec<Cart>, Vec<Vec<Cell>>)),
 }
 
 #[derive(Debug)]
