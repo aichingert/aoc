@@ -11,6 +11,7 @@ pub mod d10;
 pub mod d11;
 pub mod d12;
 pub mod d13;
+pub mod d14;
 
 pub use d03::Claim;
 pub use d06::Point;
@@ -24,6 +25,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 pub enum Input {
     Ni32(i32),
+    Nusize(usize),
     Vu32(Vec<u32>),
     Vi32(Vec<i32>),
     Vusize(Vec<usize>),

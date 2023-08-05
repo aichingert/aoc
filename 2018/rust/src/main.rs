@@ -13,10 +13,11 @@ use day::d10::the_stars_align;
 use day::d11::chronal_charge;
 use day::d12::subterranean_sustainability as subterranean;
 use day::d13::mine_cart_madness;
+use day::d14::chocolate_charts;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 13] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 14] = [
         (chronal_calibration::parse, chronal_calibration::run),
         (inv_management_sys::parse, inv_management_sys::run),
         (no_matter::parse, no_matter::run),
@@ -30,6 +31,7 @@ fn main() {
         (chronal_charge::parse, chronal_charge::run),
         (subterranean::parse, subterranean::run),
         (mine_cart_madness::parse, mine_cart_madness::run),
+        (chocolate_charts::parse, chocolate_charts::run),
     ];
 
     for i in 0..days.len() {
