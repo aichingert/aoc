@@ -5,6 +5,7 @@ use crate::day::{
 use std::collections::HashSet;
 
 const VEC: [(i16, i16); 4] = [(-1, 0), (0, -1), (0, 1), (1, 0)];
+
 fn print(grid: &Vec<Vec<CellType>>) {
     for y in 0..grid.len() {
         for x in 0..grid[y].len() {
@@ -40,33 +41,36 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
 
         entities = filtered_dead_entities;
         entities.sort_by_key(|e| e.pos);
+        println!("{round}");
         print(grid);
+
+        for j in 0..entities.len() {
+            println!("{:?}", entities[j]);
+        }
         println!();
 
         for i in 0..entities.len() {
             if !is_enemy_alive(&entities, entities[i].is_elve) {
-                println!("{round}");
+                print(grid);
+
                 for j in 0..entities.len() {
                     println!("{:?}", entities[j]);
                 }
-
-                return (round.max(1) - 1)
-                    * entities.iter().map(|e| e.hp.max(0) as u32).sum::<u32>();
+                return round * entities.iter().map(|e| e.hp.max(0) as u32).sum::<u32>();
             }
 
-            if is_next_to_enemy(grid, i, &mut entities) {
+            if entities[i].hp <= 0 || is_next_to_enemy(grid, i, &mut entities) {
+                for j in 0..entities.len() {
+                    if entities[j].hp <= 0 {
+                        let (y, x) = entities[j].pos;
+                        grid[y][x] = CellType::Empty;
+                    }
+                }
                 continue;
             }
+
             let dp = map_distance(grid, entities[i].pos);
 
-            if entities[i].pos == (4, 4) {
-                for y in 0..dp.len() {
-                    for x in 0..dp[y].len() {
-                        print!("{:13}", dp[y][x]);
-                    }
-                    println!();
-                }
-            }
             let mut best: u32 = u32::MAX;
             let mut target: Option<Point<usize>> = None;
 
@@ -76,10 +80,11 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                 .collect::<Vec<&Entity>>()
             {
                 for (y, x) in get_open_fields(grid, enemie.pos) {
-                    if dp[y][x] < best
-                        || dp[y][x] <= best
-                            && (target.is_some_and(|(dy, dx)| dy > y || dy == y && dx > x)
-                                || target.is_none())
+                    if dp[y][x] < 10000
+                        && (dp[y][x] < best
+                            || dp[y][x] <= best
+                                && (target.is_some_and(|(dy, dx)| dy > y || dy == y && dx > x)
+                                    || target.is_none()))
                     {
                         best = dp[y][x];
                         target = Some((y, x));
@@ -87,7 +92,6 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                 }
             }
 
-            println!("go {:?}", target);
             if let Some((y, x)) = target {
                 let dp = map_distance(grid, (y, x));
                 best = u32::MAX;
@@ -104,7 +108,6 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                     }
                 }
 
-                println!("to {:?}", target);
                 if let Some((y, x)) = target {
                     let (py, px) = entities[i].pos;
                     grid[py][px] = CellType::Empty;
@@ -114,6 +117,15 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                         CellType::Goblin
                     };
                     entities[i].pos = (y, x);
+
+                    if is_next_to_enemy(grid, i, &mut entities) {
+                        for j in 0..entities.len() {
+                            if entities[j].hp <= 0 {
+                                let (y, x) = entities[j].pos;
+                                grid[y][x] = CellType::Empty;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -145,7 +157,7 @@ fn is_next_to_enemy(grid: &Vec<Vec<CellType>>, entity: usize, entities: &mut Vec
 
         if grid[y][x] == enemy {
             for i in 0..entities.len() {
-                if entities[i].pos == (y, x) && entities[i].hp < min_hp {
+                if entities[i].hp > 0 && entities[i].pos == (y, x) && entities[i].hp < min_hp {
                     min_hp = entities[i].hp;
                     to_hit = Some(i);
                 }
@@ -203,7 +215,7 @@ fn map_distance(grid: &Vec<Vec<CellType>>, start: Point<usize>) -> Vec<Vec<u32>>
         s.insert(e);
 
         for n in get_open_fields(grid, e) {
-            if !s.contains(&n) {
+            if !s.contains(&n) && !q.contains(&n) {
                 q.push(n);
             }
             let cur = dp[n.0][n.1];
