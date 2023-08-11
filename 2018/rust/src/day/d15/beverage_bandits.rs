@@ -40,17 +40,28 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
         }
 
         entities = filtered_dead_entities;
-        entities.sort_by_key(|e| e.pos);
-        println!("{round}");
-        print(grid);
+        entities.sort_by_key(|e| (e.pos.0, e.pos.1));
+        if round == 69 {
+            println!("{round}");
+            print(grid);
 
-        for j in 0..entities.len() {
-            println!("{:?}", entities[j]);
+            for j in 0..entities.len() {
+                println!("{:?}", entities[j]);
+            }
+            println!();
         }
-        println!();
 
+        if round == 70 {
+            println!("{round}");
+            print(grid);
+
+            for j in 0..entities.len() {
+                println!("{:?}", entities[j]);
+            }
+            println!();
+        }
         for i in 0..entities.len() {
-            if !is_enemy_alive(&entities, entities[i].is_elve) {
+            if entities[i].hp > 0 && !is_enemy_alive(&entities, entities[i].is_elve) {
                 print(grid);
 
                 for j in 0..entities.len() {
@@ -59,13 +70,14 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                 return round * entities.iter().map(|e| e.hp.max(0) as u32).sum::<u32>();
             }
 
-            if entities[i].hp <= 0 || is_next_to_enemy(grid, i, &mut entities) {
-                for j in 0..entities.len() {
-                    if entities[j].hp <= 0 {
-                        let (y, x) = entities[j].pos;
-                        grid[y][x] = CellType::Empty;
-                    }
+            for j in 0..entities.len() {
+                if entities[j].hp < -1 {
+                    println!("WARNING");
                 }
+                //println!("{:?}", entities[j]);
+            }
+
+            if entities[i].hp <= 0 || is_next_to_enemy(grid, i, &mut entities) {
                 continue;
             }
 
@@ -80,11 +92,14 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                 .collect::<Vec<&Entity>>()
             {
                 for (y, x) in get_open_fields(grid, enemie.pos) {
-                    if dp[y][x] < 10000
-                        && (dp[y][x] < best
-                            || dp[y][x] <= best
-                                && (target.is_some_and(|(dy, dx)| dy > y || dy == y && dx > x)
-                                    || target.is_none()))
+                    if dp[y][x] > 10000 {
+                        continue;
+                    }
+
+                    if dp[y][x] < best {
+                        best = dp[y][x];
+                        target = Some((y, x));
+                    } else if dp[y][x] == best && target.is_some_and(|(dy, dx)| dy >= y && dx >= x)
                     {
                         best = dp[y][x];
                         target = Some((y, x));
@@ -98,10 +113,13 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                 target = None;
 
                 for (y, x) in get_open_fields(grid, entities[i].pos) {
-                    if dp[y][x] < best
-                        || dp[y][x] <= best
-                            && (target.is_some_and(|(dy, dx)| dy > y || dy == y && dx > x)
-                                || target.is_none())
+                    if dp[y][x] > 10000 {
+                        continue;
+                    }
+                    if dp[y][x] < best {
+                        best = dp[y][x];
+                        target = Some((y, x));
+                    } else if dp[y][x] == best && target.is_some_and(|(dy, dx)| dy >= y && dx >= x)
                     {
                         best = dp[y][x];
                         target = Some((y, x));
@@ -118,14 +136,7 @@ fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
                     };
                     entities[i].pos = (y, x);
 
-                    if is_next_to_enemy(grid, i, &mut entities) {
-                        for j in 0..entities.len() {
-                            if entities[j].hp <= 0 {
-                                let (y, x) = entities[j].pos;
-                                grid[y][x] = CellType::Empty;
-                            }
-                        }
-                    }
+                    is_next_to_enemy(grid, i, &mut entities);
                 }
             }
         }
