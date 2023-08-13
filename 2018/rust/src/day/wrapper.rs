@@ -1,4 +1,4 @@
-use crate::day::{Cart, Cell, CellType, Claim, Entity, Input, Point, Star};
+use crate::day::{Cart, Cell, Claim, Coordinate, Input, Point, Star, Unit};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 pub trait Wrapper<T> {
@@ -32,4 +32,4 @@ wrapping!(D06, (Vec<Point<i32>>, [i32; 4]));
 wrapping!(D10, Vec<Star>);
 wrapping!(D12, (HashSet<i64>, HashMap<String, String>));
 wrapping!(D13, (Vec<Cart>, Vec<Vec<Cell>>));
-wrapping!(D15, (Vec<Entity>, Vec<Vec<CellType>>));
+wrapping!(D15, (Vec<Unit>, HashMap<Coordinate, char>));

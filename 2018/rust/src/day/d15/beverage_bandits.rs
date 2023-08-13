@@ -1,281 +1,224 @@
 use crate::day::{
-    d15::{CellType, Entity},
-    Input, InputResult, Output, Point, Wrapper,
+    d15::{Coordinate, Unit},
+    Input, InputResult, Output, Wrapper,
 };
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
-const VEC: [(i16, i16); 4] = [(-1, 0), (0, -1), (0, 1), (1, 0)];
+type Map = HashMap<Coordinate, char>;
+const UPPER_BOUND: u32 = u16::MAX as u32;
 
-fn print(grid: &Vec<Vec<CellType>>) {
-    for y in 0..grid.len() {
-        for x in 0..grid[y].len() {
-            print!(
-                "{}",
-                match grid[y][x] {
-                    CellType::Empty => '.',
-                    CellType::Wall => '#',
-                    CellType::Elve => 'E',
-                    CellType::Goblin => 'G',
-                }
-            );
-        }
-        println!()
-    }
-}
-
-fn part_one(entities: &Vec<Entity>, grid: &mut Vec<Vec<CellType>>) -> u32 {
-    let mut entities = entities.clone();
-    let mut round: u32 = 0;
-
-    loop {
-        let mut filtered_dead_entities = Vec::<Entity>::new();
-
-        for i in 0..entities.len() {
-            if entities[i].hp > 0 {
-                filtered_dead_entities.push(entities[i]);
-            } else {
-                let (y, x) = entities[i].pos;
-                grid[y][x] = CellType::Empty;
-            }
-        }
-
-        entities = filtered_dead_entities;
-        entities.sort_by_key(|e| (e.pos.0, e.pos.1));
-        if round == 69 {
-            println!("{round}");
-            print(grid);
-
-            for j in 0..entities.len() {
-                println!("{:?}", entities[j]);
-            }
-            println!();
-        }
-
-        if round == 70 {
-            println!("{round}");
-            print(grid);
-
-            for j in 0..entities.len() {
-                println!("{:?}", entities[j]);
-            }
-            println!();
-        }
-        for i in 0..entities.len() {
-            if entities[i].hp > 0 && !is_enemy_alive(&entities, entities[i].is_elve) {
-                print(grid);
-
-                for j in 0..entities.len() {
-                    println!("{:?}", entities[j]);
-                }
-                return round * entities.iter().map(|e| e.hp.max(0) as u32).sum::<u32>();
-            }
-
-            for j in 0..entities.len() {
-                if entities[j].hp < -1 {
-                    println!("WARNING");
-                }
-                //println!("{:?}", entities[j]);
-            }
-
-            if entities[i].hp <= 0 || is_next_to_enemy(grid, i, &mut entities) {
-                continue;
-            }
-
-            let dp = map_distance(grid, entities[i].pos);
-
-            let mut best: u32 = u32::MAX;
-            let mut target: Option<Point<usize>> = None;
-
-            for enemie in entities
-                .iter()
-                .filter(|e| e.is_elve != entities[i].is_elve)
-                .collect::<Vec<&Entity>>()
-            {
-                for (y, x) in get_open_fields(grid, enemie.pos) {
-                    if dp[y][x] > 10000 {
-                        continue;
-                    }
-
-                    if dp[y][x] < best {
-                        best = dp[y][x];
-                        target = Some((y, x));
-                    } else if dp[y][x] == best && target.is_some_and(|(dy, dx)| dy >= y && dx >= x)
-                    {
-                        best = dp[y][x];
-                        target = Some((y, x));
-                    }
-                }
-            }
-
-            if let Some((y, x)) = target {
-                let dp = map_distance(grid, (y, x));
-                best = u32::MAX;
-                target = None;
-
-                for (y, x) in get_open_fields(grid, entities[i].pos) {
-                    if dp[y][x] > 10000 {
-                        continue;
-                    }
-                    if dp[y][x] < best {
-                        best = dp[y][x];
-                        target = Some((y, x));
-                    } else if dp[y][x] == best && target.is_some_and(|(dy, dx)| dy >= y && dx >= x)
-                    {
-                        best = dp[y][x];
-                        target = Some((y, x));
-                    }
-                }
-
-                if let Some((y, x)) = target {
-                    let (py, px) = entities[i].pos;
-                    grid[py][px] = CellType::Empty;
-                    grid[y][x] = if entities[i].is_elve {
-                        CellType::Elve
-                    } else {
-                        CellType::Goblin
-                    };
-                    entities[i].pos = (y, x);
-
-                    is_next_to_enemy(grid, i, &mut entities);
-                }
-            }
-        }
-        round += 1;
-    }
-}
-
-fn is_enemy_alive(entities: &Vec<Entity>, is_elve: bool) -> bool {
-    entities
+fn get_open_tiles_next_to_enemies(kind: char, map: &Map, units: &Vec<Unit>) -> Vec<Coordinate> {
+    units
         .iter()
-        .find(|e| e.is_elve != is_elve && e.hp > 0)
-        .is_some()
+        .filter(|u| u.kind != kind)
+        .flat_map(|u| u.pos.adjacent())
+        .filter(|p| is_tile_open(map, units, p))
+        .collect::<Vec<Coordinate>>()
 }
 
-fn is_next_to_enemy(grid: &Vec<Vec<CellType>>, entity: usize, entities: &mut Vec<Entity>) -> bool {
-    let enemy = if entities[entity].is_elve {
-        CellType::Goblin
-    } else {
-        CellType::Elve
-    };
-    let mut min_hp = i16::MAX;
-    let mut to_hit = None::<usize>;
+fn get_distances(point: Coordinate, map: &Map, units: &Vec<Unit>) -> HashMap<Coordinate, u32> {
+    let mut dp = HashMap::from([(point, 0)]);
+    let mut q: HashSet<Coordinate> = HashSet::from([point]);
+    let mut p = vec![point];
 
-    for (dy, dx) in &VEC {
-        let (y, x) = (
-            (entities[entity].pos.0 as i16 + dy) as usize,
-            (entities[entity].pos.1 as i16 + dx) as usize,
-        );
-
-        if grid[y][x] == enemy {
-            for i in 0..entities.len() {
-                if entities[i].hp > 0 && entities[i].pos == (y, x) && entities[i].hp < min_hp {
-                    min_hp = entities[i].hp;
-                    to_hit = Some(i);
-                }
-            }
-        }
-    }
-
-    if let Some(idx) = to_hit {
-        entities[idx].hp -= entities[entity].dmg;
-        true
-    } else {
-        false
-    }
-}
-
-fn get_open_fields(grid: &Vec<Vec<CellType>>, cur: Point<usize>) -> Vec<Point<usize>> {
-    let mut open = Vec::new();
-
-    for (dy, dx) in &VEC {
-        let (y, x) = ((cur.0 as i16 + dy) as usize, (cur.1 as i16 + dx) as usize);
-        match grid[y][x] {
-            CellType::Empty => open.push((y, x)),
-            _ => {}
-        }
-    }
-
-    open
-}
-
-fn map_distance(grid: &Vec<Vec<CellType>>, start: Point<usize>) -> Vec<Vec<u32>> {
-    let mut dp = vec![vec![u32::MAX - 2; grid[0].len()]; grid.len()];
-    let mut s: HashSet<Point<usize>> = HashSet::from([start]);
-    let mut q: Vec<Point<usize>> = vec![start];
-
-    dp[start.0][start.1] = 0;
-
-    while !q.is_empty() {
-        let u = {
-            let mut found = None;
+    while !p.is_empty() {
+        let idx = {
             let mut best = u32::MAX;
+            let mut found = None;
 
-            for i in 0..q.len() {
-                let (y, x) = (q[i].0, q[i].1);
+            for i in 0..p.len() {
+                let cur = *dp.entry(p[i]).or_insert(UPPER_BOUND);
 
-                if dp[y][x] + 1 < best {
-                    best = dp[y][x];
-                    found = Some(i);
+                if cur + 1 < best {
+                    best = cur;
+                    found = Some(i)
                 }
             }
 
             found.unwrap()
         };
 
-        let e = q.remove(u);
-        s.insert(e);
+        let current = p.remove(idx);
 
-        for n in get_open_fields(grid, e) {
-            if !s.contains(&n) && !q.contains(&n) {
-                q.push(n);
+        for adjacent in current.adjacent().into_iter() {
+            if q.contains(&adjacent) || !is_tile_open(map, units, &adjacent) {
+                continue;
             }
-            let cur = dp[n.0][n.1];
 
-            if cur > dp[e.0][e.1] + 1 {
-                dp[n.0][n.1] = dp[e.0][e.1] + 1;
+            let cur = *dp.get(&current).unwrap();
+            let nxt = dp.entry(adjacent).or_insert(UPPER_BOUND);
+
+            if *nxt > cur + 1 {
+                *nxt = cur + 1;
             }
+
+            p.push(adjacent);
+            q.insert(adjacent);
         }
     }
 
     dp
 }
 
-pub fn run(input: Input) -> (Output, Output) {
-    let (mut entities, mut grid): (Vec<Entity>, Vec<Vec<CellType>>) = input.unwrap();
+fn is_tile_open(map: &Map, units: &Vec<Unit>, pos: &Coordinate) -> bool {
+    if map.get(pos).is_some_and(|ch| *ch == '#') {
+        return false;
+    }
 
-    println!("{:?}", part_one(&mut entities, &mut grid));
-
-    (Output::None, Output::None)
+    units.iter().find(|u| u.pos == *pos).is_none()
 }
 
-pub fn parse() -> InputResult<Input> {
-    let mut grid: Vec<Vec<CellType>> = Vec::new();
-    let mut entities: Vec<Entity> = Vec::new();
+fn is_next_to_enemie(units: &Vec<Unit>, unit: &Unit) -> Option<usize> {
+    let mut enemies = unit
+        .pos
+        .adjacent()
+        .into_iter()
+        .filter_map(|p| {
+            units
+                .iter()
+                .enumerate()
+                .find(|(_, u)| u.pos == p && u.kind != unit.kind)
+        })
+        .collect::<Vec<(usize, &Unit)>>();
+    enemies.sort_by(|a, b| a.1.hp.cmp(&b.1.hp).then(a.1.pos.cmp(&b.1.pos)));
 
-    for (y, line) in std::fs::read_to_string("../input/15")?.lines().enumerate() {
-        grid.push(Vec::new());
-        for (x, ch) in line.chars().enumerate() {
-            grid[y].push(match ch {
-                '#' => CellType::Wall,
-                '.' => CellType::Empty,
-                'E' | 'G' => {
-                    entities.push(Entity {
-                        hp: 200,
-                        dmg: 3,
-                        pos: (y, x),
-                        is_elve: ch == 'E',
-                    });
+    if let Some((index, _)) = enemies.first() {
+        return Some(*index);
+    }
 
-                    if ch == 'E' {
-                        CellType::Elve
-                    } else {
-                        CellType::Goblin
-                    }
+    None
+}
+
+fn round(map: &Map, units: &mut Vec<Unit>) -> bool {
+    units.sort_by_key(|u| u.pos);
+
+    let mut i: usize = 0;
+    while i < units.len() {
+        let unit: Unit = units[i];
+
+        if units.iter().find(|u| unit.kind != u.kind).is_none() {
+            return false;
+        }
+
+        if let Some(index) = is_next_to_enemie(units, &unit) {
+            units[index].hp -= unit.dmg;
+
+            if units[index].hp <= 0 {
+                units.remove(index);
+
+                if index > i {
+                    i += 1;
                 }
-                _ => return Err(crate::day::InputError::InvalidInput),
-            });
+                continue;
+            }
+
+            i += 1;
+            continue;
+        }
+
+        let dp = get_distances(unit.pos, map, units);
+
+        let tile = get_open_tiles_next_to_enemies(unit.kind, map, units)
+            .into_iter()
+            .filter(|p| dp.get(p).is_some() && is_tile_open(map, units, p))
+            .map(|p| (dp.get(&p).unwrap(), p))
+            .min();
+
+        if let Some((_, pos)) = tile {
+            let enemy_dp = get_distances(pos, map, units);
+            let (_, new_pos) = unit
+                .pos
+                .adjacent()
+                .into_iter()
+                .filter(|p| enemy_dp.get(p).is_some() && is_tile_open(map, units, &p))
+                .map(|p| (enemy_dp.get(&p).unwrap(), p))
+                .min()
+                .unwrap();
+
+            units[i].pos = new_pos;
+        }
+
+        let unit = units[i];
+
+        if let Some(index) = is_next_to_enemie(units, &unit) {
+            units[index].hp -= unit.dmg;
+
+            if units[index].hp <= 0 {
+                units.remove(index);
+
+                if index < i {
+                    continue;
+                }
+            }
+        }
+
+        i += 1;
+    }
+
+    true
+}
+
+pub fn run(input: Input) -> (Output, Output) {
+    let (units, map): (Vec<Unit>, HashMap<Coordinate, char>) = input.unwrap();
+    let (mut part_one, mut part_two): (Output, Output) = (Output::None, Output::None);
+    let elves = units
+        .iter()
+        .map(|u| if u.kind == 'E' { 1 } else { 0 })
+        .sum::<u16>();
+
+    for dmg in 3.. {
+        let mut battle_units = units.clone();
+        let mut rounds: u32 = 0;
+
+        for unit in &mut battle_units {
+            if unit.kind == 'E' {
+                unit.dmg = dmg;
+            }
+        }
+
+        while round(&map, &mut battle_units) {
+            rounds += 1;
+        }
+
+        let remaining = battle_units
+            .iter()
+            .map(|u| if u.kind == 'E' { 1 } else { 0 })
+            .sum::<u16>();
+
+        if dmg == 3 {
+            part_one = Output::Nu32(rounds * battle_units.iter().map(|u| u.hp as u32).sum::<u32>());
+        } else if remaining == elves {
+            part_two = Output::Nu32(rounds * battle_units.iter().map(|u| u.hp as u32).sum::<u32>());
+            break;
         }
     }
 
-    Ok(Input::D15((entities, grid)))
+    (part_one, part_two)
+}
+
+pub fn parse() -> InputResult<Input> {
+    let mut map: HashMap<Coordinate, char> = HashMap::new();
+    let mut units: Vec<Unit> = Vec::new();
+
+    for (y, line) in std::fs::read_to_string("../input/15")?.lines().enumerate() {
+        for (x, ch) in line.chars().enumerate() {
+            let point: Coordinate = Coordinate { y, x };
+
+            match ch {
+                '#' | '.' => map.insert(point, ch),
+                'E' | 'G' => {
+                    units.push(Unit {
+                        hp: 200,
+                        pos: point,
+                        dmg: 3,
+                        kind: ch,
+                    });
+                    map.insert(point, '.')
+                }
+                _ => return Err(crate::day::InputError::InvalidInput),
+            };
+        }
+    }
+
+    Ok(Input::D15((units, map)))
 }
