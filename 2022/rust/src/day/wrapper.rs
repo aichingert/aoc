@@ -1,5 +1,5 @@
-use crate::day::{Calculation, Input, Loc, Pos, Sensor};
-use std::collections::HashSet;
+use crate::day::{Calculation, Coordinate, Input, Loc, Path, Pos, Sensor};
+use std::collections::{BTreeMap, HashSet};
 
 pub trait Wrapper<T> {
     fn unwrap(self) -> T;
@@ -26,3 +26,4 @@ wrapping!((HashSet<Pos>, i32), D14);
 wrapping!((Vec<Sensor>, Vec<(i64, i64)>, (i64, i64)), D15);
 wrapping!((Vec<char>, Vec<(char, Vec<Pos>)>), D17);
 wrapping!(Calculation, D21);
+wrapping!((Vec<Path>, BTreeMap<Coordinate, char>), D22);

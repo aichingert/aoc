@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashSet};
 use std::fmt;
 
 pub mod d01;
@@ -7,10 +7,13 @@ pub mod d03;
 pub mod d04;
 pub mod d14;
 pub mod d15;
-use d15::Sensor;
 pub mod d17;
 pub mod d21;
+pub mod d22;
+
+use d15::Sensor;
 use d21::Calculation;
+use d22::{Coordinate, Path};
 
 pub mod wrapper;
 pub use wrapper::Wrapper;
@@ -27,6 +30,7 @@ pub enum Input {
     D15((Vec<Sensor>, Vec<(i64, i64)>, (i64, i64))),
     D17((Vec<char>, Vec<(char, Vec<Pos>)>)),
     D21(Calculation),
+    D22((Vec<Path>, BTreeMap<Coordinate, char>)),
 }
 
 #[derive(Debug)]

@@ -8,10 +8,11 @@ use day::d14::regolith_reservoir;
 use day::d15::beacon;
 use day::d17::pyroclastic_flow;
 use day::d21::monkey_math;
+use day::d22::monkey_map;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 8] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 9] = [
         (calorie_counting::parse, calorie_counting::run),
         (rps::parse, rps::run),
         (rucksack::parse, rucksack::run),
@@ -20,6 +21,7 @@ fn main() {
         (beacon::parse, beacon::run),
         (pyroclastic_flow::parse, pyroclastic_flow::run),
         (monkey_math::parse, monkey_math::run),
+        (monkey_map::parse, monkey_map::run),
     ];
 
     println!("======");
