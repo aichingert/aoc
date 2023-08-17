@@ -27,3 +27,22 @@ pub enum Path {
     Left(u32),
     Right(u32),
 }
+
+#[derive(Copy, Clone)]
+pub enum Direction {
+    North,
+    South,
+    East,
+    West,
+}
+
+impl Direction {
+    pub fn as_coordinate(&self) -> (i32, i32) {
+        match self {
+            Direction::North => (-1, 0),
+            Direction::South => (1, 0),
+            Direction::East => (0, 1),
+            Direction::West => (0, -1),
+        }
+    }
+}
