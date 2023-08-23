@@ -1,75 +1,96 @@
-use std::collections::HashMap;
-
-type Map = HashMap<String, Vec<Vec<String>>>;
-
 pub fn answer() -> (u32, u32) {
-    parse();
+    let (list, poss) = parse();
+    let mut cnt = 0;
+    solve(&list, 0, &String::new(), &Vec::new(), &poss, &mut cnt);
 
+    println!("{cnt}");
     (0, 0)
+}
+
+fn solve(list: &Vec<Value>, cur: usize, value: &String, rest: &Vec<usize>, pos: &Vec<String>, cnt: &mut u32) {
+    let mut m_value;
+    let mut m_rest;
+
+    match &list[cur] {
+        Value::Pointers(ptr) => {
+            'outer: for i in 0..ptr.len() {
+                m_value = value.clone();
+                m_rest = rest.clone();
+
+                for j in 0..ptr[i].len() {
+                    let pt = ptr[i][j];
+
+                    match &list[pt] {
+                        Value::Lit(s) => {
+                            m_value.push_str(&s.clone());
+                            if j + 1 < ptr[i].len() {
+                                continue;
+                            } else {
+                                while !m_rest.is_empty() {
+                                    let first = m_rest.remove(0);
+
+                                    match &list[first] {
+                                        Value::Lit(s) => m_value.push_str(&s.clone()),
+                                        Value::Pointers(_) => {
+                                            solve(list, first, &m_value, &m_rest, pos, cnt);
+                                            continue 'outer;
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                        Value::Pointers(_) => {
+                            for k in j+1..ptr[i].len() {
+                                m_rest.insert(0, ptr[i][k]);
+                            }
+                            solve(list, pt, &m_value, &m_rest, pos, cnt);
+                            break;
+                        },
+                    }
+
+                    if pos.contains(&m_value) {
+                        *cnt += 1;
+                    }
+                }
+            }
+        },
+        _ => panic!("how {cur} {:?}", rest),
+    };
 }
 
 #[derive(Debug)]
 enum Value {
-    Literal(String),
-    List(Vec<Box<Value>>),
+    Lit(String),
+    Pointers(Vec<Vec<usize>>),
 }
 
-fn uncover(m: &Map, ptr: &String) -> Vec<Box<Value>> {
-    let mut values: Vec<Box<Value>> = Vec::new();
+fn parse() -> (Vec<Value>, Vec<String>) {
+    let mut list = Vec::<Value>::new();
 
-    match m.get(ptr) {
-        Some(options) => {
-            for option in options.iter() {
-                let mut store = Vec::new();
-                for element in option.iter() {
-                    store.push(Box::new(Value::List(uncover(m, element))));
-                }
-                values.push(Box::new(Value::List(store)));
-            }
-        }
-        None => values.push(Box::new(Value::Literal(ptr.clone()))),
-    }
+    let binding = std::fs::read_to_string("../input/19").unwrap();
+    let (rules, input) = binding.split_once("\n\n").unwrap();
 
-    values
-}
-
-fn open(value: &Value) {
-    match value {
-        Value::Literal(s) => {
-            print!("{s} ");
-        }
-        Value::List(l) => {
-            for e in l.iter() {
-                open(e);
-            }
-            print!(" ");
-        }
-    }
-}
-
-fn parse() -> Map {
-    let mut mappings: Map = HashMap::new();
-
-    for line in std::fs::read_to_string("../input/19").unwrap().lines() {
+    'outer: for line in rules.lines() {
         let line = line.replace("\"", "");
-        let (key, values) = line.split_once(": ").unwrap();
+        let (_, values) = line.split_once(": ").unwrap();
 
-        let list: Vec<&str> = values.split(" | ").collect();
+        let mut storing = Vec::new();
+        let possibilities: Vec<&str> = values.split(" | ").collect();
 
-        for element in list.iter() {
-            mappings
-                .entry(key.to_string())
-                .or_insert(Vec::new())
-                .push(element.split(' ').map(|e| e.to_string()).collect());
+        for possibility in possibilities {
+            let x = possibility.split(' ').collect::<Vec<&str>>();
+
+            if x.len() == 1 && x[0].parse::<usize>().is_err() {
+                list.push(Value::Lit(x[0].to_string()));
+                continue 'outer;
+            } else {
+                storing.push(x.iter().map(|s| s.parse::<usize>().unwrap()).collect());
+            }
         }
+
+
+        list.push(Value::Pointers(storing));
     }
 
-    let x = uncover(&mappings, &"0".to_string());
-
-    println!("{:?}", x[0]);
-    for v in x.iter() {
-        open(v);
-    }
-
-    mappings
+    (list, input.split('\n').map(|s| s.to_string()).collect::<Vec<String>>())
 }
