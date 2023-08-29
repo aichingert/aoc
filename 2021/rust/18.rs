@@ -72,46 +72,36 @@ impl Snailfish {
         }
     }
 
-    fn explode(self, explosion: &mut bool, remainding: &mut (Option<u8>, Option<u8>), depth: u8) -> Self {
+    fn explode(self, restored: &mut Value, depth: u8) -> Self {
         match self {
             Self::Lit(_) => self,
             Self::Pair((lhs, rhs)) => {
-                if depth < 4 {
-                    let lhs = lhs.explode(explosion, remainding, depth + 1);
+                if depth != 4 {
+                    let rhs = match rhs.explode(restored, depth + 1) {
+                        Self::Lit(n) => if n == 255 {
+                            Self::Lit(0)
+                        } else {
+                            Self::Lit(n)
+                        },
+                        Self::Pair((l, r)) => Self::Pair((l, r)), 
+                    };
 
-                    if *explosion {
-                        match *remainding {
-                            (None, None) => return Self::Pair((Box::new(lhs), rhs)),
-                            (Some(x), None) | (Some(x), Some(_)) => if let Some(y) = rhs.is_literal() {
-                                remainding.0 = None;
-                                return Self::Pair((Box::new(lhs), Box::new(Self::Lit(x + y))));
-                            } else {
-                                return Self::Pair((Box::new(lhs), rhs));
-                            }
-                            _ => {},
-                        }
-                    }
-
-                    return Self::Pair((Box::new(lhs), rhs));
+                    return Self::Lit(0);
                 }             
 
                 match (*lhs, *rhs) {
-                    (Self::Lit(lhs), Self::Lit(rhs)) => println!("{:?} - {:?}", lhs, rhs),
-                    _ => panic!("should not happen :("),
+                    (Self::Lit(l), Self::Lit(r)) => {
+                        *restored = (Some(l), Some(r));
+                        Self::Lit(255)
+                    }
+                    _ => panic!("to deep"),
                 }
-
-                Self::Lit(0)
             }
         }
     }
-
-    fn is_literal(&self) -> Option<u8> {
-        match self {
-            Self::Lit(n) => Some(*n),
-            Self::Pair(_) => None,
-        }
-    }
 }
+
+type Value = (Option<u8>, Option<u8>);
 
 fn main() {
     let input = std::fs::read_to_string("../input/18").unwrap();
@@ -128,5 +118,7 @@ fn main() {
     let split = split.split(&mut false);
     println!("{:?} \n", split);
 
-    split.explode(&mut false, &mut (None, None), 0);
+    let mut x = (None, None);
+    split.explode(&mut x, 0);
+    println!("{:?}", x);
 }
