@@ -1,6 +1,6 @@
 #[derive(Clone,Debug)]
 enum Snailfish {
-    Lit(u8),
+    Lit(u32),
     Pair((Box<Snailfish>, Box<Snailfish>)),
 }
 
@@ -32,7 +32,7 @@ impl Snailfish {
                     Box::new(Snailfish::from_stream(&stream[mid + 1..cur]))
                 ))
             }
-            ch => {
+            _ => {
                 let mut acc = String::new();
                 let mut cur = 0;
 
@@ -40,161 +40,125 @@ impl Snailfish {
                     acc.push(stream[cur]);
                     cur += 1;
                 }
-                Snailfish::Lit(acc.parse::<u8>().unwrap())
+                Snailfish::Lit(acc.parse::<u32>().unwrap())
             }
         }
     }
 
     fn add(self, other: Self) -> Self {
-        Self::Pair((Box::new(self), Box::new(other)))
+        Self::make_pair(self, other)
     }
 
-    fn split(self, is_done: &mut bool) -> Self {
+    fn split(self, splitted: &mut bool) -> Self {
         match self {
             Self::Lit(n) => if n > 9 {
                 let lhs = n / 2;
                 let rhs = n / 2 + if n & 1 != 0 { 1 } else { 0 };
 
-                *is_done = true;
+                *splitted = true;
                 Self::Pair((Box::new(Self::Lit(lhs)),Box::new(Self::Lit(rhs))))
-            } else {
-                self
-            }
+            } else { self },
             Self::Pair((lhs, rhs)) => {
-                let lhs = lhs.split(is_done);
+                let lhs = lhs.split(splitted);
 
-                if *is_done {
+                if *splitted {
                     Self::Pair((Box::new(lhs), rhs))
                 } else {
-                    Self::Pair((Box::new(lhs), Box::new(rhs.split(is_done))))
+                    Self::Pair((Box::new(lhs), Box::new(rhs.split(splitted))))
                 }
             }
         }
     }
 
-    fn explode(self, explosion: &mut bool, restored: &mut (Option<u8>, Option<u8>), depth: u8) -> Self {
-        self.show();
-        println!("           {:?} = {depth}", restored);
+    fn explode(self, depth: u8) -> (bool, Self, Option<u32>, Option<u32>) {
         match self {
-            Self::Lit(_) => self,
+            Self::Lit(_) => (false, self, None, None),
             Self::Pair((lhs, rhs)) => {
-                if depth == 4 {
-                    match (*lhs, *rhs) {
-                        (Self::Lit(l), Self::Lit(r)) => {
-                            *explosion = true;
-                            *restored = (Some(l), Some(r));
-                            return Self::Lit(255);
-                        }
-                        _ => panic!("to deep"),
-                    }    
-                } else if *explosion && restored.0.is_none() && restored.1.is_none() {
-                    return Self::Pair((lhs, rhs));
+                if depth >= 4 && lhs.is_lit() && rhs.is_lit() {
+                    return (
+                        true, Self::Lit(0), Some(lhs.magnitude()), Some(rhs.magnitude())
+                    );
                 }
 
-                let (lhs, next_to_explosion) = match lhs.explode(explosion, restored, depth + 1) {
-                    Self::Lit(n) => if n==255{(Self::Lit(0), true)}else{(Self::Lit(n), false)}
-                    p => (p.explode(explosion, restored, depth + 1), false)
-                };
-
-                match *restored {
-                    (_, Some(x)) => if next_to_explosion {
-                        restored.1 = None;
-                        let rhs = Box::new(match *rhs {
-                            Self::Lit(n) => Self::Lit(x + n),
-                            p => p.open(x, false),
-                        });
-                        return Self::Pair((Box::new(lhs), rhs));
-                    }
-                    (Some(x), _) => if !next_to_explosion {
-                        restored.0 = None;
-                        lhs.show();
-                        println!("{depth}");
-                        let lhs = Box::new(match lhs {
-                            Self::Lit(n) => Self::Lit(x + n),
-                            p => p.open(x, true),
-                        });
-                        print!("returning : ");
-                        lhs.show();
-                        println!();
-                        return Self::Pair((lhs, Box::new(*rhs)));
-                    }
-                    _ => ()
+                let (did_explode, new_lhs, ll, lr) = lhs.explode(depth + 1);
+                if did_explode {
+                    return (
+                        true, Self::make_pair(new_lhs, rhs.add_left(lr)), ll, None
+                    );
                 }
 
-                print!("LHS : ");
-                lhs.show();
-                println!("");
-                let (rhs, next_to_explosion) = match rhs.explode(explosion, restored, depth + 1) {
-                    Self::Lit(n) => if n==255{(Self::Lit(0), true)}else{(Self::Lit(n), false)}
-                    p => (p.explode(explosion, restored, depth + 1), false)
-                };
-
-                match *restored {
-                    (Some(x), _) => if next_to_explosion {
-                        restored.0 = None;
-                        let lhs = Box::new(match lhs {
-                            Self::Lit(n) => Self::Lit(n + x),
-                            p => p.open(x, true),
-                        });
-                        return Self::Pair((lhs, Box::new(rhs)));
-                    }                     
-                    (_, Some(x)) => if !next_to_explosion {
-                        restored.1 = None;
-                        let rhs = Box::new(match rhs {
-                            Self::Lit(n) => Self::Lit(n + x),
-                            p => p.open(x, false),
-                        });
-                        return Self::Pair((Box::new(lhs), rhs));
-                    },
-                    _ => ()
+                let (did_explode, new_rhs, rl, rr) = rhs.explode(depth + 1);
+                if did_explode {
+                    return (
+                        true, Self::make_pair(new_lhs.add_right(rl), new_rhs), None, rr 
+                    );
                 }
 
-                Self::Pair((Box::new(lhs), Box::new(rhs)))
+                (false, Self::make_pair(new_lhs, new_rhs), None, None)
+            }
+         }
+    }
+
+    fn add_left(self, value: Option<u32>) -> Self {
+        match value {
+            None => self,
+            Some(x) => match self {
+                Self::Lit(n) => Self::Lit(x + n),
+                Self::Pair((lhs, rhs)) => Self::make_pair(lhs.add_left(value), *rhs),
             }
         }
     }
 
-    fn open(self, value: u8, right: bool) -> Self {
-        match self {
-            Self::Lit(n) => Self::Lit(n + value),
-            Self::Pair((lhs, rhs)) => {
-                if right {
-                    Self::Pair((lhs, Box::new(rhs.open(value, right))))
-                } else {
-                    Self::Pair((Box::new(lhs.open(value, right)), rhs))
-                }
+    fn add_right(self, value: Option<u32>) -> Self {
+        match value {
+            None => self,
+            Some(x) => match self {
+                Self::Lit(n) => Self::Lit(x + n),
+                Self::Pair((lhs, rhs)) => Self::make_pair(*lhs, rhs.add_right(value)),
             }
         }
     }
 
-    fn magnitude(&self, is_left: bool) -> u32 {
+    fn magnitude(&self) -> u32 {
         match self {
-            Self::Lit(n) => if is_left { *n as u32 * 3 } else { *n as u32 * 2 },
+            Self::Lit(n) => *n as u32,
             Self::Pair((lhs, rhs)) => {
-                (match **lhs {
-                    Self::Lit(n) => 3 * n as u32,
-                    Self::Pair(_) => 3 * lhs.magnitude(true),
-                }
-                +
-                match **rhs {
-                    Self::Lit(n) => 2 * n as u32,
-                    Self::Pair(_) => 2 * rhs.magnitude(true),
-                })
+                3 * lhs.magnitude() + 2 * rhs.magnitude()
             }
         }
     }
 
-    fn show(&self) {
+    fn make_pair(lhs: Self, rhs: Self) -> Self {
+        Self::Pair((Box::new(lhs), Box::new(rhs)))
+    }
+    
+    fn is_lit(&self) -> bool {
         match self {
-            Self::Lit(n) => print!("{n}"),
-            Self::Pair((lhs, rhs)) => {
-                print!("[");
-                lhs.show();
-                print!(",");
-                rhs.show();
-                print!("]");
+            Self::Lit(_) => true,
+            _ => false,
+        }
+    }
+
+    fn reduce(self) -> Self {
+        let mut sn = self;
+
+        loop {
+            let (did_explode, next, _, _) = sn.explode(0);
+            sn = next;
+
+            if did_explode {
+                continue;
+            }
+
+            let mut did_split = false;
+            sn = sn.split(&mut did_split);
+
+            if !did_split {
+                break;
             }
         }
+
+        sn
     }
 }
 
@@ -203,11 +167,26 @@ fn main() {
     let input = input.trim().lines()
         .map(|l| l.chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
-    let sn = Snailfish::from_stream(&input[0]);
 
-    println!("{:?} ", sn);
+    let mut current = Snailfish::from_stream(&input[0]);
 
-    let split = sn.explode(&mut false, &mut (None, None), 0);
-    split.show();
-    println!();
+    for i in 1..input.len() {
+        current = current.add(Snailfish::from_stream(&input[i]));
+        current = current.reduce();
+    }
+
+    let mut part_two: u32 = u32::MIN;
+    
+    for i in 0..input.len() - 1 {
+        for j in i + 1..input.len() {
+            let a = Snailfish::from_stream(&input[i]);
+            let b = Snailfish::from_stream(&input[j]);
+
+            part_two = part_two.max(a.clone().add(b.clone()).reduce().magnitude());
+            part_two = part_two.max(b.add(a).reduce().magnitude());
+        }
+    }
+
+    println!("Part 1: {}", current.magnitude());
+    println!("Part 2: {}", part_two);
 }
