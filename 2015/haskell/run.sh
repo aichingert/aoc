@@ -3,7 +3,7 @@
 
 def=$(basename $1 .hs)
 
-ghc $1
+ghc -dynamic $1
 
 ./$def
 rm "$def.hi"

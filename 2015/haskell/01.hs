@@ -20,7 +20,5 @@ part2 (x:xs) loc cur | loc < 0 = cur
 main :: IO ()
 main = do
   input <- readFile "../input/01"
-  putStr "Part 1: "
-  print $ part1 input 0
-  putStr "Part 2: "
-  print $ part2 input 0 0
+  putStrLn ("Part 1: " ++ (show (part1 input 0)))
+  putStrLn ("Part 2: " ++ (show (part2 input 0 0)))
