@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashSet, HashMap};
 use std::fmt;
 
 pub mod d01;
@@ -7,11 +7,13 @@ pub mod d03;
 pub mod d04;
 pub mod d14;
 pub mod d15;
+pub mod d16;
 pub mod d17;
 pub mod d21;
 pub mod d22;
 
 use d15::Sensor;
+use d16::Valve;
 use d21::Calculation;
 use d22::{Coordinate, Path};
 
@@ -28,6 +30,7 @@ pub enum Input {
     VTLoc(Vec<(Loc, Loc)>),
     D14((HashSet<Pos>, i32)),
     D15((Vec<Sensor>, Vec<(i64, i64)>, (i64, i64))),
+    D16(HashMap<String, Valve>),
     D17((Vec<char>, Vec<(char, Vec<Pos>)>)),
     D21(Calculation),
     D22((Vec<Path>, BTreeMap<Coordinate, char>)),
@@ -56,13 +59,13 @@ impl fmt::Display for InputError {
 }
 
 impl From<std::io::Error> for InputError {
-    fn from(error: std::io::Error) -> Self {
+    fn from(_error: std::io::Error) -> Self {
         InputError::NoInput
     }
 }
 
 impl From<std::num::ParseIntError> for InputError {
-    fn from(error: std::num::ParseIntError) -> Self {
+    fn from(_error: std::num::ParseIntError) -> Self {
         InputError::InvalidInput
     }
 }

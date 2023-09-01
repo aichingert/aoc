@@ -12,7 +12,7 @@ fn part_one(map: &BTreeMap<Coordinate, char>, path: &Vec<Path>, start: Coordinat
     let mut pos = start;
     let mut dir = 0;
     let mut idx = 0;
-    let mut n = 0;
+    let mut n;
 
     let update_position = |dir: &Direction, next: &Coordinate| -> Option<Coordinate> {
         if let Some((c, ch)) = match dir {
