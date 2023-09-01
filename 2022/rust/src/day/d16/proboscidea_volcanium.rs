@@ -77,76 +77,36 @@ fn part_two(
     let el_str = elephant.to_string();
     let mut max_released: u32 = 0;
 
-    let is_left_open = opened_valves.contains(&my_str);
+    if !opened_valves.contains(&my_str) {
+        opened_valves.push(my_str);
+        let new_released = released + my_valve.flow_rate * (PART_TWO - minute - 1);
 
-    match (is_left_open, opened_valves.contains(&el_str)) {
-        (true, true) => {
-            for nxt_el_valve in el_valve.connects.iter() {
-                for nxt_my_valve in my_valve.connects.iter() {
-                    max_released = max_released.max(
-                        part_two(valves, cached, opened_valves, nxt_my_valve, nxt_el_valve, minute + 1, released));
-                }
-            }
-
-            max_released
+        for nxt_el_valve in el_valve.connects.iter() {
+            max_released = max_released.max(
+                part_two(valves, cached, opened_valves, me, nxt_el_valve, minute + 1, new_released));
         }
-        (true, false) | (false, true) => {
-            let (c_str, c_valve, o_valve) = if is_left_open {
-                (el_str, el_valve, my_valve)
-            } else {
-                (my_str, my_valve, el_valve)
-            };
+        opened_valves.pop();
+    }
 
-            opened_valves.push(c_str);
-            let new_released = released + c_valve.flow_rate * (PART_TWO - minute - 1);
+    if !opened_valves.contains(&el_str) {
+        opened_valves.push(el_str);
+        let new_released = released + el_valve.flow_rate * (PART_TWO - minute - 1);
 
-            for nxt_o_valve in o_valve.connects.iter() {
-                max_released = if is_left_open {
-                    max_released.max(part_two(valves, cached, opened_valves, nxt_o_valve, elephant, minute + 1, new_released))
-                } else {
-                    max_released.max(part_two(valves, cached, opened_valves, me, nxt_o_valve, minute + 1, new_released))
-                };
-            }
-            opened_valves.pop();
-
-            for nxt_c_valve in c_valve.connects.iter() {
-                for nxt_o_valve in o_valve.connects.iter() {
-                    max_released = max_released
-                        .max(part_two(valves, cached, opened_valves, nxt_o_valve, nxt_c_valve, minute + 1, released))
-                }
-            }
-
-            max_released
+        for nxt_my_valve in my_valve.connects.iter() {
+            max_released = max_released.max(
+                part_two(valves, cached, opened_valves, nxt_my_valve, elephant, minute + 1, new_released));
         }
-        (false, false) => {
-            opened_valves.push(el_str);
-            let new_released = released + el_valve.flow_rate * (PART_TWO - minute - 1);
+        opened_valves.pop();
+    }
 
-            for nxt_my_valve in my_valve.connects.iter() {
-                max_released = max_released.max(
-                    part_two(valves, cached, opened_valves, nxt_my_valve, elephant, minute + 1, new_released));
-            }
-            opened_valves.pop();
-            opened_valves.push(my_str);
-            let new_released = released + my_valve.flow_rate * (PART_TWO - minute - 1);
-
-            for nxt_el_valve in el_valve.connects.iter() {
-                max_released = max_released.max(
-                    part_two(valves, cached, opened_valves, me, nxt_el_valve, minute + 1, new_released));
-            }
-            opened_valves.pop();
-
-
-            for nxt_el_valve in el_valve.connects.iter() {
-                for nxt_my_valve in my_valve.connects.iter() {
-                    max_released = max_released.max(
-                        part_two(valves, cached, opened_valves, nxt_my_valve, nxt_el_valve, minute + 1, released));
-                }
-            }
-
-            max_released
+    for nxt_el_valve in el_valve.connects.iter() {
+        for nxt_my_valve in my_valve.connects.iter() {
+            max_released = max_released.max(
+                part_two(valves, cached, opened_valves, nxt_my_valve, nxt_el_valve, minute + 1, released));
         }
     }
+
+    max_released
 }
 
 pub fn run(input: Input) -> (Output, Output) {
