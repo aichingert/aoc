@@ -1,8 +1,10 @@
 module Main where 
 
+import Data.List
+
 data Point = Point { x :: Int
                    , y :: Int
-                   } deriving (Show)
+                   } deriving (Show, Eq, Ord)
 
 move :: Char -> Point -> Point
 move c (Point {x = px, y = py}) = case c of
@@ -11,11 +13,18 @@ move c (Point {x = px, y = py}) = case c of
              'v' -> Point { x = px, y = py + 1 }
              '^' -> Point { x = px, y = py - 1 }
 
+followPath :: Point -> [Char] -> [Point]
+followPath p [] = []
+followPath p (x:xs) = let np = move x p in np : followPath np xs
+
+countVisitedHouses :: [Point] -> Int
+countVisitedHouses = length . map head . group . sort
+
 partOne :: [Char] -> Int
 partOne [] = 0
-partOne xs = 10
+partOne xs = countVisitedHouses (let p = Point { x = 0, y = 0 } in p : followPath p xs)
 
+main :: IO ()
 main = do
   input <- readFile "../input/03"
-  putStrLn $ show $ move '>' Point { x = 10, y = 20 }
-  putStrLn $ show $ partOne input
+  putStrLn $ show $ partOne $ init input
