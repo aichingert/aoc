@@ -30,7 +30,6 @@ countVisitedHouses :: [Point] -> Int
 countVisitedHouses = length . map head . group . sort
 
 partOne :: [Char] -> Int
-partOne [] = 0
 partOne xs = countVisitedHouses (let p = starting in p : followPath p xs)
 
 partTwo :: [Char] -> Int
@@ -39,6 +38,6 @@ partTwo xs = countVisitedHouses (let p = starting in
 
 main :: IO ()
 main = do
-  input <- readFile "../input/03"
+  input <- readFile "input/03"
   putStrLn $ show $ partOne $ init input
   putStrLn $ show $ partTwo $ init input

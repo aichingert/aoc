@@ -1,5 +1,6 @@
-module AOC where
+module Aoc where
 
+import Data.Char
 import Data.List
 
 tail' :: [a] -> [a]
