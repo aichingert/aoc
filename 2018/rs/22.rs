@@ -1,7 +1,8 @@
 // Advent of Code 2018, day 22
 // (c) aichingert
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BinaryHeap};
+use std::cmp::Ordering;
 
 fn geologic_index(gi: &mut HashMap<(i64, i64), i64>, x: i64, y: i64, depth: i64) -> i64 {
     if gi.contains_key(&(x, y)) {
@@ -24,93 +25,50 @@ fn geologic_index(gi: &mut HashMap<(i64, i64), i64>, x: i64, y: i64, depth: i64)
 }
 
 fn part1(depth: i64, x: i64, y: i64, gi: &mut HashMap<(i64, i64), i64>) -> i64 {
-    let mut risk: i64 = 0;
-    for i in 0..=y {
-        for j in 0..=x {
-            let erosion_level = (geologic_index(gi, j, i, depth) + depth) % 20183;
-            let cave_type = erosion_level % 3;
-            risk += cave_type;
-
-            match cave_type {
-                0 => print!("."),
-                1 => print!("="),
-                2 => print!("|"),
-                _ => (),
-            };
-        }
-        println!("");
-    }
-
-    risk
+    (0..=y)
+        .map(|i| (0..=x)
+             .map(|j| (geologic_index(gi, j, i, depth) + depth) % 20183 % 3)
+             .sum::<i64>())
+        .sum::<i64>()
 }
 
-fn part2(
-    depth: i64,
-    tx: i64,
-    ty: i64,
-    gi: &mut HashMap<(i64, i64), i64>,
-    index: &mut HashMap<(i64, i64), i64>,
-    dist: &mut HashMap<(i64, i64), i64>,
-    q: &mut HashSet<(i64, i64)>,
-    already: &mut HashSet<(i64, i64)>,
-    gear: i64,
-    minutes: i64,
-) -> i64 {
-    let mut gear = gear;
-    let mut minutes = minutes;
+struct State {
+    cost: u32,
+    position: (i64, i64),
+}
 
-    while !q.is_empty() {
-        let u = {
-            let mut best = i64::MAX;
-            let mut found = None;
-
-            for u in q.clone() {
-                let v = dist.get(&u).unwrap();
-
-                if *v < best {
-                    best = *v;
-                    found = Some(u);
-                }
-            }
-
-            found.unwrap()
-        };
-
-        q.remove(&u);
-
-        for m in [
-            (u.0, u.1 + 1),
-            (u.0 + 1, u.1),
-            (u.0 - 1, u.1),
-            (u.0, u.1 - 1),
-        ]
-        .into_iter()
-        .filter(|(x, y)| *x > -1 && *y > -1 && *x < tx + 20 && *y < ty + 20)
-        .map(|(x, y)| (*x, *y))
-        .collect::<Vec<(i64, i64)>>()
-        {
-            let v = if q.contains(&m) {
-                m
-            } else if !index.contains_key(&m) {
-                index.insert(m, minutes);
-                minutes += 1;
-                dist.insert(m, i64::MAX);
-                q.insert(m);
-                m
-            } else {
-                continue;
-            };
-
-            let alt = dist.get(&u).unwrap() + 1;
-
-            if alt < *dist.get(&v).unwrap() {
-                dist.insert(v.clone(), alt);
-            }
-        }
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.cost.cmp(&self.cost)
+            .then_with(|| self.position.cmp(&other.position))
     }
+}
 
-    println!("{:?}", dist[&(tx, ty)]);
-    0
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+fn neighbours(p: (i64, i64), dist: &HashMap<(i64, i64), u32>, gi: &mut HashMap<(i64, i64), i64>) -> Vec<State> {
+    Vec::new()
+}
+
+fn part_two(depth: i64, goal: (i64, i64), gi: &mut HashMap<(i64, i64), i64>) -> u32 {
+    let mut dist = HashMap::new();
+    let mut heap = BinaryHead::new();
+
+    dist.insert((0,0), 0);
+    heap.push(State { cost: 0, (0,0)});
+
+    while let Some(State { cost, position }) = heap.pop() {
+        if position == goal {
+            return cost;
+        }
+
+        if cost > dist.get(&position).or_insert(u32::MAX) { continue; }
+
+    }
 }
 
 fn main() {
@@ -122,18 +80,5 @@ fn main() {
     let mut geologic_index: HashMap<(i64, i64), i64> = HashMap::from([((0, 0), 0), ((x, y), 0)]);
 
     println!("Part 1: {}", part1(depth, x, y, &mut geologic_index));
-    println!(
-        "Part 2: {}",
-        part2(
-            depth,
-            x,
-            y,
-            &mut geologic_index,
-            &mut HashMap::from([((0, 0), 0)]),
-            &mut HashMap::from([((0, 0), 0)]),
-            &mut HashSet::from([(0, 0)]),
-            0,
-            1
-        )
-    );
+    println!("Part 2: {}", 10);
 }
