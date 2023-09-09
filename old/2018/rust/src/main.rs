@@ -15,10 +15,11 @@ use day::d12::subterranean_sustainability as subterranean;
 use day::d13::mine_cart_madness;
 use day::d14::chocolate_charts;
 use day::d15::beverage_bandits;
+use day::d16::chronal_classification;
 use day::{Input, InputResult, Output};
 
 fn main() {
-    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 15] = [
+    let days: [(fn() -> InputResult<Input>, fn(Input) -> (Output, Output)); 16] = [
         (chronal_calibration::parse, chronal_calibration::run),
         (inv_management_sys::parse, inv_management_sys::run),
         (no_matter::parse, no_matter::run),
@@ -34,6 +35,7 @@ fn main() {
         (mine_cart_madness::parse, mine_cart_madness::run),
         (chocolate_charts::parse, chocolate_charts::run),
         (beverage_bandits::parse, beverage_bandits::run),
+        (chronal_classification::parse, chronal_classification::run),
     ];
 
     for i in 0..days.len() {

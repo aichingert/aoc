@@ -3,7 +3,7 @@
 
 pub struct Computer {
     pub opcodes: Vec<i32>,
-    input: Vec<i32>,
+    pub input: Vec<i32>,
     pub output: Vec<i32>,
 }
 

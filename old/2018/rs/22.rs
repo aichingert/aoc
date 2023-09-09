@@ -1,8 +1,7 @@
 // Advent of Code 2018, day 22
 // (c) aichingert
 
-use std::collections::{HashMap, BinaryHeap};
-use std::cmp::Ordering;
+use std::collections::{HashMap, HashSet};
 
 fn geologic_index(gi: &mut HashMap<(i64, i64), i64>, x: i64, y: i64, depth: i64) -> i64 {
     if gi.contains_key(&(x, y)) {
@@ -32,43 +31,43 @@ fn part1(depth: i64, x: i64, y: i64, gi: &mut HashMap<(i64, i64), i64>) -> i64 {
         .sum::<i64>()
 }
 
-struct State {
-    cost: u32,
-    position: (i64, i64),
+enum Tool {
+    Torch,
+    Gear,
+    Neither,
 }
 
-impl Ord for State {
-    fn cmp(&self, other: &Self) -> Ordering {
-        other.cost.cmp(&self.cost)
-            .then_with(|| self.position.cmp(&other.position))
+impl Tool {
+    fn adjacent(&self, cur: (i64, i64), gi: &mut HashMap<(i64, i64), i64>) -> Vec<(i64, i64)> {
+        let mut adjacent = Vec::new();
+
+        // ROCKY == 0 => Gear | Torch !Neihter
+        // WET == 1 => Gear | Neither !Torch
+        // NARROW == 2 => Torch | Neither !Gear
+ 
+        for dir in [(1, 0),(-1,0),(0,1),(0,-1)].iter() {
+            let x = cur.0 + dir.0;
+            let y = cur.1 + dir.1;
+
+            if x < 0 || y < 0 { continue; }
+
+            let region = (geologic_index(gi, j, i, depth) + depth) % 20183 % 3;
+
+            match self {
+                Self::Torch => if region == 0 || region == 2 {
+                    adjacent.push((x, y));
+                }
+
+        }
+
+        adjacent
     }
-}
-
-impl PartialOrd for State {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-fn neighbours(p: (i64, i64), dist: &HashMap<(i64, i64), u32>, gi: &mut HashMap<(i64, i64), i64>) -> Vec<State> {
-    Vec::new()
 }
 
 fn part_two(depth: i64, goal: (i64, i64), gi: &mut HashMap<(i64, i64), i64>) -> u32 {
-    let mut dist = HashMap::new();
-    let mut heap = BinaryHead::new();
+    let mut tool: Tool = Tool::Torch; 
 
-    dist.insert((0,0), 0);
-    heap.push(State { cost: 0, (0,0)});
-
-    while let Some(State { cost, position }) = heap.pop() {
-        if position == goal {
-            return cost;
-        }
-
-        if cost > dist.get(&position).or_insert(u32::MAX) { continue; }
-
-    }
+    0
 }
 
 fn main() {
