@@ -1,10 +1,11 @@
 use std::collections::HashMap;
+use std::cmp::Ordering;
 
-type Blueprint = HashMap<String, (u32, Ingredients)>;
-type Ingredients = Vec<(String, u32)>;
-type Inventory = HashMap<String, u32>;
+type Blueprint = HashMap<String, (u64, Ingredients)>;
+type Ingredients = Vec<(String, u64)>;
+type Inventory = HashMap<String, u64>;
 
-fn produce(ore_type: &str, times: u32, blueprint: &Blueprint, inv: &mut Inventory) -> u32 {
+fn produce(ore_type: &str, times: u64, blueprint: &Blueprint, inv: &mut Inventory) -> u64 {
     if ore_type == "ORE" {
         return times;
     }
@@ -21,17 +22,14 @@ fn produce(ore_type: &str, times: u32, blueprint: &Blueprint, inv: &mut Inventor
     };
 
     let mut ore = 0;
-    let mut created = 0;
     let (gets, ingredients) = blueprint.get(ore_type).unwrap();
+    let iterations = (needed as f64 / *gets as f64).ceil() as u64;
 
-    for _ in 0..(needed as f32 / *gets as f32).ceil() as u32 {
-        created += *gets;
-        for ingredient in ingredients.iter() {
-            ore += produce(&ingredient.0, ingredient.1, blueprint, inv);
-        }
+    for ingredient in ingredients.iter() {
+        ore += produce(&ingredient.0, ingredient.1 * iterations, blueprint, inv);
     }
 
-    let rest = created - needed;
+    let rest = *gets * iterations - needed;
     
     if rest > 0 {
         inv.insert(ore_type.to_string(), rest);
@@ -52,13 +50,32 @@ fn main() {
 
         let mut ores = ores.iter().map(|ore| {
             let (amount, ore_type) = ore.split_once(' ').unwrap();
-            (ore_type.to_string(), amount.parse::<u32>().unwrap())
-        }).collect::<Vec<(String, u32)>>();
+            (ore_type.to_string(), amount.parse::<u64>().unwrap())
+        }).collect::<Vec<(String, u64)>>();
 
         let result = ores.pop().unwrap();
 
         blueprint.insert(result.0, (result.1, ores));
     }
 
-    println!("{:?}", produce("FUEL", 1, &blueprint, &mut HashMap::new()));
+    let part_one: u64 = produce("FUEL", 1, &blueprint, &mut HashMap::new());
+
+    let (mut max, mut min) = (40000000, 0);
+    loop {
+        let mid = (max + min) / 2;
+        let ore = produce("FUEL", mid, &blueprint, &mut HashMap::new());
+
+        match ore.cmp(&1000000000000) {
+            Ordering::Less => min = mid + 1,
+            Ordering::Greater => max = mid - 1,
+            Ordering::Equal => unreachable!(),
+        }
+
+        if max < min { 
+            break;
+        }
+    }
+
+    println!("Part one: {}", part_one);
+    println!("Part two: {}", (max + min) / 2);
 }
