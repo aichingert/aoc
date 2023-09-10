@@ -1,11 +1,10 @@
-use std::collections::{HashSet,HashMap};
+use std::collections::{HashSet, BTreeMap};
 
 type P = (i8, i8);
 
 fn part_one(inp: &Vec<P>) -> u32 {
     let mut layouts = HashSet::new();
-    let mut state = HashSet::new();
-    inp.iter().for_each(|p| {state.insert(*p);});
+    let mut state = inp.clone();
     println!("{:?}", state);
 
     let next_to = |p: &P| -> Vec<P> {
@@ -15,9 +14,9 @@ fn part_one(inp: &Vec<P>) -> u32 {
             .collect::<Vec<P>>()
     };
 
-    while layouts.insert(state.iter().map(|p| *p).collect::<Vec<P>>()) {
-        let mut next = HashSet::new();
-        let mut empty_counts = HashMap::new();
+    while layouts.insert(state.clone()) {
+        let mut next = Vec::new();
+        let mut empty_counts = BTreeMap::new();
 
         for p in state.iter() {
             let c = next_to(p).iter().map(|n| 
@@ -26,13 +25,13 @@ fn part_one(inp: &Vec<P>) -> u32 {
             ).sum::<u8>();
 
             if c == 1 {
-                next.insert(*p);
+                next.push(*p);
             }
         }
 
         for (p, c) in empty_counts.into_iter() {
             if c == 1 || c == 2 {
-                next.insert(p);
+                next.push(p);
             }
         }
 
