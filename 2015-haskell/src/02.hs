@@ -13,7 +13,7 @@ partTwo :: [String] -> Int
 partTwo inp = sum $ map getRibbon $ map lineFromString inp
 
 main = do
-  input <- readFile "../input/02"
+  input <- readFile "input/02"
   let dimensions = lines input
   putStrLn $ show $ partOne dimensions
   putStrLn $ show $ partTwo dimensions

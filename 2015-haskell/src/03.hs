@@ -38,6 +38,6 @@ partTwo xs = countVisitedHouses (let p = starting in
 
 main :: IO ()
 main = do
-  input <- readFile "../input/03"
+  input <- readFile "input/03"
   putStrLn $ show $ partOne $ init input
   putStrLn $ show $ partTwo $ init input
