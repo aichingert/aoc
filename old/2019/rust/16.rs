@@ -28,13 +28,34 @@ fn phase(inp: Vec<u16>) -> Vec<u16> {
     output
 }
 
-fn main() {
-    let inp = std::fs::read_to_string("../input/16").unwrap().trim().to_string();
-    let mut output = inp.chars().map(|c| (c as u8 - b'0').into()).collect::<Vec<u16>>();
-
+fn part_two(mut inp: Vec<u16>, offset: usize) -> Vec<u16> {
     for _ in 0..100 {
-        output = phase(output);
+        for i in (offset..inp.len() - 1).rev() {
+            inp[i] = (inp[i] + inp[i + 1]) % 10;
+        }
     }
 
-    println!("{:?}", &output[0..8]);
+    inp
+}
+
+fn to_string(number: &[u16]) -> String {
+    number.iter().map(|c| (*c as u8 + b'0') as char).collect::<String>()
+}
+
+fn main() {
+    let inp = std::fs::read_to_string("../input/16").unwrap().trim().to_string();
+    let mut part_one = inp.chars().map(|c| (c as u8 - b'0').into()).collect::<Vec<u16>>();
+    let mut output = Vec::new();
+
+    for _ in 0..10000 { output.extend_from_slice(&part_one.clone()); }
+    let offset = inp[..7].parse::<usize>().unwrap();
+
+    for _ in 0..100 {
+        part_one = phase(part_one);
+    }
+
+    output = part_two(output, offset);
+
+    println!("Part one: {}", to_string(&part_one[..8]));
+    println!("Part two: {}", to_string(&output[offset..offset+ 8]));
 }
