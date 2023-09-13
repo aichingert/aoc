@@ -14,9 +14,14 @@ fn main() {
 
     let mut directions = vec![D::N, D::S, D::W, D::E];
 
-    for _ in 0..10 {
+    for n in 0..10000 {
         let mut next = HashSet::new();
-        let proposes = game_loop(&elves, &mut directions);
+        let (cont, proposes) = game_loop(&elves, &mut directions);
+
+        if !cont {
+            println!("round: {}", n+1);
+            break;
+        }
 
         for i in 0..proposes.len() {
             let mut blocked = false;
@@ -87,17 +92,11 @@ impl D {
             D::None => vec,
         }
     }
-
-    fn is_none(&self) -> bool {
-        match self {
-            D::None => true,
-            _ => false,
-        }
-    }
 }
 
-fn game_loop(elves: &HashSet<(i32, i32)>, directions: &mut Vec<D>) -> Vec<(D, (i32, i32))> {
+fn game_loop(elves: &HashSet<(i32, i32)>, directions: &mut Vec<D>) -> (bool, Vec<(D, (i32, i32))>) {
     let mut proposes = Vec::new();
+    let mut cont = false;
 
     'outer: for (dy, dx) in elves.iter() {
         let (dy, dx) = (*dy, *dx);
@@ -115,6 +114,7 @@ fn game_loop(elves: &HashSet<(i32, i32)>, directions: &mut Vec<D>) -> Vec<(D, (i
         };
 
         if has_neighbour {
+            cont = true;
             for i in 0..directions.len() {
                 match directions[i] {
                     D::N => if !elves.contains(&(dy - 1, dx)) 
@@ -152,5 +152,5 @@ fn game_loop(elves: &HashSet<(i32, i32)>, directions: &mut Vec<D>) -> Vec<(D, (i
     let first = directions.remove(0);
     directions.push(first);
 
-    proposes
+    (cont, proposes)
 }
