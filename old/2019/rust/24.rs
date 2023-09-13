@@ -34,6 +34,7 @@ fn part_one(inp: &Vec<P>) -> u32 {
             }
         }
 
+        next.sort();
         state = next;
     }
 
