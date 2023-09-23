@@ -4,50 +4,93 @@ with Ada.Containers.Vectors;
 procedure Day_04 is
 	F	   : File_Type;
 	File_Name  : constant String := "../input/04";
-	X	   : Integer := 0;
+
+	Answer_One : Integer := 0;
+	Answer_Two : Integer := 0;
+
 
 	function Part_One (Line : String) return Integer
 	is
-		Cur_Start	: Natural := 1;
-		Cur_End		: Natural := 1;
-		Next_Start 	: Natural := 1;
-		Next_End 	: Natural := 1;
-		Is_Valid	: Integer := 1;
+		fs  	 : Natural := 1;
+		fe 	 : Natural := 1;
+		ss 	 : Natural := 1;
+		se 	 : Natural := 1;
 	begin
 		for I in Line'Range loop
 			if Line (I) = ' ' then
-				Cur_End := I - 1;
-				Next_Start := I + 1;
+				fe := I - 1;
+				ss := I + 1;
 
 				for J in I + 1 .. Line'Last loop
 					if Line (J) = ' ' then
-						Next_End := J - 1;
+						se := J - 1;
 
-						if Line(Cur_Start .. Cur_End) = Line(Next_Start .. Next_End) then 
-							Is_Valid := 0;
+						if Line (fs .. fe) = Line (ss .. se) then 
+							return 0;
 						end if;
-						Next_Start := J + 1;
+						ss := J + 1;
 					end if;
 				end loop;
 
-				if Cur_Start /= Next_start and then Line(Cur_Start .. Cur_End) = Line(Next_Start .. Line'Last) then
-					Is_Valid := 0;
+				if fs /= ss and then Line (fs .. fe) = Line(ss .. Line'Last) then
+					return 0;
 				end if;
 
-				Cur_Start := I + 1;
+				fs:= I + 1;
 			end if;
 		end loop;
 
-		return Is_Valid;
+		return 1;
 	end Part_One;
+
+	function Part_Two (Line : String) return Integer
+	is
+		This	   : Integer := 0;
+		Other	   : Integer := 0;
+		Last_Start : Natural := 0;
+	begin
+		for I in Line'Range loop
+			if Line (I) = ' ' then
+				for J in I + 1 .. Line'Last loop
+					if Line (J) = ' ' then
+						if This = Other then
+							return 0;
+						end if;
+
+						Other := 0;
+						Last_Start := J + 1;
+					else
+						Other := Other + Character'Pos (Line (J));
+					end if;
+				end loop;
+
+				if I + 1 /= Last_Start and then This = Other then
+					return 0;
+				end if;
+
+				This := 0;
+				Other := 0;
+			else
+				This := This + Character'Pos (Line (I));
+			end if;
+		end loop;
+
+		return 1;
+	end Part_Two;
 begin
 	Open (F, In_File, File_Name);
 
 	while not End_Of_File (F) loop
-		X := X + Part_One (Get_Line (F));
+		declare
+			Line : String := Get_Line (F);
+		begin
+			Answer_One := Answer_One + Part_One (Line);
+			Answer_Two := Answer_Two + Part_Two (Line);
+		end;
 	end loop;
 
-	Put_Line("Part One: " & Integer'Image(X));
+	Put_Line ("Part one: " & Integer'Image (Answer_One));
+	Put_Line ("Part two: " & Integer'Image (Answer_Two));
 	Close (F);
 end Day_04;
 
