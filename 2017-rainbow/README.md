@@ -2,9 +2,9 @@
 
 | Day | Language |
 | -   | - |
-| 0  | [ASM](/01-asm) |
-| 02 | [APL](/02-apl) |
-| 03 | [D](/03-d) |
+| 01 | [ASM](/2017-rainbow/01-asm) |
+| 02 | [APL](/2017-rainbow/02-apl) |
+| 03 | [D](/2017-rainbow/03-d) |
 
 # Day 1 - ASM
 
