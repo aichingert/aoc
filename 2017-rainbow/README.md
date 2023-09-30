@@ -5,7 +5,9 @@
 | 01 | [ASM](/2017-rainbow/01-asm/01.asm) |
 | 02 | [APL](/2017-rainbow/02-apl/02.apl) |
 | 03 | [D](/2017-rainbow/03-d/03.d) |
-| 03 | [ADA](/2017-rainbow/04-ada/04.adb) |
+| 04 | [ADA](/2017-rainbow/04-ada/04.adb) |
+| 05 | [BF](/2017-rainbow/05-bf/05.bf) |
+| 06 | [F#](/2017-rainbow/06-fsx/06.fsx)|
 
 ## Day 1 - ASM
 
@@ -32,3 +34,12 @@ end loop;
 ```
 
 was pretty unique and interesting. Overall I think the language has almost everything anyone would want but it was a bit too verbose for me with the keywords instead of brackets and the like.
+
+## Day 5 - Brainfuck
+
+This day has it's own README in the folder.
+
+## Day 6 - F#
+
+TODO
+
