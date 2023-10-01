@@ -12,11 +12,11 @@ fn part_one(opcodes: &Vec<N>) -> N {
 
     for perm in perms.iter() {
         let mut cpus = vec![
-            VM::new(opcodes.clone(), perm[0]),
-            VM::new(opcodes.clone(), perm[1]),
-            VM::new(opcodes.clone(), perm[2]),
-            VM::new(opcodes.clone(), perm[3]),
-            VM::new(opcodes.clone(), perm[4])
+            VM::new(opcodes, perm[0]),
+            VM::new(opcodes, perm[1]),
+            VM::new(opcodes, perm[2]),
+            VM::new(opcodes, perm[3]),
+            VM::new(opcodes, perm[4])
         ];
         let mut input = 0;
 
@@ -37,17 +37,17 @@ fn part_one(opcodes: &Vec<N>) -> N {
     signal
 }
 
-fn part_two(opcodes: Vec<N>) -> N {
+fn part_two(opcodes: &Vec<N>) -> N {
     let mut signal = 0;
     let perms = permutations(5, &mut vec![5,6,7,8,9]);
 
     for perm in perms.iter() {
         let mut cpus = vec![
-            VM::new(opcodes.clone(), perm[0]),
-            VM::new(opcodes.clone(), perm[1]),
-            VM::new(opcodes.clone(), perm[2]),
-            VM::new(opcodes.clone(), perm[3]),
-            VM::new(opcodes.clone(), perm[4])
+            VM::new(opcodes, perm[0]),
+            VM::new(opcodes, perm[1]),
+            VM::new(opcodes, perm[2]),
+            VM::new(opcodes, perm[3]),
+            VM::new(opcodes, perm[4])
         ];
 
         for i in 0..cpus.len() {
@@ -104,5 +104,5 @@ fn main() {
         .collect::<Vec<N>>();
 
     println!("Part 1: {}", part_one(&opcodes));
-    println!("Part 2: {}", part_two(opcodes));
+    println!("Part 2: {}", part_two(&opcodes));
 }

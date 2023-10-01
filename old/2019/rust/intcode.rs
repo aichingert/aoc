@@ -1,12 +1,15 @@
 // Advent of Code 2019, Intcode
 // (c) aichingert
 
-pub type N = i32;
+use std::collections::HashMap;
+
+pub type N = i64;
 
 pub struct VM {
     pub ptr: usize,
+    base: N,
     input: N,
-    opcodes: Vec<N>,
+    mem: HashMap<usize, N>,
 }
 
 #[derive(PartialEq, Eq, Copy, Clone)]
@@ -18,16 +21,23 @@ pub enum Status {
 }
 
 impl VM {
-    pub fn new(opcodes: Vec<N>, input: N) -> Self {
+    pub fn new(opcodes: &Vec<N>, input: N) -> Self {
+        let mut mem = HashMap::new();
+
+        for i in 0..opcodes.len() {
+            mem.insert(i, opcodes[i]);
+        }
+
         Self {
             ptr: 0,
+            base: 0,
             input,
-            opcodes,
+            mem,
         }
     }
 
-    pub fn _get_position(&self, dst: usize) -> N {
-        self.opcodes[dst]
+    pub fn _get_position(&mut self, dst: usize) -> N {
+        *self.mem.entry(dst).or_insert(0)
     }
 
     pub fn _set_input(&mut self, input: N) {
@@ -39,8 +49,9 @@ impl VM {
 
         for i in 1..modes.len() {
             match modes[i] {
-                0 => loc.push(self.opcodes[self.ptr + i] as usize),
+                0 => loc.push(*self.mem.entry(self.ptr + i).or_insert(0) as usize),
                 1 => loc.push(self.ptr + i),
+                2 => loc.push((self.base + *self.mem.entry(self.ptr + i).or_insert(0)) as usize),
                 _ => panic!("unsupported mode"),
             }
         }
@@ -52,15 +63,16 @@ impl VM {
         let loc = self.get_registers(modes);
 
         self.ptr += 4;
-        (self.opcodes[self.ptr - 1] as usize, loc[0], loc[1])
+        (loc[2], loc[0], loc[1])
     }
 
     fn get_io_register(&mut self, modes: &Vec<N>) -> usize {
         self.ptr += 2;
 
         match modes[1] {
-            0 => self.opcodes[self.ptr - 1] as usize,
+            0 => *self.mem.entry(self.ptr - 1).or_insert(0) as usize,
             1 => self.ptr - 1,
+            2 => (self.base + *self.mem.entry(self.ptr - 1).or_insert(0)) as usize,
             _ => panic!("unsupported mode"),
         }
     }
@@ -69,12 +81,12 @@ impl VM {
         let loc = self.get_registers(modes);
 
         self.ptr += 3;
-        (self.opcodes[loc[1]] as usize, self.opcodes[loc[0]])
+        (*self.mem.entry(loc[1]).or_insert(0) as usize, *self.mem.entry(loc[0]).or_insert(0))
     }
 
-    fn parse_modes(&self) -> Vec<N> {
-        let mut opcode = self.opcodes[self.ptr];
-        let mut modes = vec![0;3];
+    fn parse_modes(&mut self) -> Vec<N> {
+        let mut opcode = *self.mem.entry(self.ptr).or_insert(0);
+        let mut modes = vec![0;4];
         let mut idx = 1usize;
 
         modes[0] += opcode % 100;
@@ -90,38 +102,39 @@ impl VM {
     }
 
     pub fn execute(&mut self) -> Status {
-        if self.ptr >= self.opcodes.len() || self.opcodes[self.ptr] == 99 {
-            return Status::Exit;
-        }
         let modes = self.parse_modes();
 
         match modes[0] {
             1 | 2 | 7 | 8 => {
                 let (dst, a, b) = self.get_op_registers(&modes);
+                let a = *self.mem.entry(a).or_insert(0);
+                let b = *self.mem.entry(b).or_insert(0);
 
                 match modes[0] {
-                    1 => self.opcodes[dst] = self.opcodes[a] + self.opcodes[b],
-                    2 => self.opcodes[dst] = self.opcodes[a] * self.opcodes[b],
-                    7 => match self.opcodes[a] < self.opcodes[b] {
-                        true  => self.opcodes[dst] = 1,
-                        false => self.opcodes[dst] = 0,
+                    1 => self.mem.entry(dst).and_modify(|reg| *reg = a + b).or_insert(a + b),
+                    2 => self.mem.entry(dst).and_modify(|reg| *reg = a * b).or_insert(a * b),
+                    7 => match a < b {
+                        true  => self.mem.entry(dst).and_modify(|reg| *reg = 1).or_insert(1),
+                        false => self.mem.entry(dst).and_modify(|reg| *reg = 0).or_insert(0),
                     },
-                    8 => match self.opcodes[a] == self.opcodes[b] {
-                        true  => self.opcodes[dst] = 1,
-                        false => self.opcodes[dst] = 0,
+                    8 => match a == b {
+                        true  => self.mem.entry(dst).and_modify(|reg| *reg = 1).or_insert(1),
+                        false => self.mem.entry(dst).and_modify(|reg| *reg = 0).or_insert(0),
                     },
                     _ => unreachable!(),
                 };
             }
-            3 | 4 => {
+            3 | 4 | 9 => {
                 let dst = self.get_io_register(&modes);
 
                 match modes[0] {
-                    3 => {
-                        self.opcodes[dst] = self.input;
-                        return Status::Input;
+                    3 => { 
+                        let input = self.input;
+                        self.mem.entry(dst).and_modify(|reg| *reg = input).or_insert(input);
+                        return Status::Input; 
                     }
-                    4 => return Status::Output(self.opcodes[dst]),
+                    4 => return Status::Output(*self.mem.entry(dst).or_insert(0)),
+                    9 => self.base += *self.mem.entry(dst).or_insert(0),
                     _ => unreachable!(),
                 };
             }

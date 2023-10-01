@@ -5,7 +5,7 @@
 use intcode::{VM, Status, N};
 
 fn part_one(opcodes: &Vec<N>) -> N {
-    let mut vm: VM = VM::new(opcodes.clone(), 0);
+    let mut vm: VM = VM::new(opcodes, 0);
 
     loop {
         match vm.execute() {
@@ -23,7 +23,7 @@ fn part_two(opcodes: &mut Vec<N>) -> N {
             opcodes[1] = noun;
             opcodes[2] = verb;
 
-            let mut vm: VM = VM::new(opcodes.clone(), 0);
+            let mut vm: VM = VM::new(opcodes, 0);
 
             loop {
                 match vm.execute() {
