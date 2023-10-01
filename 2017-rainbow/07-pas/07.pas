@@ -4,15 +4,16 @@ uses
 	Sysutils;
 
 const
-	C_FNAME = '../input/07';
-
+	INP_FILE = '../input/07';
 
 type
 	node = ^TowerList;
+	tPtr = ^Tower;
+
 	Tower = record
 		ident: string;
 		weight: integer;
-		parent: ^Tower;
+		parent: tPtr;
 		children: node
 	end;
 
@@ -25,12 +26,25 @@ var
 	head: node;
 	root: Tower;
 
-function ParseLine (l: string): Tower;
+function CreateChild (ident: string; parent: tPtr) : Tower;
+var
+	child: Tower;
+
+begin
+	child.ident := ident;
+	child.parent := parent;
+
+	CreateChild := child;
+end;
+
+function ParseLine (l: string) : Tower;
 var
 	i: integer;
 	s: integer;
+	id: string;
 
 	t: Tower;
+	ch: node;
 
 begin
 	for i := 1 to Length(l) do
@@ -44,9 +58,36 @@ begin
 		t.ident := t.ident + l[i];
 	end;
 
-	writeln (l[s..Length(l) - 1]);
+	for i := s to Length(l) do
+	begin
+		if l[i] = ')' then
+		begin
+			t.weight := StrToInt(l[s..i-1]);
+			s := i + 5;
+			break;
+		end;
+	end;
 
-	t.weight := StrToInt(l[s..Length(l) - 1]);
+	i := s;
+	while i < Length(l) do
+	begin
+		id := '';
+		while (i < Length(l)) and (not (l[i] = ',')) do
+		begin
+			id := id + l[i];
+			i := i + 1;
+		end;
+
+		writeln (id[2]);
+		i := i + 1;
+	end;
+
+	for i := s to Length(l) do
+	begin
+		writeln (l[i]);
+	end;
+
+	t.children := ch;
 	ParseLine := t;
 end;
 
@@ -57,7 +98,7 @@ var
 	t: Tower;
 
 begin
-	Assign(tfIn, C_FNAME);
+	Assign(tfIn, INP_FILE);
 	reset(tfIn);
 
 	new (head);
