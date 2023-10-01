@@ -28,7 +28,7 @@ impl VM {
         self.opcodes[dst]
     }
 
-    fn get_registers(&mut self, modes: Vec<N>) -> Vec<usize> {
+    fn get_registers(&mut self, modes: &Vec<N>) -> Vec<usize> {
         let mut loc = Vec::<usize>::new();
 
         for i in 1..modes.len() {
@@ -42,14 +42,14 @@ impl VM {
         loc
     }
 
-    fn get_op_registers(&mut self, modes: Vec<N>) -> (usize, usize, usize) {
+    fn get_op_registers(&mut self, modes: &Vec<N>) -> (usize, usize, usize) {
         let loc = self.get_registers(modes);
 
         self.ptr += 4;
         (self.opcodes[self.ptr - 1] as usize, loc[0], loc[1])
     }
 
-    fn get_io_register(&mut self, modes: Vec<N>) -> usize {
+    fn get_io_register(&mut self, modes: &Vec<N>) -> usize {
         self.ptr += 2;
 
         match modes[1] {
@@ -59,7 +59,7 @@ impl VM {
         }
     }
 
-    fn get_jmp_registers(&mut self, modes: Vec<N>) -> (usize, N) {
+    fn get_jmp_registers(&mut self, modes: &Vec<N>) -> (usize, N) {
         let loc = self.get_registers(modes);
 
         self.ptr += 3;
@@ -92,46 +92,43 @@ impl VM {
         let modes = self.parse_modes();
 
         match modes[0] {
-            1 => {
-                let (dst, a, b) = self.get_op_registers(modes);
-                self.opcodes[dst] = self.opcodes[a] + self.opcodes[b];
-            }
-            2 => {
-                let (dst, a, b) = self.get_op_registers(modes);
-                self.opcodes[dst] = self.opcodes[a] * self.opcodes[b];
-            }
-            3 => {
-                let dst = self.get_io_register(modes);
-                self.opcodes[dst] = self.input;
-            }
-            4 => {
-                let dst = self.get_io_register(modes);
-                return Status::Output(self.opcodes[dst]);
-            }
-            5 => {
-                let (dst, value) = self.get_jmp_registers(modes);
-                if value != 0 { self.ptr = dst; }
-            }
-            6 => {
-                let (dst, value) = self.get_jmp_registers(modes);
-                if value == 0 { self.ptr = dst; }
-            },
-            7 => {
-                let (dst, a, b) = self.get_op_registers(modes);
-                match self.opcodes[a] < self.opcodes[b] {
-                    true => self.opcodes[dst] = 1,
-                    false => self.opcodes[dst] = 0,
+            1 | 2 | 7 | 8 => {
+                let (dst, a, b) = self.get_op_registers(&modes);
+
+                match modes[0] {
+                    1 => self.opcodes[dst] = self.opcodes[a] + self.opcodes[b],
+                    2 => self.opcodes[dst] = self.opcodes[a] * self.opcodes[b],
+                    7 => match self.opcodes[a] < self.opcodes[b] {
+                        true  => self.opcodes[dst] = 1,
+                        false => self.opcodes[dst] = 0,
+                    },
+                    8 => match self.opcodes[a] == self.opcodes[b] {
+                        true  => self.opcodes[dst] = 1,
+                        false => self.opcodes[dst] = 0,
+                    },
+                    _ => unreachable!(),
                 };
-            },
-            8 => {
-                let (dst, a, b) = self.get_op_registers(modes);
-                match self.opcodes[a] == self.opcodes[b] {
-                    true => self.opcodes[dst] = 1,
-                    false => self.opcodes[dst] = 0,
+            }
+            3 | 4 => {
+                let dst = self.get_io_register(&modes);
+
+                match modes[0] {
+                    3 => self.opcodes[dst] = self.input,
+                    4 => return Status::Output(self.opcodes[dst]),
+                    _ => unreachable!(),
+                };
+            }
+            5 | 6 => {
+                let (dst, value) = self.get_jmp_registers(&modes);
+
+                match modes[0] {
+                    5 => if value != 0 { self.ptr = dst; },
+                    6 => if value == 0 { self.ptr = dst; },
+                    _ => unreachable!(),
                 };
             }
             99 => return Status::Exit,
-            _  => panic!("invalid opcode {}", self.opcodes[self.ptr]),
+            _ => panic!("invalid op code!"),
         }
 
         Status::Normal
