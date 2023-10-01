@@ -1,7 +1,7 @@
 // Advent of Code 2019, Intcode
 // (c) aichingert
 
-type N = i32;
+pub type N = i32;
 
 pub struct VM {
     ptr: usize,
