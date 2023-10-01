@@ -4,11 +4,12 @@
 pub type N = i32;
 
 pub struct VM {
-    ptr: usize,
+    pub ptr: usize,
     input: N,
     opcodes: Vec<N>,
 }
 
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum Status {
     Normal,
     Input,
