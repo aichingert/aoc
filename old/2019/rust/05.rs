@@ -2,23 +2,38 @@
 // (c) aichingert
 
 #[path="intcode.rs"] mod intcode;
-use intcode::Computer;
+use intcode::{VM, Status, N};
 
-fn part1(opcodes: &Vec<i32>) -> i32 {
-    let mut computer = Computer::new(opcodes.clone(),vec![1]);
-    computer.run();
-    computer.output[computer.output.len()-1]
+fn part_one(opcodes: &Vec<N>) -> N {
+    let mut vm = VM::new(opcodes.clone(), 1);
+    let mut out = 0;
+
+    loop {
+        match vm.execute() {
+            Status::Output(n) => out = n,
+            Status::Exit => break,
+            _ => {},
+        }
+    }
+
+    out
 }
 
+/*
 fn part2(opcodes: &Vec<i32>) -> i32 {
     let mut computer = Computer::new(opcodes.clone(),vec![5]);
     computer.run();
     computer.output[computer.output.len()-1]
 }
+*/
 
 fn main() {
-    let opcodes = std::fs::read_to_string("../input/05").unwrap().trim().split(',').map(|n| n.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+    let opcodes = std::fs::read_to_string("../input/05")
+        .unwrap().trim()
+        .split(',')
+        .map(|n| n.parse::<N>().unwrap())
+        .collect::<Vec<N>>();
 
-    println!("Part 1: {}", part1(&opcodes));
-    println!("Part 2: {}", part2(&opcodes));
+    println!("Part 1: {}", part_one(&opcodes));
+    //println!("Part 2: {}", part2(&opcodes));
 }
