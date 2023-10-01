@@ -3,41 +3,46 @@
 
 #[path="intcode.rs"] mod intcode;
 #[path="../../utils/rust/permutations.rs"] mod permutations;
-use intcode::Computer;
+use intcode::{VM, Status, N};
 use permutations::permutations;
 
-fn part1(opcodes: &Vec<i32>) -> i32 {
-    let mut signal = 0i32;
-    let mut perms = permutations(5, &mut vec![0,1,2,3,4]);
+fn part_one(opcodes: &Vec<N>) -> N {
+    let mut signal = 0;
+    let perms = permutations(5, &mut vec![0,1,2,3,4]);
 
     for perm in perms.iter() {
-        let mut amp_a = Computer::new(opcodes.clone(), vec![perm[0], 0]);
-        amp_a.run();
-        //println!("{:?}", amp_a.output);
-        let mut amp_b = Computer::new(opcodes.clone(), vec![perm[1], amp_a.output[0]]);
-        amp_b.run();
-        //println!("{:?}", amp_b.output);
-        let mut amp_c = Computer::new(opcodes.clone(), vec![perm[2], amp_b.output[0]]);
-        amp_c.run();
-        //println!("{:?}", amp_c.output);
-        let mut amp_d = Computer::new(opcodes.clone(), vec![perm[3], amp_c.output[0]]);
-        amp_d.run();
-        //println!("{:?}", amp_d.output);
-        let mut amp_e = Computer::new(opcodes.clone(), vec![perm[4], amp_d.output[0]]);
-        amp_e.run();
-        //println!("{:?}", amp_e.output);
-        //println!("{:?} - {:?}", perm, amp_e.output);
-        signal = signal.max(amp_e.output[0]);
+        let mut cpus = vec![
+            VM::new(opcodes.clone(), perm[0]),
+            VM::new(opcodes.clone(), perm[1]),
+            VM::new(opcodes.clone(), perm[2]),
+            VM::new(opcodes.clone(), perm[3]),
+            VM::new(opcodes.clone(), perm[4])
+        ];
+        let mut input = 0;
+
+        for i in 0..cpus.len() {
+            loop {
+                match cpus[i].execute() {
+                    Status::Input => cpus[i]._set_input(input),
+                    Status::Output(n) => input = n,
+                    Status::Exit => break,
+                    _ => {},
+                }
+            }
+        }
+
+        signal = signal.max(input);
     }
 
     signal
 }
 
-fn part2() {}
 
 fn main() {
-    let opcodes = std::fs::read_to_string("../input/07").unwrap().trim().split(',').map(|n| n.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+    let opcodes = std::fs::read_to_string("../input/07").unwrap().trim()
+        .split(',')
+        .map(|n| n.parse::<N>().unwrap())
+        .collect::<Vec<N>>();
 
-    println!("Part 1: {}", part1(&opcodes));
-    //println!("Part 2: {}", part2());
+    println!("Part 1: {}", part_one(&opcodes));
 }

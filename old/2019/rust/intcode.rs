@@ -11,6 +11,7 @@ pub struct VM {
 
 pub enum Status {
     Normal,
+    Input,
     Output(N),
     Exit,
 }
@@ -26,6 +27,10 @@ impl VM {
 
     pub fn _get_position(&self, dst: usize) -> N {
         self.opcodes[dst]
+    }
+
+    pub fn _set_input(&mut self, input: N) {
+        self.input = input;
     }
 
     fn get_registers(&mut self, modes: &Vec<N>) -> Vec<usize> {
@@ -71,10 +76,8 @@ impl VM {
         let mut modes = vec![0;3];
         let mut idx = 1usize;
 
-        modes[0] += opcode % 10;
-        opcode /= 10;
-        modes[0] += (opcode % 10) * 10;
-        opcode /= 10;
+        modes[0] += opcode % 100;
+        opcode /= 100;
 
         while opcode > 0 {
             modes[idx] = opcode % 10;
@@ -113,7 +116,10 @@ impl VM {
                 let dst = self.get_io_register(&modes);
 
                 match modes[0] {
-                    3 => self.opcodes[dst] = self.input,
+                    3 => {
+                        self.opcodes[dst] = self.input;
+                        return Status::Input;
+                    }
                     4 => return Status::Output(self.opcodes[dst]),
                     _ => unreachable!(),
                 };
