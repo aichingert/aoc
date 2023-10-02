@@ -6,7 +6,7 @@ use std::collections::HashMap;
 pub type N = i64;
 
 pub struct VM {
-    pub ptr: usize,
+    ptr: usize,
     base: N,
     input: N,
     mem: HashMap<usize, N>,
@@ -101,7 +101,11 @@ impl VM {
         modes
     }
 
-    pub fn execute(&mut self) -> Status {
+    pub fn _get_next_opcode(&mut self) -> N {
+        *self.mem.entry(self.ptr).or_insert(0) % 100
+    }
+
+    pub fn exec(&mut self) -> Status {
         let modes = self.parse_modes();
 
         match modes[0] {

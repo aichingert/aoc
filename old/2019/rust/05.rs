@@ -9,7 +9,7 @@ fn part_one(opcodes: &Vec<N>) -> N {
     let mut out = 0;
 
     loop {
-        match vm.execute() {
+        match vm.exec() {
             Status::Output(n) => out = n,
             Status::Exit => break,
             _ => {},
@@ -24,7 +24,7 @@ fn part_two(opcodes: &Vec<N>) -> N {
     let mut out = 0;
 
     loop {
-        match vm.execute() {
+        match vm.exec() {
             Status::Output(n) => out = n,
             Status::Exit => break,
             _ => {},

@@ -22,7 +22,7 @@ fn part_one(opcodes: &Vec<N>) -> N {
 
         for i in 0..cpus.len() {
             loop {
-                match cpus[i].execute() {
+                match cpus[i].exec() {
                     Status::Input => cpus[i]._set_input(input),
                     Status::Output(n) => input = n,
                     Status::Exit => break,
@@ -52,7 +52,7 @@ fn part_two(opcodes: &Vec<N>) -> N {
 
         for i in 0..cpus.len() {
             loop {
-                match cpus[i].execute() {
+                match cpus[i].exec() {
                     Status::Input => {
                         break;
                     }
@@ -62,23 +62,17 @@ fn part_two(opcodes: &Vec<N>) -> N {
         }
 
         let mut status = Status::Normal;
-        let mut input = 0;
-        let mut i = 0;
+        let (mut input, mut i) = (0, 0);
 
         while status != Status::Exit {
-            let mut first = false;
-
             loop {
-                status = cpus[i].execute();
+                if cpus[i]._get_next_opcode() == 3 {
+                    cpus[i]._set_input(input);
+                }
+
+                status = cpus[i].exec();
 
                 match status {
-                    Status::Input => {
-                        if !first {
-                            cpus[i].ptr -= 2;
-                            cpus[i]._set_input(input);
-                            first = true;
-                        }
-                    }
                     Status::Output(n) => {
                         input = n;
                         break;
