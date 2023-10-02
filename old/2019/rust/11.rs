@@ -11,10 +11,10 @@ fn main() {
     let mut pos = (0, 0);
     let mut dir = (-1, 0);
 
-    let mut map: HashSet<(N, N)> = HashSet::new();
+    let mut map: HashSet<(N, N)> = HashSet::from([pos]);
     let mut seen = HashSet::from([pos]);
 
-    let mut vm = VM::new(&opcodes, 0);
+    let mut vm = VM::new(&opcodes, 1);
     let mut status = Status::Normal;
 
     while status != Status::Exit {
@@ -68,6 +68,18 @@ fn main() {
             seen.insert(pos); 
         }
     }
-    
+
     println!("Part one: {}", seen.len());
+    println!("Part two: ");
+
+    for i in 0..6 {
+        for j in 0..40 {
+            if map.contains(&(i, j)) {
+                print!("#");
+            } else {
+                print!(".");
+            }
+        }
+        println!();
+    }
 }
