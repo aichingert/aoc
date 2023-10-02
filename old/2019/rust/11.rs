@@ -2,12 +2,7 @@
 use intcode::{VM, Status, N};
 use std::collections::HashSet;
 
-fn main() {
-    let opcodes = std::fs::read_to_string("../input/11").unwrap().trim()
-        .split(',')
-        .map(|n| n.parse::<N>().unwrap())
-        .collect::<Vec<N>>();
-
+fn solve(opcodes: &Vec<N>) -> (HashSet<(N, N)>, HashSet<(N, N)>) {
     let mut pos = (0, 0);
     let mut dir = (-1, 0);
 
@@ -68,6 +63,17 @@ fn main() {
             seen.insert(pos); 
         }
     }
+
+    (map, seen)
+}
+
+fn main() {
+    let opcodes = std::fs::read_to_string("../input/11").unwrap().trim()
+        .split(',')
+        .map(|n| n.parse::<N>().unwrap())
+        .collect::<Vec<N>>();
+
+    let (map, seen) = solve(&opcodes);
 
     println!("Part one: {}", seen.len());
     println!("Part two: ");
