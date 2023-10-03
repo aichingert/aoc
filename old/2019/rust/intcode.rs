@@ -158,3 +158,11 @@ impl VM {
         Status::Normal
     }
 }
+
+pub fn read_input(day: u16) -> Vec<N> {
+    std::fs::read_to_string(&format!("../input/{:0>2}", day))
+        .unwrap().trim()
+        .split(',')
+        .map(|n| n.parse::<N>().unwrap())
+        .collect::<Vec<N>>()
+}

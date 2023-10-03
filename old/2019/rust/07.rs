@@ -3,7 +3,7 @@
 
 #[path="intcode.rs"] mod intcode;
 #[path="../../utils/rust/permutations.rs"] mod permutations;
-use intcode::{VM, Status, N};
+use intcode::{VM, Status, N, read_input};
 use permutations::permutations;
 
 fn part_one(opcodes: &Vec<N>) -> N {
@@ -92,10 +92,7 @@ fn part_two(opcodes: &Vec<N>) -> N {
 }
 
 fn main() {
-    let opcodes = std::fs::read_to_string("../input/07").unwrap().trim()
-        .split(',')
-        .map(|n| n.parse::<N>().unwrap())
-        .collect::<Vec<N>>();
+    let opcodes = read_input(7);
 
     println!("Part 1: {}", part_one(&opcodes));
     println!("Part 2: {}", part_two(&opcodes));

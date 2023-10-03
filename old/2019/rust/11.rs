@@ -1,5 +1,5 @@
 #[path="intcode.rs"] mod intcode;
-use intcode::{VM, Status, N};
+use intcode::{VM, Status, N, read_input};
 use std::collections::HashSet;
 
 fn solve(opcodes: &Vec<N>) -> (HashSet<(N, N)>, HashSet<(N, N)>) {
@@ -68,11 +68,7 @@ fn solve(opcodes: &Vec<N>) -> (HashSet<(N, N)>, HashSet<(N, N)>) {
 }
 
 fn main() {
-    let opcodes = std::fs::read_to_string("../input/11").unwrap().trim()
-        .split(',')
-        .map(|n| n.parse::<N>().unwrap())
-        .collect::<Vec<N>>();
-
+    let opcodes = read_input(11);
     let (map, seen) = solve(&opcodes);
 
     println!("Part one: {}", seen.len());

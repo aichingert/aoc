@@ -2,7 +2,7 @@
 // (c) aichingert
 
 #[path="intcode.rs"] mod intcode;
-use intcode::{VM, Status, N};
+use intcode::{VM, Status, N, read_input};
 
 fn part_one(opcodes: &Vec<N>) -> N {
     let mut vm: VM = VM::new(opcodes, 0);
@@ -42,11 +42,7 @@ fn part_two(opcodes: &mut Vec<N>) -> N {
 }
 
 fn main() {
-    let mut opcodes = std::fs::read_to_string("../input/02")
-        .unwrap().trim()
-        .split(',')
-        .map(|n| n.parse::<N>().unwrap())
-        .collect::<Vec<N>>();
+    let mut opcodes = read_input(2);
     opcodes[1] = 12;
     opcodes[2] = 2;
 
