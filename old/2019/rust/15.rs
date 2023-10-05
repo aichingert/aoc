@@ -83,6 +83,27 @@ fn part_one(c: Pos, e: Pos, v: &mut HashSet<Pos>, d: u32, o: &HashSet<Pos>) -> O
     Some(ans)
 }
 
+fn part_two(c: Pos, v: &mut HashSet<Pos>, time: u32, o: &HashSet<Pos>) -> u32 {
+    if v.contains(&c) {
+        return time;
+    }
+    v.insert(c);
+
+    let routes = [(1,0),(-1,0),(0,1),(0,-1)].iter()
+        .map(|(i, j)| (c.0 + *i, c.1 + *j))
+        .filter(|(i,j)| {
+            o.contains(&(*i, *j)) && !v.contains(&(*i, *j))
+        })
+        .collect::<Vec<_>>();
+
+    let mut max = time;
+    for route in routes {
+        max = max.max(part_two(route, v, time + 1, o));
+    }
+
+    max
+}
+
 fn parse(opcodes: &Vec<N>) -> (HashSet<Pos>, Pos) {
     let vm = VM::new(&opcodes, 2);
     let mut bfs = VecDeque::from(vec![
@@ -142,5 +163,6 @@ fn main() {
     let opcodes = read_input(15);
     let (open, oxygen_system) = parse(&opcodes);
 
-    println!("Part one: {}", part_one((0,0), oxygen_system, &mut HashSet::new(), 0, &open).unwrap());
+    println!("Part one: {:?}", part_one((0,0), oxygen_system, &mut HashSet::new(), 0, &open));
+    println!("Part two: {:?}", part_two(oxygen_system, &mut HashSet::new(), 0, &open));
 }
