@@ -1,10 +1,13 @@
 pub fn answer() -> (u32, u32) {
     let (list, poss) = parse();
     let mut cnt = 0;
+
+    //list[8] = Value::Pointers(vec![vec![42],vec![42,8]]);
+    //list[11] = Value::Pointers(vec![vec![42, 31],vec![42,11,31]]);
+
     solve(&list, 0, &String::new(), &Vec::new(), &poss, &mut cnt);
 
-    println!("{cnt}");
-    (0, 0)
+    (cnt, 0)
 }
 
 fn solve(list: &Vec<Value>, cur: usize, value: &String, rest: &Vec<usize>, pos: &Vec<String>, cnt: &mut u32) {
@@ -58,7 +61,7 @@ fn solve(list: &Vec<Value>, cur: usize, value: &String, rest: &Vec<usize>, pos: 
     };
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Value {
     Lit(String),
     Pointers(Vec<Vec<usize>>),
@@ -72,7 +75,8 @@ fn parse() -> (Vec<Value>, Vec<String>) {
 
     'outer: for line in rules.lines() {
         let line = line.replace("\"", "");
-        let (_, values) = line.split_once(": ").unwrap();
+        let (idx, values) = line.split_once(": ").unwrap();
+        let idx = idx.parse::<usize>().unwrap();
 
         let mut storing = Vec::new();
         let possibilities: Vec<&str> = values.split(" | ").collect();
@@ -81,15 +85,26 @@ fn parse() -> (Vec<Value>, Vec<String>) {
             let x = possibility.split(' ').collect::<Vec<&str>>();
 
             if x.len() == 1 && x[0].parse::<usize>().is_err() {
-                list.push(Value::Lit(x[0].to_string()));
+                for i in 0..=idx {
+                    if i >= list.len() {
+                        list.push(Value::Lit(String::from("")));
+                    }
+                }
+
+                list[idx] = Value::Lit(x[0].to_string());
                 continue 'outer;
             } else {
                 storing.push(x.iter().map(|s| s.parse::<usize>().unwrap()).collect());
             }
         }
 
+        for i in 0..=idx {
+            if i >= list.len() {
+                list.push(Value::Lit(String::from("")));
+            }
+        }
 
-        list.push(Value::Pointers(storing));
+        list[idx] = Value::Pointers(storing);
     }
 
     (list, input.split('\n').map(|s| s.to_string()).collect::<Vec<String>>())
