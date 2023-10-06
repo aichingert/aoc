@@ -61,9 +61,7 @@ impl Position {
 fn part_one(c: Pos, e: Pos, v: &mut HashSet<Pos>, d: u32, o: &HashSet<Pos>) -> Option<u32> {
     if c == e {
         return Some(d);
-    } else if v.contains(&c) {
-        return None;
-    }
+    } 
     v.insert(c);
 
     let routes = [(1,0),(-1,0),(0,1),(0,-1)].iter()
@@ -84,9 +82,6 @@ fn part_one(c: Pos, e: Pos, v: &mut HashSet<Pos>, d: u32, o: &HashSet<Pos>) -> O
 }
 
 fn part_two(c: Pos, v: &mut HashSet<Pos>, time: u32, o: &HashSet<Pos>) -> u32 {
-    if v.contains(&c) {
-        return time;
-    }
     v.insert(c);
 
     let routes = [(1,0),(-1,0),(0,1),(0,-1)].iter()
@@ -164,5 +159,5 @@ fn main() {
     let (open, oxygen_system) = parse(&opcodes);
 
     println!("Part one: {:?}", part_one((0,0), oxygen_system, &mut HashSet::new(), 0, &open));
-    println!("Part two: {:?}", part_two(oxygen_system, &mut HashSet::new(), 0, &open));
+    println!("Part two: {}", part_two(oxygen_system, &mut HashSet::new(), 0, &open));
 }

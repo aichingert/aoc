@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 pub type N = i64;
 
+#[derive(Clone)]
 pub struct VM {
     ptr: usize,
     base: N,
