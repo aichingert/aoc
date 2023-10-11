@@ -44,6 +44,10 @@ impl VM {
     pub fn _set_input(&mut self, input: N) {
         self.input = input;
     }
+    
+    pub fn _get_next_opcode(&mut self) -> N {
+        *self.mem.entry(self.ptr).or_insert(0) % 100
+    }
 
     fn get_registers(&mut self, modes: &Vec<N>) -> Vec<usize> {
         let mut loc = Vec::<usize>::new();
@@ -100,10 +104,6 @@ impl VM {
         }
 
         modes
-    }
-
-    pub fn _get_next_opcode(&mut self) -> N {
-        *self.mem.entry(self.ptr).or_insert(0) % 100
     }
 
     pub fn exec(&mut self) -> Status {
