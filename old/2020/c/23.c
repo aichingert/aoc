@@ -99,6 +99,6 @@ int main(void) {
 	node* head = create_circle();
 
 	part_one(head);
-
+	part_two(head);
 	return 0;
 }

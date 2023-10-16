@@ -3,49 +3,76 @@ use std::collections::{VecDeque, HashMap, HashSet};
 type Pos = (usize, usize);
 type HM= HashMap<Pos, char>;
 
-fn get_reachable_keys(start: Pos, k: &HM, d: &HM, w: &HashSet<Pos>, i: &HashSet<char>) -> Vec<Pos> {
-    let mut bfs = VecDeque::from([start]);
-    let mut visited = HashSet::new();
-    let mut reachable_keys = Vec::new();
-
-    while let Some(next) = bfs.pop_front() {
-        if w.contains(&next) || (d.contains_key(&next) && !i.contains(d.get(&next).unwrap())) {
-            continue;
-        }
-        visited.insert(next);
-
-        if k.contains_key(&next) && !i.contains(&k.get(&next).unwrap().to_ascii_uppercase()) { 
-            reachable_keys.push(next); 
-            continue; 
-        }
-
-        for vec in [(0,1),(0,-1),(1,0),(-1,0)] {
-            let loc = ((next.0 as i32 + vec.0) as usize, (next.1 as i32 + vec.1) as usize);
-
-            if !visited.contains(&loc) {
-                bfs.push_back(loc);
-            }
-        }
-    }
-
-    reachable_keys
+#[derive(Debug, Clone)]
+struct State {
+    reachable_keys: Vec<Pos>,
+    inventory: HashSet<char>,
+    visited: HashSet<Pos>,
+    position: Pos,
 }
 
-fn part_one(start: Pos, l: u32, inv: &HashSet<char>, k: &HM, d: &HM, w: &HashSet<Pos>) -> u32 {
-    println!("{:?}", inv);
-    if inv.len() == k.len() {
-        return l;
+impl State {
+    fn new(start: Pos) -> Self {
+        Self {
+            reachable_keys: Vec::new(),
+            inventory: HashSet::new(),
+            visited: HashSet::new(),
+            position: start,
+        }
     }
 
-    let mut i = inv.clone();
+    fn get_reachable_keys(&mut self, keys: &HM, doors: &HM, walls: &HashSet<Pos>) {
+        let mut bfs = VecDeque::from([self.position]);
+
+        while let Some(next) = bfs.pop_front() {
+            if walls.contains(&next) || (doors.contains_key(&next) && !self.inventory.contains(doors.get(&next).unwrap())) {
+                continue;
+            }
+            self.visited.insert(next);
+
+            if keys.contains_key(&next) && !self.inventory.contains(&keys.get(&next).unwrap().to_ascii_uppercase()) { 
+                self.reachable_keys.push(next); 
+                continue; 
+            }
+
+            for vec in [(0,1),(0,-1),(1,0),(-1,0)] {
+                let loc = ((next.0 as i32 + vec.0) as usize, (next.1 as i32 + vec.1) as usize);
+
+                if !self.visited.contains(&loc) {
+                    bfs.push_back(loc);
+                }
+            }
+        }
+
+    }
+}
+
+fn part_one(state: State, dist: u32, keys: &HM, doors: &HM, rd: &HashMap<char, Pos>, walls: &HashSet<Pos>) -> u32 {
+    if state.inventory.len() == keys.len() {
+        return dist;
+    }
+
     let mut ans = u32::MAX;
+    let mut state = state;
+    let mut idx = 0usize;
 
-    for keys in get_reachable_keys(start, k, d, w, &inv) {
-        let ch = k.get(&keys).unwrap().to_ascii_uppercase();
+    state.get_reachable_keys(keys, doors, walls);
+    println!("{dist}: {:?}", state);
 
-        i.insert(ch);
-        ans = ans.min(part_one(keys, l + 1, &i, k, d, w));
-        i.remove(&ch);
+    while idx < state.reachable_keys.len() {
+        let loc = state.reachable_keys.remove(idx);
+        let key = keys.get(&loc).unwrap().to_ascii_uppercase();
+
+        state.inventory.insert(key);
+        if let Some(pos) = rd.get(&key) {
+            state.position = *pos;
+        }
+
+        ans = ans.min(part_one(state.clone(), dist + 1, keys, doors, rd, walls));
+
+        state.inventory.remove(&key);
+        state.reachable_keys.insert(idx, loc);
+        idx += 1;
     }
 
     ans
@@ -73,7 +100,11 @@ fn main() {
         }
     }
 
-    println!("{}", part_one(start, 0, &HashSet::new(), &keys, &doors, &walls));
-    //println!("{:?}", get_reachable_keys(start, &keys, &doors, &walls, &HashSet::from(['A'])));
+    let mut rev_doors: HashMap<char, Pos> = HashMap::new();
 
+    for (k, v) in doors.iter() {
+        rev_doors.insert(*v, *k);
+    }
+
+    println!("{}", part_one(State::new(start), 0, &keys, &doors, &rev_doors, &walls));
 }

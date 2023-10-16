@@ -51,13 +51,14 @@ impl Tool {
 
             if x < 0 || y < 0 { continue; }
 
-            let region = (geologic_index(gi, j, i, depth) + depth) % 20183 % 3;
+            let region = (geologic_index(gi, x, y, depth) + depth) % 20183 % 3;
 
             match self {
                 Self::Torch => if region == 0 || region == 2 {
                     adjacent.push((x, y));
                 }
-
+                _ => (),
+            }
         }
 
         adjacent
