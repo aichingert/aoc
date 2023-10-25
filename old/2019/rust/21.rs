@@ -1,19 +1,9 @@
 #[path="intcode.rs"] mod intcode;
 use intcode::{VM, Status, N, read_input};
 
-fn part_one(opcodes: &Vec<N>) -> N {
+fn solve(opcodes: &Vec<N>, commands: Vec<N>) -> N {
     let mut vm = VM::new(opcodes, 0);
-    let commands = "\
-    NOT A J\n\
-    NOT B T\n\
-    OR J T\n\
-    NOT C J\n\
-    OR J T\n\
-    OR T J\n\
-    AND D J\n\
-    AND T J\n\
-    WALK\n
-    ".chars().map(|ch| (ch as u8) as N).collect::<Vec<N>>();
+    
     let mut cur = 0;
     let mut ans = 0;
 
@@ -35,6 +25,36 @@ fn part_one(opcodes: &Vec<N>) -> N {
 
 fn main() {
     let opcodes = read_input(21);
+
+    let part_one = "\
+    NOT A J\n\
+    NOT B T\n\
+    OR J T\n\
+    NOT C J\n\
+    OR J T\n\
+    OR T J\n\
+    AND D J\n\
+    AND T J\n\
+    WALK\n
+    ".chars().map(|ch| (ch as u8) as N).collect::<Vec<N>>();
     
-    println!("Part one: {}", part_one(&opcodes));
+    let part_two = "\
+    NOT A J\n\
+    NOT B T\n\
+    OR J T\n\
+    NOT C J\n\
+    OR J T\n\
+    OR T J\n\
+    AND E J\n\
+    OR H J\n\
+    AND J T\n\
+    OR T J\n\
+    AND D J\n\
+    AND T J\n\
+    RUN\n
+    ".chars().map(|ch| (ch as u8) as N).collect::<Vec<N>>();
+
+    
+    println!("Part one: {}", solve(&opcodes, part_one));
+    println!("Part one: {}", solve(&opcodes, part_two));
 }
