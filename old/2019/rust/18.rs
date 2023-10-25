@@ -1,110 +1,119 @@
-use std::collections::{VecDeque, HashMap, HashSet};
+use std::collections::{HashMap,HashSet,VecDeque};
 
-type Pos = (usize, usize);
-type HM= HashMap<Pos, char>;
+type Loc = (usize, usize);
 
-#[derive(Debug, Clone)]
+struct Maze {
+    keys:   HashMap<Loc, char>,
+    doors:  HashMap<Loc, char>,
+    walls:  HashSet<Loc>,
+}
+
+#[derive(Clone)]
 struct State {
-    reachable_keys: Vec<Pos>,
     inventory: HashSet<char>,
-    visited: HashSet<Pos>,
-    position: Pos,
+    visited: HashSet<Loc>,
+    blocked: Vec<Loc>,
+    starts: Vec<Loc>,
 }
 
 impl State {
-    fn new(start: Pos) -> Self {
-        Self {
-            reachable_keys: Vec::new(),
-            inventory: HashSet::new(),
-            visited: HashSet::new(),
-            position: start,
+    fn is_door_locked(&self, loc: Loc, maze: &Maze) -> bool {
+        if let Some(door) = maze.doors.get(&loc) {
+            let door_key = *door as u8 + 32;
+            !self.inventory.contains(&(door_key as char))
+        } else {
+            false
         }
     }
 
-    fn get_reachable_keys(&mut self, keys: &HM, doors: &HM, walls: &HashSet<Pos>) {
-        let mut bfs = VecDeque::from([self.position]);
+    fn explore_path(&mut self, loc: Loc, maze: &Maze) {
+        let mut bfs = VecDeque::from([loc]);
 
-        while let Some(next) = bfs.pop_front() {
-            if walls.contains(&next) || (doors.contains_key(&next) && !self.inventory.contains(doors.get(&next).unwrap())) {
-                continue;
-            }
-            self.visited.insert(next);
+        while let Some((r, c)) = bfs.pop_front() {
+            for (i, j) in [(0,1),(1,0),(0,-1),(-1,0)] {
+                let (nr, nc) = (i + r as i32, j + c as i32);
 
-            if keys.contains_key(&next) && !self.inventory.contains(&keys.get(&next).unwrap().to_ascii_uppercase()) { 
-                self.reachable_keys.push(next); 
-                continue; 
-            }
+                if nr < 0 || nc < 0 { continue; }
 
-            for vec in [(0,1),(0,-1),(1,0),(-1,0)] {
-                let loc = ((next.0 as i32 + vec.0) as usize, (next.1 as i32 + vec.1) as usize);
+                let loc = (nr as usize, nc as usize);
 
-                if !self.visited.contains(&loc) {
+                if self.visited.contains(&loc) || maze.walls.contains(&loc) { continue; }
+                self.visited.insert(loc);
+
+                //println!("{:?} - {}", loc, self.is_door_locked(loc, maze));
+                if self.is_door_locked(loc, maze) {
+                    self.blocked.push(loc);
+                } else if maze.keys.contains_key(&loc) {
+                    self.starts.push(loc);
+                } else {
                     bfs.push_back(loc);
                 }
             }
         }
-
     }
 }
 
-fn part_one(state: State, dist: u32, keys: &HM, doors: &HM, rd: &HashMap<char, Pos>, walls: &HashSet<Pos>) -> u32 {
-    if state.inventory.len() == keys.len() {
-        return dist;
+fn part_one(maze: &Maze, mut state: State, dst: u32) -> u32 { 
+    if state.inventory.len() == maze.keys.len() {
+        //println!("FIN: {:?}", state.inventory);
+        return dst;
     }
 
-    let mut ans = u32::MAX;
-    let mut state = state;
-    let mut idx = 0usize;
+    let mut dst = dst;
+    let mut i = 0;
 
-    state.get_reachable_keys(keys, doors, walls);
-    println!("{dist}: {:?}", state);
+    while i < state.blocked.len() {
+        let cur = maze.doors.get(&state.blocked[i]).unwrap();
 
-    while idx < state.reachable_keys.len() {
-        let loc = state.reachable_keys.remove(idx);
-        let key = keys.get(&loc).unwrap().to_ascii_uppercase();
+        if state.inventory.contains(&cur) {
+            let open = state.blocked.remove(i);
+            state.starts.push(open);
+        } else {
+            i += 1;
+        }
+    }
+    
 
-        state.inventory.insert(key);
-        if let Some(pos) = rd.get(&key) {
-            state.position = *pos;
+    for i in 0..state.starts.len() {
+        let start = state.starts.remove(i);
+        let mut clone = state.clone();
+        if let Some(key) = maze.keys.get(&start).and_then(|key| Some((*key as u8 - 32) as char)) {
+            clone.inventory.insert(key);
         }
 
-        ans = ans.min(part_one(state.clone(), dist + 1, keys, doors, rd, walls));
+        clone.explore_path(start, maze);
+        dst = dst.min(part_one(maze, clone, dst));
 
-        state.inventory.remove(&key);
-        state.reachable_keys.insert(idx, loc);
-        idx += 1;
+        state.starts.insert(i, start);
     }
 
-    ans
+    0
 }
 
 fn main() {
     let inp = std::fs::read_to_string("../input/18").unwrap().trim().to_string();
-    let mut walls: HashSet<Pos> = HashSet::new();
-    let mut doors: HashMap<Pos, char> = HashMap::new();
-    let mut keys:  HashMap<Pos, char> = HashMap::new();
-    let mut start: Pos = (0, 0);
+    let mut maze = Maze { keys: HashMap::new(), doors: HashMap::new(), walls: HashSet::new() };
+    let mut start: Loc = (0,0);
 
     for (i, l) in inp.lines().enumerate() {
         for (j, c) in l.chars().enumerate() {
             match c {
-                '.' => (),
-                '#' => { walls.insert((i, j)); },
+                '#' => { maze.walls.insert((i, j)); },
                 '@' => start = (i, j),
-                c => if c.is_ascii_uppercase() {
-                    doors.insert((i, j), c);
-                } else {
-                    keys.insert((i, j), c);
-                }
-            };
+                'a'..='z' => { maze.keys.insert((i, j), c); },
+                'A'..='Z' => { maze.doors.insert((i, j), c); },
+                '.' => (),
+                _ => panic!("invalid character {}", c),
+            }
         }
     }
 
-    let mut rev_doors: HashMap<char, Pos> = HashMap::new();
+    let state = State { 
+        inventory: HashSet::new(), 
+        visited: HashSet::new(), 
+        blocked: Vec::new(),
+        starts: vec![start],
+    };
 
-    for (k, v) in doors.iter() {
-        rev_doors.insert(*v, *k);
-    }
-
-    println!("{}", part_one(State::new(start), 0, &keys, &doors, &rev_doors, &walls));
+    println!("Part one: {}", part_one(&maze, state, 0));
 }
