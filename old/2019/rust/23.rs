@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[path="intcode.rs"] mod intcode;
 use intcode::{VM, Status, N, read_input};
 
@@ -6,6 +8,11 @@ const MACHINES: usize = 50;
 struct Nic {
     vm: VM,
     packets: Vec<(bool, N, N)>
+}
+
+struct Nat {
+    mem: HashSet<(N, N)>,
+    last_packet: Option<(N, N)>,
 }
 
 impl Nic {
@@ -17,44 +24,48 @@ impl Nic {
     }
 }
 
-fn part_one(opcodes: &Vec<N>) -> N {
+impl Nat {
+    fn new() -> Self {
+        Self {
+            mem: HashSet::new(),
+            last_packet: None,
+        }
+    }
+}
+
+fn solve(opcodes: &Vec<N>) -> (N, N) {
+    let mut part_one: N = -1;
     let mut nics: [Nic; MACHINES] = core::array::from_fn(|_| Nic::new(opcodes));
-    let mut ans = 0;
-    let mut cur = 0;
+    let mut nat : Nat = Nat::new();
 
     for i in 0..MACHINES {
         nics[i].vm._set_input(i as N);
-        let mut done = false;
 
         loop {
             if nics[i].vm._get_next_opcode() == 3 {
-                if done { break; }
-                done = true;
+                _ = nics[i].vm.exec();
+                break;
             }
             
-            match nics[i].vm.exec() {
-                Status::Output(n) => println!("FIR: {}", n),
-                _ => (),
-            }
+            _ = nics[i].vm.exec();
         }
     }
 
     loop {
+        let mut p = false;
         for i in 0..MACHINES {
-            let mut first = true;
-            let mut should_break = false;
+            let (mut f, mut sb) = (true, false);
 
             loop {
                 if nics[i].vm._get_next_opcode() == 3 {
-                    println!("INP: {i}");
                     nics[i].vm._set_input(if nics[i].packets.len() == 0 {
-                        if !first { should_break = true; }
-                        first = false;
+                        if !f { sb = true; }
+                        f = false;
                         -1
                     } else {
                         if nics[i].packets[0].0 {
-                            let rem = nics[i].packets.remove(0);
-                            rem.2
+                            let r = nics[i].packets.remove(0);
+                            r.2
                         } else {
                             nics[i].packets[0].0 = true;
                             nics[i].packets[0].1 
@@ -64,47 +75,54 @@ fn part_one(opcodes: &Vec<N>) -> N {
 
                 match nics[i].vm.exec() {
                     Status::Output(n) => {
-                        let addr = n;
-                        let mut vals = vec![];
+                        let (addr, mut vals) = (n, vec![]);
 
                         loop {
                             match nics[i].vm.exec() {
                                 Status::Output(n) => {
                                     vals.push(n);
-
-                                    if vals.len() == 2 {
-                                        break;
-                                    }
+                                    if vals.len() == 2 { break; }
                                 }
                                 _ => (),
                             }
                         }
 
+                        p = true;
                         if addr == 255 {
-                            return vals[1];
+                            if part_one == -1 { part_one = vals[1]; }
+                            nat.last_packet = Some((vals[0], vals[1]));
                         } else {
                             nics[addr as usize].packets.push((false, vals[0], vals[1]));
                         }
-
-                        println!("Addr: {addr} - X: {}; Y: {}", vals[0], vals[1]);
                     }
                     Status::Exit => break,
                     _ => (),
                 }
 
-                if should_break {
+                if sb {
                     break;
                 }
             }
-            ans = 0;
+        }
+
+        if !p {
+            if let Some(packet) = nat.last_packet {
+                if !nat.mem.insert(packet) {
+                    return (part_one, packet.1);
+                }
+
+                nics[0].packets.push((false, packet.0, packet.1));
+            } else {
+                panic!("no one send a packet to nat");
+            }
         }
     }
-
-    ans
 }
 
 fn main() {
     let opcodes = read_input(23);
+    let (part_one, part_two) = solve(&opcodes);
     
-    println!("Part one: {}", part_one(&opcodes));
+    println!("Part one: {}", part_one);
+    println!("Part one: {}", part_two);
 }
