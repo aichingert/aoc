@@ -54,7 +54,6 @@ fn main() {
     RUN\n
     ".chars().map(|ch| (ch as u8) as N).collect::<Vec<N>>();
 
-    
     println!("Part one: {}", solve(&opcodes, part_one));
     println!("Part one: {}", solve(&opcodes, part_two));
 }

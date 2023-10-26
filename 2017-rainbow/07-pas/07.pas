@@ -78,8 +78,8 @@ begin
 			i := i + 1;
 		end;
 
-		writeln (id[2]);
-		i := i + 1;
+		writeln (id);
+		i := i + 2;
 	end;
 
 	for i := s to Length(l) do

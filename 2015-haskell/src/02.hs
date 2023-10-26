@@ -1,4 +1,9 @@
 import Aoc
+import Data.List
+
+lineFromString :: String -> [Int]
+lineFromString s = sort (read l :  read w : read h : [])
+  where [l, w, h] = splitOn 'x' s
 
 getWrappingPaper :: [Int] -> Int
 getWrappingPaper (l:w:h:[]) = 2 * l * w + 2 * w * h + 2 * h * l + l * w
