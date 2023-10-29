@@ -54,25 +54,15 @@ fn parse() -> (Vec<u32>, Vec<Board>) {
         boards.split("\n\n").collect::<Vec<_>>()
     );
 
-    let mut boards = Vec::new();
-
-
-    for board_str in boards_str {
+    (numbers, boards_str.iter().map(|s| {
         let mut cur: Board = [[(0, false); 5]; 5];
-
-        let lines = board_str.lines().collect::<Vec<_>>();
-
-        for i in 0..lines.len() {
-            let row = lines[i].split(' ').filter(|n| !n.is_empty()).collect::<Vec<_>>();
-            for j in 0..row.len() {
-                cur[i][j].0 = row[j].parse::<u32>().unwrap();
-            }
-        }
-
-        boards.push(cur);
-    }
-
-    (numbers, boards)
+        s.lines().collect::<Vec<_>>().into_iter().enumerate().for_each(|(i, line)| {
+            line.split(' ').filter(|n| !n.is_empty()).collect::<Vec<_>>().into_iter().enumerate().for_each(|(j, e)| { 
+                cur[i][j].0 = e.parse::<u32>().unwrap(); 
+            })
+        });
+        cur
+    }).collect::<Vec<Board>>())
 }
 
 fn main() {
