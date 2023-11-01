@@ -1,4 +1,5 @@
 const PART_ONE: u8 = 24;
+const PART_TWO: u8 = 32;
 
 struct Blueprint {
     id: u8,
@@ -161,9 +162,14 @@ fn part_one(bps: &Vec<Blueprint>) -> u32 {
     bps.iter().map(|bp| bp.id as u32 * bp.solve(PART_ONE, State::new(), &mut 0) as u32).sum::<u32>()
 }
 
+fn part_two(bps: &Vec<Blueprint>) -> u32 {
+    bps.iter().take(3).map(|bp| bp.solve(PART_TWO, State::new(), &mut 0) as u32).fold(1, |acc, cur| acc * cur)
+}
+
 fn main() {
     let inp = std::fs::read_to_string("../input/19").unwrap().trim().to_string();
     let bps: Vec<Blueprint> = inp.lines().map(|l| Blueprint::new(l)).collect::<Vec<_>>();
 
     println!("Part one: {}", part_one(&bps));
+    println!("Part one: {}", part_two(&bps));
 }
