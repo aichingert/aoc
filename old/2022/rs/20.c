@@ -1,24 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int input[] = {1,2,-3,3,-2,0,4};
+
 typedef struct node {
-	int val;
+	long long val;
 	struct node* prev;
 	struct node* next;
 } node;
 
-const int input[] = {1,2,-3,3,-2,0,4};
-enum { N = (sizeof input / sizeof input[0]) };
-
-node circle[N];
+node circle[7]; // change to input len
 node* zero;
 
-void build_circle() {
+void build_circle(long long key) {
 	for (int i = 0; i < N; i++) {
 		if (input[i] == 0) {
 			zero = &circle[i];
 		}
-		circle[i].val = input[i];
+		circle[i].val = input[i] * key;
 		circle[i].next = &circle[(i + 1) % N];
 		circle[i].prev = &circle[(i - 1 + N) % N];
 	}
@@ -33,11 +32,11 @@ void mix_circle() {
 		n->prev = p;
 
 		int d = circle[i].val % (N - 1);
-		for (; d > 0; d--) {
+		for (; d > 0; --d) {
 			p = n;
 			n = n->next;
 		}
-		for (; d < 0; d++) {
+		for (; d < 0; ++d) {
 			n = p;
 			p = p->prev;
 		}
@@ -49,20 +48,29 @@ void mix_circle() {
 	}
 }
 
-int main(void) {
-	build_circle();
-	mix_circle();
+long long solve(long long key) {
+	build_circle(key);
+	int t = (key > 10LL) ? 10 : 1;
 
-	node* iter = zero;
-	int part_one = 0;
-
-	for(int t = 0; t < 3; t++) {
-		for (int i = 0; i < 1000; i++) {
-			iter = iter->next;
-		}
-		part_one += iter->val;
+	for (int i = 0; i < t; i++) {
+		mix_circle();
 	}
 
-	printf("%i \n", part_one);
+	node* iter = zero;
+	long long sum = 0;
+
+	for (int t = 0; t < 3; ++t) {
+		for (int i = 0; i < 1000; ++i) {
+			iter = iter->next;
+		}
+		sum += iter->val;
+	}
+
+	return sum;
+}
+
+int main(void) {
+	printf("Part one: %lld\n", solve(1L));
+	printf("Part two: %lld\n", solve(811589153LL));
 	return 0;
 }
