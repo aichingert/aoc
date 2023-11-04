@@ -2,111 +2,67 @@
 #include <stdlib.h>
 
 typedef struct node {
-	int value;
-	struct node* left;
-	struct node* right;
+	int val;
+	struct node* prev;
+	struct node* next;
 } node;
 
-int BUF[6000];
-int LEN = 0;
+const int input[] = {1,2,-3,3,-2,0,4};
+enum { N = (sizeof input / sizeof input[0]) };
 
-void read_file()
-{
-	FILE* fp = fopen("../input/20", "r");
-	if (fp == NULL) return;
+node circle[N];
+node* zero;
 
-	char* line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	while ((read = getline(&line, &len, fp)) != -1)
-	{
-		BUF[LEN++] = atoi(line);
-	}
-
-	fclose(fp);
-}
-
-node* create_circle() 
-{
-	node* start = (node *) malloc(sizeof (node));
-
-	start->value = BUF[0];
-	start->right = (node*) malloc(sizeof (node));
-
-	node* previous = start;
-	node* current = start->right;
-
-	for (int i = 1; i < LEN - 1; ++i) 
-	{
-		current->value = BUF[i];
-		current->left = previous; 
-
-		current->left->value = BUF[i - 1];
-		current->right = (node*) malloc(sizeof(node));
-
-		previous = current;
-		current = current->right;
-	}
-
-	current->value = BUF[LEN - 1];
-	current->left = previous;
-	current->right = start;
-	start->left = current;
-
-	return start;
-}
-
-int main(void) 
-{
-	read_file();
-	node* current = create_circle();
-
-	int mod = LEN - 1;
-
-	for (int i = 0; i < 8; ++i)
-	{
-		while (current->value != BUF[i])
-			current = current->right;
-
-		node* src = current;
-		src->left->right = src->right;
-		src->right->left = src->left;
-
-		node* prv = src->left;
-		node* nxt = src->right;
-
-		int move = ((BUF[i] % mod) + mod) % mod;
-		printf("MOVE: %i - BUF: %i \n", move, BUF[i]);
-
-		for (int i = 0; i < move; i++)
-		{
-			prv = prv->right;
-			nxt = nxt->right;
+void build_circle() {
+	for (int i = 0; i < N; i++) {
+		if (input[i] == 0) {
+			zero = &circle[i];
 		}
-		printf("L: %i - R: %i\n", prv->value, nxt->value);
-
-		prv->right = src;
-		src->left = prv;
-		nxt->left = src;
-		src->right = nxt;
+		circle[i].val = input[i];
+		circle[i].next = &circle[(i + 1) % N];
+		circle[i].prev = &circle[(i - 1 + N) % N];
 	}
+}
 
-	while (current->value != 0)
-		current = current->right;
+void mix_circle() {
+	for (int i = 0; i < N; i++) {
+		node* p = circle[i].prev;
+		node* n = circle[i].next;
 
-	//printf("L: %i - R: %i \n", current->left->value, current->right->value);
+		p->next = n;
+		n->prev = p;
+
+		int d = circle[i].val % (N - 1);
+		for (; d > 0; d--) {
+			p = n;
+			n = n->next;
+		}
+		for (; d < 0; d++) {
+			n = p;
+			p = p->prev;
+		}
+
+		p->next = &circle[i];
+		circle[i].next = n;
+		circle[i].prev = p;
+		n->prev = &circle[i];
+	}
+}
+
+int main(void) {
+	build_circle();
+	mix_circle();
+
+	node* iter = zero;
 	int part_one = 0;
 
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 1000; ++j)
-			current = current->right;
-		part_one += current->value;
+	for(int t = 0; t < 3; t++) {
+		for (int i = 0; i < 1000; i++) {
+			iter = iter->next;
+		}
+		part_one += iter->val;
 	}
 
 	printf("%i \n", part_one);
-
-
 	return 0;
 }
