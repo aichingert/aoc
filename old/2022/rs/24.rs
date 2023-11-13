@@ -1,42 +1,39 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-const VEC: [(i32,i32);5] = [(0,1),(1,0),(-1,0),(0,-1),(0,0)];
-
-fn part_one(blzrd: &HashMap<char, Vec<(i32, i32)>>, len: (i32, i32)) -> i32 {
-    let mut options = VecDeque::from([(1, -1, 0)]);
+fn find_minimum_minutes_to_reach_end(blizzards: &HashMap<char, Vec<(i32, i32)>>, start: (i32, i32), end: (i32, i32), rl: i32, cl: i32) -> i32 {
+    let mut start = VecDeque::from([(1, (start))]);
     let mut seen = HashSet::new();
-    let blzrds = vec![('v', 1, 0), ('^', -1, 0), ('>', 0, 1), ('<', 0, -1)];
-    let end = (len.0 - 1, len.1);
 
-    while let Some((time, y, x)) = options.pop_front() {
+    while let Some((time, (r, c))) = start.pop_front() {
         let time = time + 1;
-        'outer: for (r, c) in VEC.iter() {
-            let ny = r + y;
-            let nx = c + x;
 
-            if (ny, nx) == end {
+        'directions: for (y, x) in [(0,1),(1,0),(-1,0),(0,-1),(0,0)] {
+            let adjacent = ((r + y), (c + x));
+
+            if adjacent == end {
                 return time;
             }
 
-            if nx < 0 || nx > len.1 || ny < 0 || ny > len.0 {
+            if adjacent.0 < 0 || adjacent.1 < 0 || adjacent.0 > rl || adjacent.1 > cl {
                 continue;
             }
 
-            for (dir, r, c) in blzrds.iter() {
-                let np = ((ny - time * r).rem_euclid(len.0), (nx - time * c).rem_euclid(len.1));
+            for (dir, y, x) in [('v', 1, 0), ('^', -1, 0), ('>', 0, 1), ('<', 0, -1)] {
+                let next_r = (adjacent.0 - time * y).rem_euclid(rl);
+                let next_c = (adjacent.1 - time * x).rem_euclid(cl);
 
-                if blzrd[&dir].contains(&np) {
-                    continue 'outer;
+                if blizzards[&dir].contains(&(next_r, next_c)) {
+                    continue 'directions;
                 }
             }
 
-            if seen.insert((time, ny, nx)) {
-                options.push_back((time, ny, nx));
+            if seen.insert((time, adjacent)) {
+                start.push_back((time, adjacent));
             }
         }
     }
 
-    -1
+    panic!("NO solution fond!");
 }
 
 fn main() {
@@ -58,5 +55,5 @@ fn main() {
 
     println!("{row} - {col}");
 
-    println!("Part one: {}", part_one(&blzrd, (row, col)));
+    println!("Part one: {}", find_minimum_minutes_to_reach_end(&blzrd, (-1, 0), (row - 1, col), row, col));
 }
