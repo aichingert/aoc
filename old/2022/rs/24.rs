@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-fn find_minimum_minutes_to_reach_end(blizzards: &HashMap<char, Vec<(i32, i32)>>, start: (i32, i32), end: (i32, i32), rl: i32, cl: i32) -> i32 {
-    let mut start = VecDeque::from([(1, (start))]);
+fn find_minimum_minutes_to_reach_end(blizzards: &HashMap<char, Vec<(i32, i32)>>, time: i32, start: (i32, i32), end: (i32, i32), rl: i32, cl: i32) -> i32 {
+    let mut start = VecDeque::from([(time, (start))]);
     let mut seen = HashSet::new();
 
     while let Some((time, (r, c))) = start.pop_front() {
@@ -31,12 +31,26 @@ fn find_minimum_minutes_to_reach_end(blizzards: &HashMap<char, Vec<(i32, i32)>>,
                 start.push_back((time, adjacent));
             }
         }
+
+        if start.len() == 0 {
+            start.push_back((time, (r, c)));
+        }
     }
 
-    panic!("NO solution fond!");
+    panic!("NO solution found!");
 }
 
-fn main() {
+fn solve(blizzards: &HashMap<char, Vec<(i32, i32)>>, r: i32, c: i32) -> (i32, i32) {
+    let start = (-1, 0);
+    let end   = (r - 1, c);
+
+    let part_one = find_minimum_minutes_to_reach_end(&blizzards, 0, start, end, r, c);
+    let end_to_start = find_minimum_minutes_to_reach_end(&blizzards, part_one, end, start, r, c);
+
+    (part_one, find_minimum_minutes_to_reach_end(&blizzards, end_to_start, start, end, r, c))
+}
+
+fn parse() -> (HashMap<char, Vec<(i32, i32)>>, i32, i32) {
     let inp = std::fs::read_to_string("../input/24").unwrap().trim().to_string();
     let mut blzrd: HashMap<char, Vec<(i32, i32)>> = HashMap::new();
     let (mut col, mut row) = (0, 0);
@@ -53,7 +67,13 @@ fn main() {
         row = i as i32 - 1;
     }
 
-    println!("{row} - {col}");
+    (blzrd, col, row)
+}
 
-    println!("Part one: {}", find_minimum_minutes_to_reach_end(&blzrd, (-1, 0), (row - 1, col), row, col));
+fn main() {
+    let (blizzards, col, row) = parse();
+    let (part_one, part_two) = solve(&blizzards, row, col);
+
+    println!("Part one: {:?}", part_one);
+    println!("Part two: {:?}", part_two);
 }
