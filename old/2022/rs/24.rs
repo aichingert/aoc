@@ -4,11 +4,13 @@ const VEC: [(i32,i32);5] = [(0,1),(1,0),(-1,0),(0,-1),(0,0)];
 
 fn part_one(blzrd: &HashMap<char, Vec<(i32, i32)>>, len: (i32, i32)) -> i32 {
     let mut options = VecDeque::from([(1, -1, 0)]);
+    let mut seen = HashSet::new();
     let blzrds = vec![('v', 1, 0), ('^', -1, 0), ('>', 0, 1), ('<', 0, -1)];
     let end = (len.0 - 1, len.1);
 
     while let Some((time, y, x)) = options.pop_front() {
-        for (r, c) in VEC.iter() {
+        let time = time + 1;
+        'outer: for (r, c) in VEC.iter() {
             let ny = r + y;
             let nx = c + x;
 
@@ -21,7 +23,15 @@ fn part_one(blzrd: &HashMap<char, Vec<(i32, i32)>>, len: (i32, i32)) -> i32 {
             }
 
             for (dir, r, c) in blzrds.iter() {
-                // is_safe = ny + r * time
+                let np = ((ny - time * r).rem_euclid(len.0), (nx - time * c).rem_euclid(len.1));
+
+                if blzrd[&dir].contains(&np) {
+                    continue 'outer;
+                }
+            }
+
+            if seen.insert((time, ny, nx)) {
+                options.push_back((time, ny, nx));
             }
         }
     }
