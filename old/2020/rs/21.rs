@@ -12,7 +12,7 @@ fn part_one(allergen: &HashMap<String, Vec<String>>, ingredients: &Vec<Vec<Strin
         .sum::<u32>()
 }
 
-fn part_two(mut allergen: HashMap<String, Vec<String>>, ingredients: &Vec<Vec<String>>) -> String {
+fn part_two(mut allergen: HashMap<String, Vec<String>>) -> String {
     let mut allergen_in_ingredient: Vec<(String, String)> = Vec::new();
 
     while allergen.len() > 0 {
@@ -78,8 +78,8 @@ fn parse() -> (HashMap<String, Vec<String>>, Vec<Vec<String>>) {
 }
 
 fn main() { 
-    let (mut allergen, ingredients) = parse();
+    let (allergen, ingredients) = parse();
 
     println!("Part one: {}", part_one(&allergen, &ingredients));
-    println!("Part two: {}", part_two(allergen, &ingredients));
+    println!("Part two: {}", part_two(allergen));
 }
