@@ -6,22 +6,62 @@ fn part_one(start: Point, end: Point, paths: &HashSet<Point>, portals: &HashMap<
     let mut bfs = VecDeque::from([(start, 0)]);
     let mut kwn = HashSet::from([start]);
 
-    while let Some((pos, d)) = bfs.pop_front() {
+    while let Some((pos, t)) = bfs.pop_front() {
         for nxt in [(0,1),(1,0),(0,-1),(-1,0)] {
             let cord = ((pos.0 as i32 + nxt.0) as usize, (pos.1 as i32 + nxt.1) as usize);
 
             if cord == end {
-                return d + 1;
+                return t + 1;
             }
 
             if !kwn.insert(cord) { continue; }
 
             if paths.contains(&cord) {
-                bfs.push_back((cord, d + 1));
+                bfs.push_back((cord, t + 1));
             }
 
             if let Some(jmp) = portals.get(&cord) {
-                bfs.push_back((*jmp, d + 2));
+                bfs.push_back((*jmp, t + 2));
+            }
+        }
+
+    }
+
+    panic!("no solution found!");
+}
+
+fn part_two(start: Point, end: Point, paths: &HashSet<Point>, portals: &HashMap<Point, Point>) -> u32 {
+    let mut bfs = VecDeque::from([(start, 0, 0)]);
+    let mut kwn = HashSet::from([(start, 0)]);
+
+    while let Some((pos, l, t)) = bfs.pop_front() {
+        for nxt in [(0,1),(1,0),(0,-1),(-1,0)] {
+            let cord = ((pos.0 as i32 + nxt.0) as usize, (pos.1 as i32 + nxt.1) as usize);
+
+            if l == 0 && cord == end {
+                return t + 1;
+            }
+
+            if !kwn.insert((cord, l)) { continue; }
+
+            if paths.contains(&cord) { 
+                bfs.push_back((cord, l, t + 1));
+            }
+
+            if let Some(jmp) = portals.get(&cord) {
+                let is_outer_portal = cord.0 < 3 || cord.1 < 3 || cord.0 + 4 > 113 || cord.1 + 4 > 119;
+
+                if l == 0 && !is_outer_portal {
+                    bfs.push_back((*jmp, l + 1, t + 2));
+                } else if l != 0 {
+                    let layer = if is_outer_portal {
+                        l - 1
+                    } else {
+                        l + 1
+                    };
+
+                    bfs.push_back((*jmp, layer, t + 2));
+                }
             }
         }
 
@@ -112,4 +152,5 @@ fn main() {
     let (start, end, paths, portals) = parse();
 
     println!("Part one: {}", part_one(start, end, &paths, &portals));
+    println!("Part two: {}", part_two(start, end, &paths, &portals));
 }
