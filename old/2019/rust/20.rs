@@ -1,47 +1,115 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashSet, HashMap, VecDeque};
 
-type Loc = (usize, usize);
+type Point = (usize, usize);
 
-fn around(loc: Loc, map: &Vec<Vec<char>>) -> (Loc, Option<Loc>) {
-    let mut second = (0, 0);
-    let mut entrance = None;
-    for r in -1..2 {
-        for c in -1..2 {
-            if r == 0 && c == 0 { continue; }
-            let (nr, nc) = (loc.0 as i32 + r, loc.1 as i32 + c);
-            if nr < 0 || nc < 0 || nr >= map.len() as i32 || nc >= map[loc.0].len() as i32 { continue; }
-            let (nr, nc) = (nr as usize, nc as usize);
+fn part_one(start: Point, end: Point, paths: &HashSet<Point>, portals: &HashMap<Point, Point>) -> u32 {
+    let mut bfs = VecDeque::from([(start, 0)]);
+    let mut kwn = HashSet::from([start]);
 
-            match map[nr][nc] => {
-                'A'..='Z' => second = (nr, nc),
-                '.' => entrance = Some((nr, nc)),
-                _ => (),
+    while let Some((pos, d)) = bfs.pop_front() {
+        for nxt in [(0,1),(1,0),(0,-1),(-1,0)] {
+            let cord = ((pos.0 as i32 + nxt.0) as usize, (pos.1 as i32 + nxt.1) as usize);
+
+            if cord == end {
+                return d + 1;
             }
-            print!("{}", map[nr][nc]);
+
+            if !kwn.insert(cord) { continue; }
+
+            if paths.contains(&cord) {
+                bfs.push_back((cord, d + 1));
+            }
+
+            if let Some(jmp) = portals.get(&cord) {
+                bfs.push_back((*jmp, d + 2));
+            }
         }
-        println!();
+
     }
 
-    (second, entrance)
+    panic!("no solution found!");
 }
 
-fn main() {
+fn parse() -> (Point, Point, HashSet<Point>, HashMap<Point, Point>) {
     let inp = std::fs::read_to_string("../input/20").unwrap();
-
-    let mut walls = HashSet::new();
-
     let map = inp.lines().map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+
+    let mut portals: HashMap<Point, Point> = HashMap::new();
+    let mut parsing: HashMap<(char, char), Point> = HashMap::new();
+    let mut known = HashSet::new();
+    let mut paths = HashSet::new();
+    let (mut start, mut end) = ((0, 0), (0,0));
 
     for i in 0..map.len() {
         for j in 0..map[i].len() {
             match map[i][j] {
-                '#' => { walls.insert((i, j)); }
+                '.' => { paths.insert((i, j)); }
                 'A'..='Z' => {
-                    println!("CUR: {}", map[i][j]);
-                    let (sec, to) = around((i,j), &map);
+                    let mut sp = (0, 0);
+
+                    for cord in [(0,1),(1,0),(0,-1),(-1,0)] {
+                        let nxt = (i as i32 + cord.0, j as i32 + cord.1);
+
+                        if nxt.0 < 0 || nxt.1 < 0 || nxt.0 >= map.len() as i32 || nxt.1 >= map[i].len() as i32 || 
+                        map[nxt.0 as usize][nxt.1 as usize] == '.' || map[nxt.0 as usize][nxt.1 as usize] == ' ' {
+                            continue;
+                        }
+
+                        sp = (nxt.0 as usize, nxt.1 as usize);
+                        break;
+                    }
+
+                    let mut pos = None;
+                    let fp = (i, j);
+
+                    if !known.insert(fp) || !known.insert(sp) {
+                        continue;
+                    }
+
+                    for (y, x) in [fp, sp] {
+                        pos = if y > 0 && map[y - 1][x] == '.' {
+                            Some((y - 1, x))
+                        } else if y + 1 < map.len() && map[y + 1][x] == '.' {
+                            Some((y + 1, x))
+                        } else if x > 0 && map[y][x - 1] == '.' {
+                            Some((y, x - 1))
+                        } else if x + 1 < map[i].len() && map[y][x + 1] == '.' {
+                            Some((y, x + 1))
+                        } else {
+                            None
+                        };
+
+                        if pos.is_some() {
+                            break;
+                        }
+                    }
+                    let pos = pos.unwrap();
+
+                    let (fs, sc) = (map[fp.0][fp.1], map[sp.0][sp.1]);
+
+                    match (fs, sc) {
+                        ('A', 'A') => start = pos,
+                        ('Z', 'Z') => end = pos,
+                        _ => (),
+                    };
+
+                    if let Some(position) = parsing.get(&(fs, sc)).or(parsing.get(&(sc, fs))) {
+                        portals.insert(*position, pos);
+                        portals.insert(pos, *position);
+                    } else {
+                        parsing.insert((fs, sc), pos);
+                    }
                 }
                 _ => (),
             }
         }
     }
+
+    (start, end, paths, portals) 
+}
+
+fn main() {
+    let (start, end, paths, portals) = parse();
+
+    println!("Part one: {}", part_one(start, end, &paths, &portals));
 }
