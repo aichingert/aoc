@@ -1,44 +1,33 @@
-use std::collections::HashSet;
+use std::collections::{VecDeque, HashSet};
 
 type Point = (usize, usize);
 
-fn part_one(
-    cord: Point,
-    mut key_ring: u32, 
-    solution: u32,
-    distance: u32,
-    map: &Vec<Vec<char>>, 
-    mut vis: HashSet<(usize, usize)>) -> u32 {
-    let mut ans = u32::MAX;
+fn part_one(map: &Vec<Vec<char>>, start: Point, max_keys: u32) -> u32 {
+    let mut bfs = VecDeque::from([(start, 0u32, 0u32)]);
+    let mut vis = HashSet::new();
 
-    let ch = map[cord.0][cord.1];
+    while let Some(((y, x), mut keys, dis)) = bfs.pop_front() {
+        if keys.count_ones() == max_keys {
+            return dis - 1;
+        }
 
-    if ch == '#' || vis.contains(&(cord)) {
-        return ans;
-    }
-    vis.insert(cord);
+        let cur = map[y][x];
+        let cond = cur >= 'A' && cur <= 'Z' && keys & (1 << (cur as u8 - b'A')) == 0;
 
-    if ch >= 'A' && ch <= 'Z' && key_ring & (1 << (ch as u8 - b'A')) == 0 {
-        return ans;
-    }
+        if cur == '#' || !vis.insert((y, x, keys)) || cond {
+            continue;
+        }
 
-    if ch >= 'a' && ch <= 'z' && key_ring & (1 << (ch as u8 - b'a')) == 0 {
-        key_ring |= 1 << (ch as u8 - b'a');
-        vis.clear();
-    }
+        if cur >= 'a' && cur <= 'z' {
+            keys |= 1 << (cur as u8 - b'A');
+        }
 
-    if key_ring.count_ones() == solution {
-        return distance;
+        for (r, c) in [(0,1),(1,0),(0,-1),(-1,0)] {
+            bfs.push_back((((y as i32 + r) as usize, (x as i32 + c) as usize), keys, dis + 1));
+        }
     }
 
-    let dist = distance + 1;
-
-    ans = ans.min(part_one((cord.0 - 1, cord.1), key_ring, solution, dist, map, vis.clone()));
-    ans = ans.min(part_one((cord.0 + 1, cord.1), key_ring, solution, dist, map, vis.clone()));
-    ans = ans.min(part_one((cord.0, cord.1 - 1), key_ring, solution, dist, map, vis.clone()));
-    ans = ans.min(part_one((cord.0, cord.1 + 1), key_ring, solution, dist, map, vis));
-
-    ans
+    panic!("help");
 }
 
 fn main() {
@@ -59,5 +48,5 @@ fn main() {
         }
     }
 
-    println!("{:?}", part_one(start, 0, expec, 0, &map, HashSet::new()));
+    println!("{:?}", part_one(&map, start, expec));
 }
