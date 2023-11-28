@@ -1,119 +1,63 @@
-use std::collections::{HashMap,HashSet,VecDeque};
+use std::collections::HashSet;
 
-type Loc = (usize, usize);
+type Point = (usize, usize);
 
-struct Maze {
-    keys:   HashMap<Loc, char>,
-    doors:  HashMap<Loc, char>,
-    walls:  HashSet<Loc>,
-}
+fn part_one(
+    cord: Point,
+    mut key_ring: u32, 
+    solution: u32,
+    distance: u32,
+    map: &Vec<Vec<char>>, 
+    mut vis: HashSet<(usize, usize)>) -> u32 {
+    let mut ans = u32::MAX;
 
-#[derive(Clone)]
-struct State {
-    inventory: HashSet<char>,
-    visited: HashSet<Loc>,
-    blocked: Vec<Loc>,
-    starts: Vec<Loc>,
-}
+    let ch = map[cord.0][cord.1];
 
-impl State {
-    fn is_door_locked(&self, loc: Loc, maze: &Maze) -> bool {
-        if let Some(door) = maze.doors.get(&loc) {
-            let door_key = *door as u8 + 32;
-            !self.inventory.contains(&(door_key as char))
-        } else {
-            false
-        }
+    if ch == '#' || vis.contains(&(cord)) {
+        return ans;
+    }
+    vis.insert(cord);
+
+    if ch >= 'A' && ch <= 'Z' && key_ring & (1 << (ch as u8 - b'A')) == 0 {
+        return ans;
     }
 
-    fn explore_path(&mut self, loc: Loc, maze: &Maze) {
-        let mut bfs = VecDeque::from([loc]);
-
-        while let Some((r, c)) = bfs.pop_front() {
-            for (i, j) in [(0,1),(1,0),(0,-1),(-1,0)] {
-                let (nr, nc) = (i + r as i32, j + c as i32);
-
-                if nr < 0 || nc < 0 { continue; }
-
-                let loc = (nr as usize, nc as usize);
-
-                if self.visited.contains(&loc) || maze.walls.contains(&loc) { continue; }
-                self.visited.insert(loc);
-
-                //println!("{:?} - {}", loc, self.is_door_locked(loc, maze));
-                if self.is_door_locked(loc, maze) {
-                    self.blocked.push(loc);
-                } else if maze.keys.contains_key(&loc) {
-                    self.starts.push(loc);
-                } else {
-                    bfs.push_back(loc);
-                }
-            }
-        }
-    }
-}
-
-fn part_one(maze: &Maze, mut state: State, dst: u32) -> u32 { 
-    if state.inventory.len() == maze.keys.len() {
-        //println!("FIN: {:?}", state.inventory);
-        return dst;
+    if ch >= 'a' && ch <= 'z' && key_ring & (1 << (ch as u8 - b'a')) == 0 {
+        key_ring |= 1 << (ch as u8 - b'a');
+        vis.clear();
     }
 
-    let mut dst = dst;
-    let mut i = 0;
-
-    while i < state.blocked.len() {
-        let cur = maze.doors.get(&state.blocked[i]).unwrap();
-
-        if state.inventory.contains(&cur) {
-            let open = state.blocked.remove(i);
-            state.starts.push(open);
-        } else {
-            i += 1;
-        }
-    }
-    
-
-    for i in 0..state.starts.len() {
-        let start = state.starts.remove(i);
-        let mut clone = state.clone();
-        if let Some(key) = maze.keys.get(&start).and_then(|key| Some((*key as u8 - 32) as char)) {
-            clone.inventory.insert(key);
-        }
-
-        clone.explore_path(start, maze);
-        dst = dst.min(part_one(maze, clone, dst));
-
-        state.starts.insert(i, start);
+    if key_ring.count_ones() == solution {
+        return distance;
     }
 
-    0
+    let dist = distance + 1;
+
+    ans = ans.min(part_one((cord.0 - 1, cord.1), key_ring, solution, dist, map, vis.clone()));
+    ans = ans.min(part_one((cord.0 + 1, cord.1), key_ring, solution, dist, map, vis.clone()));
+    ans = ans.min(part_one((cord.0, cord.1 - 1), key_ring, solution, dist, map, vis.clone()));
+    ans = ans.min(part_one((cord.0, cord.1 + 1), key_ring, solution, dist, map, vis));
+
+    ans
 }
 
 fn main() {
     let inp = std::fs::read_to_string("../input/18").unwrap().trim().to_string();
-    let mut maze = Maze { keys: HashMap::new(), doors: HashMap::new(), walls: HashSet::new() };
-    let mut start: Loc = (0,0);
+    let map = inp.lines().map(|l| l.chars().collect::<Vec<_>>()).collect::<Vec<_>>();
+    let mut start = (0, 0);
+    let mut expec = 0;
 
-    for (i, l) in inp.lines().enumerate() {
-        for (j, c) in l.chars().enumerate() {
-            match c {
-                '#' => { maze.walls.insert((i, j)); },
-                '@' => start = (i, j),
-                'a'..='z' => { maze.keys.insert((i, j), c); },
-                'A'..='Z' => { maze.doors.insert((i, j), c); },
-                '.' => (),
-                _ => panic!("invalid character {}", c),
+    for i in 0..map.len() {
+        for j in 0..map[i].len() {
+            if map[i][j] >= 'a' && map[i][j] <= 'z' {
+                expec += 1;
+            }
+
+            if map[i][j] == '@' {
+                start = (i, j);
             }
         }
     }
 
-    let state = State { 
-        inventory: HashSet::new(), 
-        visited: HashSet::new(), 
-        blocked: Vec::new(),
-        starts: vec![start],
-    };
-
-    println!("Part one: {}", part_one(&maze, state, 0));
+    println!("{:?}", part_one(start, 0, expec, 0, &map, HashSet::new()));
 }
