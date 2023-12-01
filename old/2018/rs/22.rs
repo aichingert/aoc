@@ -80,18 +80,6 @@ enum Tool {
 // 1, Wet
 // 2, Narrow
 impl Tool {
-    fn has_to_switch(&self, cave_type: i64) -> Option<(Tool, Tool)> {
-        match (self, cave_type) {
-            (Tool::Gear, 0) | (Tool::Gear, 1) => None,
-            (Tool::Gear, 2) => Some((Tool::Torch, Tool::Neither)),
-            (Tool::Torch, 0) | (Tool::Torch, 2) => None,
-            (Tool::Torch, 1) => Some((Tool::Gear, Tool::Neither)),
-            (Tool::Neither, 0) => Some((Tool::Torch, Tool::Gear)),
-            (Tool::Neither, 1) | (Tool::Neither, 2) => None,
-            _ => unreachable!("not possible"),
-        }
-    }
-
     fn get_matching_tool(&self, cave_type: i64) -> Tool {
         match (self, cave_type) {
             (Tool::Gear, 0) => Tool::Torch,
@@ -100,7 +88,15 @@ impl Tool {
             (Tool::Torch, 2) => Tool::Neither,
             (Tool::Neither, 1) => Tool::Gear,
             (Tool::Neither, 2) => Tool::Torch,
-            _ => unreachable!("not possible"),
+            _ => unreachable!("{:?}", (self, cave_type)),
+        }
+    }
+
+    fn is_usable_in(&self, cave_type: i64) -> bool {
+        match self {
+            Tool::Gear => cave_type != 2,
+            Tool::Torch => cave_type != 1,
+            Tool::Neither => cave_type != 0,
         }
     }
 }
@@ -108,13 +104,10 @@ impl Tool {
 fn part_two(depth: i64, goal: (i64, i64), gi: &mut HashMap<(i64, i64), i64>) -> i64 {
     let mut heap = BinaryHeap::from([Reverse(State::new(0,0,0, Tool::Torch))]);
     let mut seen = HashSet::new();
-    let mut ans = i64::MAX;
 
     while let Some(Reverse(s)) = heap.pop() {
         if goal == (s.x, s.y) && s.t == Tool::Torch {
-            let max = heap.iter().max_by_key(|k| k.0.d).unwrap();
-            println!("{:?}", max);
-            ans = ans.min(s.d);
+            return s.d;
         }
 
         if !seen.insert((s.x, s.y, s.t)) {
@@ -124,24 +117,21 @@ fn part_two(depth: i64, goal: (i64, i64), gi: &mut HashMap<(i64, i64), i64>) -> 
         for (x, y) in [(0,1),(1,0),(0,-1),(-1,0)] {
             let (nx, ny) = (s.x + x, s.y + y);
 
-            if nx < 0 || ny < 0 || nx > goal.0 * 10 || ny > goal.1 * 10 {
+            if nx < 0 || ny < 0 {
                 continue;
             }
 
-            let dist = s.d + 8;
+            let curr_cave = (geologic_index(gi, s.x, s.y, depth) + depth) % 20183 % 3;
             let cave_type = (geologic_index(gi, nx, ny, depth) + depth) % 20183 % 3;
 
-            if let Some((one, two)) = s.t.has_to_switch(cave_type) {
-                heap.push(Reverse(State::new(nx, ny, dist, one)));
-                heap.push(Reverse(State::new(nx, ny, dist, two)));
-            } else {
-                heap.push(Reverse(State::new(nx, ny, dist - 7, s.t)));
-                heap.push(Reverse(State::new(nx, ny, dist, s.t.get_matching_tool(cave_type))));
+            heap.push(Reverse(State::new(s.x, s.y, s.d + 7, s.t.get_matching_tool(curr_cave))));
+
+            if s.t.is_usable_in(cave_type) {
+                heap.push(Reverse(State::new(nx, ny, s.d + 1, s.t)));
             }
         }
     }
 
-    println!("{}", ans);
     panic!("help");
 }
 
