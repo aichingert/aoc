@@ -1,41 +1,10 @@
-fn part_one(inp: &Vec<&str>) -> u32 {
-    let mut p = 0;
-
-    'outer: for i in 0..inp.len() {
-        let (id, val) = inp[i].split_once(": ").unwrap();
-
-        let sets = val.split("; ").collect::<Vec<_>>();
-
-        for set in sets {
-            let marbles = set.split(", ").collect::<Vec<_>>();
-
-            for marble in marbles {
-                let (n, x) = marble.split_once(" ").unwrap();
-                let n: u32 = n.parse::<u32>().unwrap();
-
-                match x {
-                    "red" => if n > 12 { continue 'outer; },
-                    "green" => if n > 13 { continue 'outer; },
-                    "blue" => if n > 14 { continue 'outer; },
-                    _ => panic!("invalid color {}", x),
-                }
-            }
-        }
-
-        p += id.split_once(" ").unwrap().1.parse::<u32>().unwrap();
-    }
-
-    p
-}
-
-fn part_two(inp: &Vec<&str>) -> u32 {
-     let mut p = 0;
+fn solve(inp: &Vec<&str>) -> (u32, u32) {
+    let (mut p1, mut p2) = (0, 0);
 
     for i in 0..inp.len() {
-        let (id, val) = inp[i].split_once(": ").unwrap();
-        let (mut red, mut green, mut blue) = (0,0,0);
-
-        let sets = val.split("; ").collect::<Vec<_>>();
+        let (mut p1_flag, mut red, mut green, mut blue) = (true, 0, 0, 0);
+        let (id, vals) = inp[i].split_once(": ").unwrap();
+        let sets = vals.split("; ").collect::<Vec<_>>();
 
         for set in sets {
             let marbles = set.split(", ").collect::<Vec<_>>();
@@ -45,26 +14,28 @@ fn part_two(inp: &Vec<&str>) -> u32 {
                 let n: u32 = n.parse::<u32>().unwrap();
 
                 match x {
-                    "red" => red = red.max(n),
-                    "green" => green = green.max(n),
-                    "blue" => blue = blue.max(n),
-                    _ => panic!("invalid color {}", x),
+                    "red"   => { red = red.max(n); if n > 12 { p1_flag = false; } },
+                    "green" => { green = green.max(n); if n > 13 { p1_flag = false; } },
+                    "blue"  => { blue = blue.max(n); if n > 14 { p1_flag = false; } },
+                    _ => panic!("unknown color {}", x),
                 }
             }
         }
 
-        p += red * green * blue;
+        if p1_flag {
+            p1 += id.split_once(" ").unwrap().1.parse::<u32>().unwrap();
+        }
+
+        p2 += red * green * blue;
     }
 
-    p
+    (p1, p2)
 }
 
 fn main() {
     let inp = std::fs::read_to_string("../input/02").unwrap().trim().to_string();
-    let inp = inp.lines().map(|l| l).collect::<Vec<_>>();
+    let (p1, p2) = solve(&inp.lines().collect::<Vec<_>>());
 
-    
-
-    println!("Part one: {}", part_one(&inp));
-    println!("Part two: {}", part_two(&inp));
+    println!("Part one: {}", p1);
+    println!("Part two: {}", p2);
 }
