@@ -9,15 +9,12 @@ fn main() {
     let inp = std::fs::read_to_string("../input/05").unwrap().trim().to_string();
     let inp = inp.split("\n\n").collect::<Vec<_>>();
 
-    let mut vecs = vec![Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(),Vec::new()];
+    let mut vecs = vec![];
 
-    parse(&mut vecs[0], inp[1]);
-    parse(&mut vecs[1], inp[2]);
-    parse(&mut vecs[2], inp[3]);
-    parse(&mut vecs[3], inp[4]);
-    parse(&mut vecs[4], inp[5]);
-    parse(&mut vecs[5], inp[6]);
-    parse(&mut vecs[6], inp[7]);
+    for i in 1..inp.len() {
+        vecs.push(Vec::new());
+        parse(&mut vecs[i - 1], inp[i]);
+    }
 
     let seeds = inp[0].split_once(": ").unwrap().1;
     let seeds = seeds.split_whitespace().map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
