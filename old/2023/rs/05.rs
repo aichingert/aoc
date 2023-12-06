@@ -1,59 +1,60 @@
-fn parse(vec: &mut Vec<Vec<u32>>, line: &str) {
-    for l in line.lines().skip(1) {
-        let v = l.split_whitespace().map(|s| s.parse::<u32>().unwrap()).collect::<Vec<_>>();
-        vec.push(v);
-    }
+fn part_one(seeds: &Vec<u32>, ranges: &Vec<Vec<Vec<u32>>>) -> u32 {
+    seeds.iter().map(|n| {
+        let mut seed = *n;
+
+        'outer: for funcs in ranges {
+            for range in funcs {
+                if seed >= range[1] && seed < range[1] + range[2] {
+                    seed = range[0] + (seed - range[1]);
+                    continue 'outer;
+                }
+            }
+        }
+
+        seed
+    }).min().unwrap()
 }
 
-fn main() {
-    let inp = std::fs::read_to_string("../input/05").unwrap().trim().to_string();
-    let inp = inp.split("\n\n").collect::<Vec<_>>();
+fn part_two(seeds: &Vec<u32>, ranges: &Vec<Vec<Vec<u32>>>) -> u32 {
+    (0..seeds.len()).step_by(2).map(|i| {
+        let mut min = u32::MAX;
 
-    let mut vecs = vec![];
-
-    for i in 1..inp.len() {
-        vecs.push(Vec::new());
-        parse(&mut vecs[i - 1], inp[i]);
-    }
-
-    let seeds = inp[0].split_once(": ").unwrap().1;
-    let seeds = seeds.split_whitespace().map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
-
-    let mut ans = u32::MAX;
-
-    for k in (0..seeds.len()).step_by(2) {
-        for seed in seeds[k]..seeds[k] + seeds[k + 1] {
-            let mut seed = seed;
-
-            for i in 0..vecs.len() {
-                for j in 0..vecs[i].len() {
-                    if seed >= vecs[i][j][1] && seed < vecs[i][j][1] + vecs[i][j][2] {
-                        seed = vecs[i][j][0] + (seed - vecs[i][j][1]);
-                        break;
+        for mut seed in seeds[i]..(seeds[i] + seeds[i + 1]) {
+            'outer: for funcs in ranges {
+                for range in funcs {
+                    if seed >= range[1] && seed < range[1] + range[2] {
+                        seed = range[0] + (seed - range[1]);
+                        continue 'outer;
                     }
                 }
             }
 
-            ans = seed.min(ans);
-
-        }
-    }
-
-    println!("{ans}");
-    for seed in seeds {
-        let mut seed = seed;
-
-        for i in 0..vecs.len() {
-            for j in 0..vecs[i].len() {
-                if seed >= vecs[i][j][1] && seed < vecs[i][j][1] + vecs[i][j][2] {
-                    seed = vecs[i][j][0] + (seed - vecs[i][j][1]);
-                    break;
-                }
-            }
+            min = seed.min(min);
         }
 
-        ans = seed.min(ans);
-    }
+        min
+    }).min().unwrap()
+}
 
+fn n<T>(n: &str) -> T
+    where T: std::str::FromStr<Err = std::num::ParseIntError>
+{
+    n.parse::<T>().unwrap()
+}
 
+fn parse() -> (Vec<u32>, Vec<Vec<Vec<u32>>>) {
+    let inp = std::fs::read_to_string("../input/05").unwrap().trim().to_string();
+    let inp = inp.split("\n\n").collect::<Vec<_>>();
+    let seeds = inp[0].split_whitespace().skip(1).map(n::<u32>).collect::<Vec<_>>();
+
+    (seeds, (1..inp.len()).map(|i| inp[i].lines().skip(1)
+            .map(|l| l.split_whitespace().map(n::<u32>).collect::<Vec<u32>>())
+            .collect::<Vec<_>>()).collect::<Vec<_>>())
+}
+
+fn main() {
+    let (seeds, ranges) = parse();
+
+    println!("Part one: {}", part_one(&seeds, &ranges));
+    println!("Part two: {}", part_two(&seeds, &ranges));
 }
