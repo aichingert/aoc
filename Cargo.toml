@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = [
+	"advent",
+	"advent_macros",
+]
+exlucde = [
+	"2015-haskell", 
+	"2016-clojure",
+	"2017-rainbow",
+	"old",
+]
+
+[workspace.package]
+version = "0.0.1"
+
+[workspace.dependencies]
+advent = { path = "./advent", version = "0.0.1" }
+advent_macros = { path = "./advent_macros", version = "0.0.1" }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 'z'

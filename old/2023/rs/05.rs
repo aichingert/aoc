@@ -17,9 +17,7 @@ fn part_one(seeds: &Vec<u32>, ranges: &Vec<Vec<Vec<u32>>>) -> u32 {
 
 fn part_two(seeds: &Vec<u32>, ranges: &Vec<Vec<Vec<u32>>>) -> u32 {
     (0..seeds.len()).step_by(2).map(|i| {
-        let mut min = u32::MAX;
-
-        for mut seed in seeds[i]..(seeds[i] + seeds[i + 1]) {
+        (seeds[i]..(seeds[i] + seeds[i + 1])).map(|mut seed| {
             'outer: for funcs in ranges {
                 for range in funcs {
                     if seed >= range[1] && seed < range[1] + range[2] {
@@ -29,10 +27,8 @@ fn part_two(seeds: &Vec<u32>, ranges: &Vec<Vec<Vec<u32>>>) -> u32 {
                 }
             }
 
-            min = seed.min(min);
-        }
-
-        min
+            seed
+        }).min().unwrap()
     }).min().unwrap()
 }
 
