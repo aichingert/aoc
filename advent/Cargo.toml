@@ -1,0 +1,7 @@
+[package]
+name = "advent"
+version = { workspace = true } 
+edition = "2021"
+
+[dependencies]
+advent_macros = { workspace = true }
