@@ -3,12 +3,7 @@ resolver = "2"
 members = [
 	"advent",
 	"advent_macros",
-]
-exlucde = [
-	"2015-haskell", 
-	"2016-clojure",
-	"2017-rainbow",
-	"old",
+	"advent_lib",
 ]
 
 [workspace.package]
@@ -16,6 +11,7 @@ version = "0.0.1"
 
 [workspace.dependencies]
 advent = { path = "./advent", version = "0.0.1" }
+advent_lib = { path = "./advent_lib", version = "0.0.1" }
 advent_macros = { path = "./advent_macros", version = "0.0.1" }
 
 [profile.release]

@@ -1,4 +1,3 @@
-extern crate advent_macros;
-use advent_macros::aoc_main;
+use advent_lib::add;
 
-aoc_main!();
+advent_macros::aoc_main!();
