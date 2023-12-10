@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 
 type Point = (usize, usize);
 
@@ -23,7 +23,7 @@ fn append_points(cur: (Point, u32), inp: &Vec<Vec<char>>, directions: Vec<(i32, 
 }
 
 fn get_loop(inp: &mut Vec<Vec<char>>) -> Option<HashMap<(usize, usize), u32>> {
-    let mut starting = (0, 0);
+    let mut starting = (0,0);
 
     'search: for i in 0..inp.len() {
         for j in 0..inp[i].len() {
@@ -111,7 +111,7 @@ fn main() {
     let inp = std::fs::read_to_string("../input/10").unwrap().trim().to_string();
     let mut inp = inp.lines().map(|l| l.chars().collect::<Vec<_>>()).collect::<Vec<_>>();
 
-    let mut looping = get_loop(&mut inp).unwrap();
+    let looping = get_loop(&mut inp).unwrap();
     let mut map = Vec::new();
 
     for i in 0..inp.len() {
