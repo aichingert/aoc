@@ -24,19 +24,6 @@ impl Hand {
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
         match self.card_t.cmp(&other.card_t) {
-            Ordering::Equal => {
-                for i in 0..self.cards.len() {
-                    let (a, b) = (map_to_val(self.cards[i]), map_to_val(other.cards[i]));
-
-                    if a > b {
-                        return Ordering::Greater;
-                    } else if a < b {
-                        return Ordering::Less;
-                    }
-                }
-
-                Ordering::Equal
-            },
             o => o,
         }
     }
@@ -69,15 +56,8 @@ fn map_to_val(ch: char) -> u32 {
         'K' => 12,
         'Q' => 11,
         'J' => 0,
-        'T' => 9,
-        '9' => 8,
-        '8' => 7,
-        '7' => 6,
-        '6' => 5,
-        '5' => 4,
-        '4' => 3,
-        '3' => 2,
-        '2' => 1,
+        'T' => 10,
+        _ if ch.is_digit(10) => (ch as u8 - b'0') as u32,
         _ => panic!("{}", ch),
     }
 }
