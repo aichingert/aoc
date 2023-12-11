@@ -1,45 +1,33 @@
 extern crate proc_macro;
 use proc_macro::{TokenStream, TokenTree, Ident, Span};
 
+use std::time::SystemTime;
+
 mod gen;
-use gen::imports;
+use gen::{imports, functions};
 
 const BASE_DIR: &'static str = "advent/src/";
 
 #[proc_macro]
 pub fn add_modules(item: TokenStream) -> TokenStream {
     let tokens = item.into_iter().collect::<Vec<TokenTree>>();
-
-    imports::get_days(&tokens[..]).join("\n").parse().unwrap()
+    imports::add_days_of_year(&tokens[..]).join("\n").parse().unwrap()
 }
 
-#[proc_macro_attribute]
-pub fn aoc(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let mut tokens = Vec::<TokenTree>::from([
-        TokenTree::Ident(Ident::new("fn", Span::call_site())),
-        TokenTree::Ident(Ident::new("main", Span::call_site()))
-    ]);
+#[proc_macro]
+pub fn add_fn_pointers(_item: TokenStream) -> TokenStream {
+    let cur_secs = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
+    let cur_year = 1970 + cur_secs / 3600 / 24 / 365;
+    let mut lines = Vec::new();
 
-    for i in item.clone() {
-        match i {
-            TokenTree::Group(ref g) => {
-                for j in g.stream() {
-                    //println!("{j:?}");
-                }
-            }
-            ref r => (),//println!("{r:?}"),
-        }
-    }
+    lines.push(format!("const CUR_YEAR: u32 = {};", cur_year));
+    lines.push(String::from("fn no_solution() { println!(\"Not solved yet\"); }"));
+    lines.push(format!("const FN_POINTER: [[fn() -> (); 25]; {}] = [", cur_year - 2015 + 1));
 
-    for path in std::fs::read_dir(BASE_DIR).unwrap() {
-        let path = path.unwrap().path();
+    lines.push((2015..=cur_year).map(|year| functions::add_fns_of_year(year)).collect::<Vec<_>>().join(","));
+    lines.push(String::from("];"));
 
-        match path.is_dir() {
-            _ => (),
-        }
-    }
-
-    TokenStream::from_iter(tokens.into_iter().chain(item.into_iter().skip(2)))
+    lines.join("\n").parse().unwrap()
 }
 
 #[proc_macro_attribute]
