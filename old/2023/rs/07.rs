@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::cmp::Ordering;
 
-#[derive(Debug)]
+#[derive(Eq)]
 struct Hand {
     card_t: Type,
     cards: Vec<char>,
@@ -68,8 +68,6 @@ impl PartialEq for Hand {
     }
 }
 
-impl Eq for Hand {}
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord)]
 enum Type {
     FiveOfKind = 13,
@@ -111,9 +109,7 @@ impl Type {
                         Self::ThreeOfKind
                     }
                 }
-                4 => {
-                    Self::OnePair
-                }
+                4 => Self::OnePair,
                 _ => panic!("{:?}", v),
             };
         }

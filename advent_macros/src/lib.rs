@@ -1,13 +1,20 @@
 extern crate proc_macro;
 use proc_macro::{TokenStream, TokenTree, Ident, Span};
 
+mod gen;
+use gen::imports;
+
 const BASE_DIR: &'static str = "advent/src/";
+
+#[proc_macro]
+pub fn add_modules(item: TokenStream) -> TokenStream {
+    let tokens = item.into_iter().collect::<Vec<TokenTree>>();
+
+    imports::get_days(&tokens[..]).join("\n").parse().unwrap()
+}
 
 #[proc_macro_attribute]
 pub fn aoc(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    println!("=======");
-    println!("  AOC ");
-    println!("=======");
     let mut tokens = Vec::<TokenTree>::from([
         TokenTree::Ident(Ident::new("fn", Span::call_site())),
         TokenTree::Ident(Ident::new("main", Span::call_site()))
@@ -17,10 +24,10 @@ pub fn aoc(_attr: TokenStream, item: TokenStream) -> TokenStream {
         match i {
             TokenTree::Group(ref g) => {
                 for j in g.stream() {
-                    println!("{j:?}");
+                    //println!("{j:?}");
                 }
             }
-            ref r => println!("{r:?}"),
+            ref r => (),//println!("{r:?}"),
         }
     }
 
@@ -40,7 +47,7 @@ pub fn parse(_attr: TokenStream, item: TokenStream) -> TokenStream {
     println!("=======");
     println!("PARSING");
     println!("=======");
-    println!("{:?}", _attr);
+    //println!("{:?}", _attr);
 
     item
 }

@@ -8,5 +8,8 @@ fn main() {
 
     let a = 0;
 
+    Y2015::D01::solve();
+
+
     println!("{a}");
 }
