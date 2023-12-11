@@ -168,9 +168,9 @@ fn main() {
         kill(i, 0, &mut map);
     }
 
-    for i in 0..map.len() {
-        for j in 0..map[i].len() {
-            if !map[i][j] && i & 1 == 0 && j & 1 == 0 {
+    for i in (0..map.len()).step_by(2) {
+        for j in (0..map[i].len()).step_by(2) {
+            if !map[i][j] {
                 ans += 1;
             }
         }
