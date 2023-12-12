@@ -1,5 +1,5 @@
 extern crate proc_macro;
-use proc_macro::{TokenStream, TokenTree, Ident, Span};
+use proc_macro::{TokenStream, TokenTree};
 
 use std::time::SystemTime;
 
@@ -7,6 +7,7 @@ mod gen;
 use gen::{imports, functions};
 
 const BASE_DIR: &'static str = "advent/src/";
+const SOLUTION: &'static str = "solve";
 
 #[proc_macro]
 pub fn add_modules(item: TokenStream) -> TokenStream {
@@ -15,12 +16,20 @@ pub fn add_modules(item: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
+pub fn add_years(_item: TokenStream) -> TokenStream {
+    imports::add_years().join("\n").parse().unwrap()
+}
+
+#[proc_macro]
 pub fn add_fn_pointers(_item: TokenStream) -> TokenStream {
     let cur_secs = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
     let cur_year = 1970 + cur_secs / 3600 / 24 / 365;
     let mut lines = Vec::new();
 
-    lines.push(format!("const CUR_YEAR: u32 = {};", cur_year));
+    lines.push(format!("const CUR_YEAR: usize = {};", cur_year));
+    println!("{}", gen::functions::find_last_edited());
+    lines.push(gen::functions::find_last_edited());
+
     lines.push(String::from("fn no_solution() { println!(\"Not solved yet\"); }"));
     lines.push(format!("const FN_POINTER: [[fn() -> (); 25]; {}] = [", cur_year - 2015 + 1));
 

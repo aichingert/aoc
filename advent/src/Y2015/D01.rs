@@ -1,9 +1,10 @@
 use advent_macros::parse;
 
-pub fn solve() {}
+pub fn solve() {
+    println!("RIGHT HERE BABY");
+}
 
-#[parse(2015, 1, chars)]
 pub fn parse() -> Vec<char> {
-    let inp = String::new();
+    let inp = std::fs::read_to_string
     inp.chars().collect()
 }

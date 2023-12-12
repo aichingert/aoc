@@ -1,1 +1,3 @@
-pub fn solve() {}
+pub fn solve() {
+    println!("KOM");
+}
