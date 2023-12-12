@@ -27,7 +27,6 @@ pub fn add_fn_pointers(_item: TokenStream) -> TokenStream {
     let mut lines = Vec::new();
 
     lines.push(format!("const CUR_YEAR: usize = {};", cur_year));
-    println!("{}", gen::functions::find_last_edited());
     lines.push(gen::functions::find_last_edited());
 
     lines.push(String::from("fn no_solution() { println!(\"Not solved yet\"); }"));
