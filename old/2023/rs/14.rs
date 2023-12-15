@@ -89,10 +89,10 @@ fn main() {
         cycler.insert(inp.clone(), i);
     }
 
-    let x = 1000000000 % (cycle.0 - cycle.1);
+    let x = (1000000000 - cycle.0) % (cycle.0 - cycle.1);
     println!("{}", x);
 
-    for i in 0..=cycle.0 {
+    for i in 0..cycle.0 {
         tilt(&mut clone, 0);
         tilt(&mut clone, 3);
         tilt(&mut clone, 1);
