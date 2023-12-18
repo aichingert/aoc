@@ -1,93 +1,57 @@
-use std::collections::{HashSet, VecDeque};
+#![allow(non_snake_case)]
+
+fn solve(inp: &Vec<&str>, parse: fn(&str) -> (i64, char)) -> i64 {
+    let mut points = vec![(0, 0)];
+    let mut b = 0;
+
+    for line in inp {
+        let pos = points[points.len() - 1];
+        let (n, dir) = parse(line);
+        b += n;
+
+        points.push(match dir {
+            'U'=> (pos.0 - n, pos.1),
+            'D' => (pos.0 + n, pos.1),
+            'R' => (pos.0, pos.1 + n),
+            'L' => (pos.0, pos.1 - n),
+            c => panic!("invalid {}", c),
+        });
+    }
+
+    let A = (0..points.len() as i32)
+        .map(|i| points[i as usize].1 
+            * (points[(i - 1).rem_euclid(points.len() as i32) as usize].0
+              -points[(i as usize + 1) % points.len()].0)
+            )
+        .sum::<i64>().abs() / 2; 
+    let i = A - b / 2 + 1;
+
+    i + b
+}
 
 fn main() {
     let inp = std::fs::read_to_string("../input/18").unwrap().trim().to_string();
     let inp = inp.split("\n").map(|s| s).collect::<Vec<_>>();
+    
+    let part_one = |s: &str| -> (i64, char) {
+        let vals = s.split(' ').collect::<Vec<_>>();
+        (vals[1].parse::<i64>().unwrap(), vals[0].chars().next().unwrap())
+    };
 
-    let mut map = HashSet::from([(0,0)]);
-    let mut pos = (0, 0);
+    let part_two = |s: &str| -> (i64, char) {
+        let vals = s.split(' ').collect::<Vec<_>>();
+        let ch = vals[2].chars().collect::<Vec<_>>();
+        let n = i64::from_str_radix(&ch[2..ch.len() - 2].iter().collect::<String>(), 16).unwrap();
 
+        (n, match ch[ch.len() - 2] {
+            '0' => 'R',
+            '1' => 'D',
+            '2' => 'L',
+            '3' => 'U',
+            c => panic!("invalid char {}", c),
+        })
+    };
 
-    for line in inp {
-        let values = line.split(" ").collect::<Vec<_>>();
-
-
-        let chars = values[2].chars().collect::<Vec<_>>();
-
-        let n = i64::from_str_radix(&chars[2..chars.len() - 2].iter().collect::<String>(), 16).unwrap();
-
-        match chars[7] {
-            '3' => {
-                for i in 0..n {
-                    pos.0 -= 1;
-                    map.insert(pos);
-                }
-
-            }
-            '1' => {
-                for i in 0..n {
-                    pos.0 += 1;
-                    map.insert(pos);
-                }
-
-            }
-            '2' => {
-                for i in 0..n {
-                    pos.1 -= 1;
-                    map.insert(pos);
-                }
-
-            }
-            '0' => {
-                for i in 0..n {
-                    pos.1 += 1;
-                    map.insert(pos);
-                }
-
-            }
-            _ => panic!("invali"),
-        }
-    }
-
-    for i in 0..10 {
-        for j in 0..10 {
-            if map.contains(&(i, j)) {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!();
-    }
-
-    let mut bfs = VecDeque::from([(1, 1)]);
-
-    while let Some((y, x)) = bfs.pop_front() {
-        if map.contains(&(y, x)) {
-            continue;
-        }
-
-        map.insert((y, x));
-
-        bfs.push_back((y, x - 1));
-        bfs.push_back((y + 1, x));
-        bfs.push_back((y, x + 1));
-        bfs.push_back((y - 1, x));
-    }
-
-    println!("{:?}", map.len());
-
-}
-
-fn fill(map: &mut HashSet<(i32,i32)>, pos: (i32,i32)) {
-    if map.contains(&pos) {
-        return;
-    }
-
-    map.insert(pos);
-
-    fill(map, (pos.0, pos.1 - 1));
-    fill(map, (pos.0 + 1, pos.1));
-    fill(map, (pos.0, pos.1 + 1));
-    fill(map, (pos.0 - 1, pos.1));
-}
+    println!("Part one: {}", solve(&inp, part_one));
+    println!("Part two: {}", solve(&inp, part_two));
+} 
