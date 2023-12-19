@@ -18,6 +18,46 @@ fn part_one(ratings: &Vec<u64>, workflows: &HashMap<String, Workflow>, current: 
     part_one(ratings, workflows, &workflow.default)
 }
 
+// [(1,4000), (1,4000), (1,4000), (1,4000)]
+// in{s<1351:px,qqz}
+
+// -> 2 
+//
+// [(1,4000), (1,4000), (1,4000), (1,1350)] px
+// px{a<2006:qkq,m>2090:A,rfg}
+//  
+//  [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
+//  qkq{x<1416:A,crn}
+//
+//      [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
+//      [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
+//      
+//
+//  # [(2006,4000), (2091,4000), (1,4000), (1,1350)] A
+//  [(2006,4000), (1,2090), (1,4000), (1,1350)] rfg
+//
+//
+// [(1,4000), (1,4000), (1,4000), (1351,4000)] qqz
+
+fn part_two(mut range: Vec<(u64, u64)>, workflows: &HashMap<String, Workflow>, current: &String) -> u64 {
+    match current.as_str() {
+        "A" => return range.iter().map(|n| (1 + n.1 - n.0)).fold(1, |acc,cur| acc * cur),
+        "R" => return 0,
+        _ => (),
+    };
+
+    let workflow = &workflows[current];
+    let mut total = 0u64;
+
+    for i in 0..workflow.rules.len() {
+        if let Some(modified) = workflow.rules[i].split_range(&mut range) {
+            total += part_two(modified, workflows, &workflow.rules[i].mapping_to);
+        }
+    }
+
+    total + part_two(range, workflows, &workflow.default)
+}
+
 fn idx(s: &str) -> usize {
     match s {
         "x" => 0,
@@ -33,8 +73,9 @@ struct Workflow {
     default: String,
 }
 
+#[derive(Debug)]
 struct Rule {
-    rating_idx: usize,
+    idx: usize,
     operator: Operator,
     amount: u64,
     mapping_to: String,
@@ -43,18 +84,43 @@ struct Rule {
 impl Rule {
     fn applies(&self, ratings: &Vec<u64>) -> bool {
         match self.operator {
-            Operator::Smaller => ratings[self.rating_idx] < self.amount,
-            Operator::Greater => ratings[self.rating_idx] > self.amount,
+            Operator::Smaller => ratings[self.idx] < self.amount,
+            Operator::Greater => ratings[self.idx] > self.amount,
+        }
+    }
+
+    fn split_range(&self, range: &mut Vec<(u64, u64)>) -> Option<Vec<(u64, u64)>> {
+        match self.operator {
+            Operator::Smaller => {
+                if range[self.idx].0 >= self.amount {
+                    return None;
+                } 
+
+                let mut clone = range.clone();
+                range[self.idx].0 = self.amount;
+                clone[self.idx].1 = self.amount - 1;
+
+                Some(clone)
+            }
+            Operator::Greater => {
+                if range[self.idx].1 <= self.amount {
+                    return None;
+                }
+
+                let mut clone = range.clone();
+                range[self.idx].1 = self.amount;
+                clone[self.idx].0 = self.amount + 1;
+                Some(clone)
+            }
         }
     }
 }
 
+#[derive(Debug)]
 enum Operator {
     Smaller,
     Greater,
 }
-
-
 
 fn parse() -> (String, HashMap<String, Workflow>, String) {
     let inp = std::fs::read_to_string("../input/19").unwrap().trim().to_string();
@@ -73,7 +139,7 @@ fn parse() -> (String, HashMap<String, Workflow>, String) {
         for i in 0..conditions.len() - 1 {
             let (condition, mapping_to) = conditions[i].split_once(":").unwrap();
 
-            let (rating_idx, operator, amount) = if let Some((ident, amount)) = condition.split_once("<") {
+            let (idx, operator, amount) = if let Some((ident, amount)) = condition.split_once("<") {
                 (idx(ident), Operator::Smaller, amount.parse::<u64>().unwrap())
             } else {
                 let (ident, amount) = condition.split_once(">").unwrap();
@@ -81,7 +147,7 @@ fn parse() -> (String, HashMap<String, Workflow>, String) {
             };
 
             rules.push(Rule {
-                rating_idx,
+                idx,
                 operator,
                 amount,
                 mapping_to: mapping_to.to_string(),
@@ -105,5 +171,5 @@ fn main() {
                     &workflows, 
                     &start))
         .sum::<u64>());
-    println!("Part two: {}", 4000u64 * 4000 * 4000 * 4000);
+    println!("Part two: {}", part_two(vec![(1,4000),(1,4000),(1,4000),(1,4000)], &workflows, &start));
 }
