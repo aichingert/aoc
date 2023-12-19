@@ -18,27 +18,6 @@ fn part_one(ratings: &Vec<u64>, workflows: &HashMap<String, Workflow>, current: 
     part_one(ratings, workflows, &workflow.default)
 }
 
-// [(1,4000), (1,4000), (1,4000), (1,4000)]
-// in{s<1351:px,qqz}
-
-// -> 2 
-//
-// [(1,4000), (1,4000), (1,4000), (1,1350)] px
-// px{a<2006:qkq,m>2090:A,rfg}
-//  
-//  [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
-//  qkq{x<1416:A,crn}
-//
-//      [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
-//      [(1,2005), (1,4000), (1,4000), (1,1350)] qkq
-//      
-//
-//  # [(2006,4000), (2091,4000), (1,4000), (1,1350)] A
-//  [(2006,4000), (1,2090), (1,4000), (1,1350)] rfg
-//
-//
-// [(1,4000), (1,4000), (1,4000), (1351,4000)] qqz
-
 fn part_two(mut range: Vec<(u64, u64)>, workflows: &HashMap<String, Workflow>, current: &String) -> u64 {
     match current.as_str() {
         "A" => return range.iter().map(|n| (1 + n.1 - n.0)).fold(1, |acc,cur| acc * cur),
@@ -73,7 +52,6 @@ struct Workflow {
     default: String,
 }
 
-#[derive(Debug)]
 struct Rule {
     idx: usize,
     operator: Operator,
@@ -90,7 +68,7 @@ impl Rule {
     }
 
     fn split_range(&self, range: &mut Vec<(u64, u64)>) -> Option<Vec<(u64, u64)>> {
-        match self.operator {
+        Some(match self.operator {
             Operator::Smaller => {
                 if range[self.idx].0 >= self.amount {
                     return None;
@@ -100,7 +78,7 @@ impl Rule {
                 range[self.idx].0 = self.amount;
                 clone[self.idx].1 = self.amount - 1;
 
-                Some(clone)
+                clone
             }
             Operator::Greater => {
                 if range[self.idx].1 <= self.amount {
@@ -109,14 +87,14 @@ impl Rule {
 
                 let mut clone = range.clone();
                 range[self.idx].1 = self.amount;
-                clone[self.idx].0 = self.amount + 1;
-                Some(clone)
+                clone[self.idx].0 = self.amount;
+
+                clone
             }
-        }
+        })
     }
 }
 
-#[derive(Debug)]
 enum Operator {
     Smaller,
     Greater,
@@ -131,9 +109,7 @@ fn parse() -> (String, HashMap<String, Workflow>, String) {
 
     for line in inp[0].lines() {
         let (name, rest) = line.split_once('{').unwrap();
-        let rest = &rest[..rest.len() - 1];
-
-        let conditions = rest.split(',').collect::<Vec<_>>();
+        let conditions = rest[..rest.len() - 1].split(',').collect::<Vec<_>>();
         let mut rules = Vec::new();
 
         for i in 0..conditions.len() - 1 {
@@ -146,12 +122,7 @@ fn parse() -> (String, HashMap<String, Workflow>, String) {
                 (idx(ident), Operator::Greater, amount.parse::<u64>().unwrap())
             };
 
-            rules.push(Rule {
-                idx,
-                operator,
-                amount,
-                mapping_to: mapping_to.to_string(),
-            });
+            rules.push(Rule { idx, operator, amount, mapping_to: mapping_to.to_string() });
         }
 
         workflows.insert(name.to_string(), Workflow {
@@ -167,7 +138,7 @@ fn main() {
     let (start, workflows, test) = parse();
 
     println!("Part one: {}", test.lines()
-        .map(|l| part_one(&l[1..l.len() - 1].split(',').map(|s| s.split_once('=').unwrap().1.parse().unwrap()).collect(), 
+        .map(|l| part_one(&l[1..l.len() - 1].split(',').map(|s| s[2..].parse().unwrap()).collect(), 
                     &workflows, 
                     &start))
         .sum::<u64>());
