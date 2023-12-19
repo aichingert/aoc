@@ -1,59 +1,25 @@
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, Copy)]
-enum Op {
-    S,
-    B,
-    N,
-}
+fn part_one(ratings: &Vec<u64>, workflows: &HashMap<String, Workflow>, current: &String) -> u64 {
+    match current.as_str() {
+        "A" => return ratings.iter().sum::<u64>(),
+        "R" => return 0,
+        _ => (),
+    };
 
-fn main() {
-    let inp = std::fs::read_to_string("../input/19").unwrap().trim().to_string();
-    let inp = inp.split("\n\n").map(|s| s).collect::<Vec<_>>();
+    let workflow = &workflows[current];
 
-    let mut rules = HashMap::new();
-
-    for line in inp[0].lines() {
-        let (name, r) = line.split_once('{').unwrap();
-        let r = &r[..r.len() - 1];
-
-        let dif = r.split(',').collect::<Vec<_>>();
-
-        let mut rls = Vec::new();
-
-        for i in 0..dif.len() {
-            if let Some((cond, to)) = dif[i].split_once(":") {
-                if let Some((id, n)) = cond.split_once("<") {
-                    rls.push(((id.to_string(), Op::S, n.parse::<u32>().unwrap()), to.to_string()));
-                } else {
-                    let (id, n) = cond.split_once(">").unwrap();
-                    rls.push(((id.to_string(), Op::B, n.parse::<u32>().unwrap()), to.to_string()));
-                }
-            } else {
-                rls.push((("".to_string(), Op::N, 0), dif[i].to_string()));
-            }
-        }
-
-        rules.insert(name.to_string(), rls);
-    }
-
-    let start = String::from("in");
-    let mut ans = 0;
-
-    for ratings in inp[1].lines() {
-        let ratings = &ratings[1..ratings.len() - 1];
-        let vals = ratings.split(',').map(|s| s.split_once("=").unwrap().1.parse::<u32>().unwrap()).collect::<Vec<_>>();
-
-        if check(&vals, &rules, &start) {
-            ans += vals.iter().sum::<u32>();
+    for i in 0..workflow.rules.len() {
+        if workflow.rules[i].applies(ratings) {
+            return part_one(ratings, workflows, &workflow.rules[i].mapping_to);
         }
     }
 
-    println!("{ans}");
+    part_one(ratings, workflows, &workflow.default)
 }
 
-fn idx(s: &String) -> usize {
-    match s.as_str() {
+fn idx(s: &str) -> usize {
+    match s {
         "x" => 0,
         "m" => 1,
         "a" => 2,
@@ -62,35 +28,82 @@ fn idx(s: &String) -> usize {
     }
 }
 
-fn check(tile: &Vec<u32>, rules: &HashMap<String, Vec<((String, Op, u32), String)>>, current: &String) -> bool {
-    if current.as_str() == "A" {
-        return true;
-    } else if current.as_str() == "R" {
-        return false;
-    }
+struct Workflow {
+    rules: Vec<Rule>,
+    default: String,
+}
 
-    let rule = rules.get(current).unwrap();
-    let chcks = rule;
+struct Rule {
+    rating_idx: usize,
+    operator: Operator,
+    amount: u64,
+    mapping_to: String,
+}
 
-    for c in chcks {
-        let (ch, to) = c;
-
-        match ch.1 {
-            Op::S => {
-                if tile[idx(&ch.0)] < ch.2 {
-                    return check(tile, rules, to);
-                }
-            }
-            Op::B => {
-                if tile[idx(&ch.0)] > ch.2 {
-                    return check(tile, rules, to);
-                }
-            }
-            Op::N => {
-                return check(tile, rules, to);
-            }
+impl Rule {
+    fn applies(&self, ratings: &Vec<u64>) -> bool {
+        match self.operator {
+            Operator::Smaller => ratings[self.rating_idx] < self.amount,
+            Operator::Greater => ratings[self.rating_idx] > self.amount,
         }
     }
-    
-    false
+}
+
+enum Operator {
+    Smaller,
+    Greater,
+}
+
+
+
+fn parse() -> (String, HashMap<String, Workflow>, String) {
+    let inp = std::fs::read_to_string("../input/19").unwrap().trim().to_string();
+    let inp = inp.split("\n\n").map(|s| s).collect::<Vec<_>>();
+
+    let mut workflows = HashMap::new();
+    let start = String::from("in");
+
+    for line in inp[0].lines() {
+        let (name, rest) = line.split_once('{').unwrap();
+        let rest = &rest[..rest.len() - 1];
+
+        let conditions = rest.split(',').collect::<Vec<_>>();
+        let mut rules = Vec::new();
+
+        for i in 0..conditions.len() - 1 {
+            let (condition, mapping_to) = conditions[i].split_once(":").unwrap();
+
+            let (rating_idx, operator, amount) = if let Some((ident, amount)) = condition.split_once("<") {
+                (idx(ident), Operator::Smaller, amount.parse::<u64>().unwrap())
+            } else {
+                let (ident, amount) = condition.split_once(">").unwrap();
+                (idx(ident), Operator::Greater, amount.parse::<u64>().unwrap())
+            };
+
+            rules.push(Rule {
+                rating_idx,
+                operator,
+                amount,
+                mapping_to: mapping_to.to_string(),
+            });
+        }
+
+        workflows.insert(name.to_string(), Workflow {
+            rules,
+            default: conditions[conditions.len() - 1].to_string()
+        });
+    }
+
+    (start, workflows, inp[1].to_string())
+}
+
+fn main() {
+    let (start, workflows, test) = parse();
+
+    println!("Part one: {}", test.lines()
+        .map(|l| part_one(&l[1..l.len() - 1].split(',').map(|s| s.split_once('=').unwrap().1.parse().unwrap()).collect(), 
+                    &workflows, 
+                    &start))
+        .sum::<u64>());
+    println!("Part two: {}", 4000u64 * 4000 * 4000 * 4000);
 }
