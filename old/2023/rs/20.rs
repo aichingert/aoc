@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Clone, Debug)]
 enum Module {
@@ -44,18 +44,14 @@ fn main() {
     }
 
     let (mut lo, mut hi) = (0, 0);
-    let MAX = u32::MAX;
 
-    for i in 0..10 {
+    'inf: for i in 0..1000 {
         let mut bfs = VecDeque::from([("button".to_string(), "broadcaster".to_string(), false)]);
 
         while let Some((sender, module, pulse)) = bfs.pop_front() {
-            if module.as_str() == "rx" {
-                println!("{i} {pulse}");
-            }
             if module.as_str() == "rx" && !pulse {
-                println!("SOL: {:?}", i);
-                break;
+                println!("SOL {i}");
+                break 'inf;
             }
 
             match pulse {
@@ -73,25 +69,54 @@ fn main() {
             match module_t {
                 Module::Bc => connections.iter().for_each(|conn| bfs.push_back((module.clone(), conn.to_string(), pulse))),
                 Module::FlipFlop(state) => {
-                    if pulse {
-                        continue;
-                    }
+                    if pulse { continue; }
                     *state = !*state;
 
                     connections.iter().for_each(|conn| bfs.push_back((module.clone(), conn.to_string(), *state)));
                 }
                 Module::Conjunction(cache) => {
-                    {
-                        let cur = cache.get_mut(&sender).unwrap();
-                        *cur = pulse;
-                    }
+                    *cache.get_mut(&sender).unwrap() = pulse;
 
                     let send = !cache.iter().all(|val| *val.1);
                     connections.iter().for_each(|conn| bfs.push_back((module.clone(), conn.to_string(), send)));
                 }
             }
         }
+    }
 
+    let mut cur = VecDeque::from(["rx".to_string()]);
+    let mut sen = HashSet::new();
+    let mut x = 0;
+
+    while let Some(el) = cur.pop_front() {
+        if !sen.insert(el.clone()) {
+            continue;
+        }
+        for module in modules.iter() {
+            let (name, (module_t, conn)) = module;
+            
+            match module_t {
+                Module::Conjunction(cache) => {
+                    if conn.contains(&el) {
+                        println!("{name}[{module_t:?}]: ");
+
+                        for con in cache {
+                            println!("  {:?}", con.0);
+                            cur.push_back(con.0.clone());
+                        }
+                    }
+                }
+                _ => {
+                    if conn.contains(&el) {
+                        println!("{name}[{module_t:?}]: ");
+
+                        for con in conn {
+                            println!("  {:?}", con);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     println!("hi: {hi} - lo: {lo} {}", hi * lo);
