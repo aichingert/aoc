@@ -1,4 +1,8 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
+
+#[path = "../../utils/rust/math.rs"]
+mod math;
+use math::lcm;
 
 #[derive(Clone, Debug)]
 enum Module {
@@ -9,8 +13,8 @@ enum Module {
 
 fn main() {
     let inp = std::fs::read_to_string("../input/20").unwrap().trim().to_string();
-    let mut modules = HashMap::new();
 
+    let mut modules = HashMap::new();
     let mut keys = Vec::new();
 
     for line in inp.lines() {
@@ -18,11 +22,11 @@ fn main() {
         let (t, v) = (&lhs[..1], &lhs[1..]);
         let connections = rhs.split(", ").map(|s| s.to_string()).collect::<Vec<_>>();
 
-        if lhs.starts_with("b") {
-            keys.push((connections.clone(), lhs.to_string()));
+        keys.push((connections.clone(), if lhs.starts_with("b") {
+            lhs.to_string()
         } else {
-            keys.push((connections.clone(), v.to_string()));
-        }
+            v.to_string()
+        }));
 
         match (t, v) {
             ("b", "roadcaster") => modules.insert(lhs.to_string(), (Module::Bc, connections)),
@@ -43,23 +47,23 @@ fn main() {
         }
     }
 
-    let (mut lo, mut hi) = (0, 0);
+    println!("{:?}", modules.get(&"zh".to_string()));
 
-    'inf: for i in 0..1000 {
+    // ks: 4021
+    // sx: 3877
+    // ks: 3851
+    // jt: 4049
+
+    println!("{:?}", lcm(lcm(lcm(4021, 3877), 3851), 4049));
+
+    for i in 1..100000 {
         let mut bfs = VecDeque::from([("button".to_string(), "broadcaster".to_string(), false)]);
-
         while let Some((sender, module, pulse)) = bfs.pop_front() {
-            if module.as_str() == "rx" && !pulse {
-                println!("SOL {i}");
-                break 'inf;
+            if sender.as_str() == "jt" && module.as_str() == "zh" && pulse {
+                println!("{i} yikes");
             }
-
-            match pulse {
-                false => lo += 1,
-                true => hi += 1,
-            };
-
             let result = modules.get_mut(&module);
+
             if result.is_none() {
                 continue;
             }
@@ -84,40 +88,5 @@ fn main() {
         }
     }
 
-    let mut cur = VecDeque::from(["rx".to_string()]);
-    let mut sen = HashSet::new();
-    let mut x = 0;
-
-    while let Some(el) = cur.pop_front() {
-        if !sen.insert(el.clone()) {
-            continue;
-        }
-        for module in modules.iter() {
-            let (name, (module_t, conn)) = module;
-            
-            match module_t {
-                Module::Conjunction(cache) => {
-                    if conn.contains(&el) {
-                        println!("{name}[{module_t:?}]: ");
-
-                        for con in cache {
-                            println!("  {:?}", con.0);
-                            cur.push_back(con.0.clone());
-                        }
-                    }
-                }
-                _ => {
-                    if conn.contains(&el) {
-                        println!("{name}[{module_t:?}]: ");
-
-                        for con in conn {
-                            println!("  {:?}", con);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    println!("hi: {hi} - lo: {lo} {}", hi * lo);
+    // 3960000000
 }
