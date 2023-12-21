@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 type N = i128;
 
-fn dfs(ms: N, y: N, x: N, s: N, map: &Vec<Vec<char>>, filter: &mut HashSet<(N, N)>) -> N {
+fn dfs(ms: N, y: N, x: N, s: N, map: &Vec<Vec<char>>, filter: &mut HashSet<(N, N, N)>) -> N {
     if !filter.insert((y, x, s)) {
         return 0;
     } 
@@ -29,7 +29,6 @@ fn dfs(ms: N, y: N, x: N, s: N, map: &Vec<Vec<char>>, filter: &mut HashSet<(N, N
     res
 }
 
-
 fn main() {
     let inp = std::fs::read_to_string("../input/21").unwrap().trim().to_string();
     let inp = inp.lines().map(|l| l.chars().collect::<Vec<_>>()).collect::<Vec<_>>();
@@ -45,36 +44,81 @@ fn main() {
         }
     }
 
-    println!("{}", dfs(5000, start.0, start.1, 0, &inp, &mut HashSet::new()));
+    //println!("{}", dfs(5000, start.0, start.1, 0, &inp, &mut HashSet::new()));
 
-    /*
-    let mut bfs = VecDeque::from([(start, 0)]);
-    let mut sen = HashSet::new();
-    let mut ans = 0;
+    let (h, w) = (inp.len() as N, inp[0].len() as N);
 
-    while let Some(((y, x), s)) = bfs.pop_front() {  
-        if !sen.insert((y, x, s)) {
-            continue;
+
+    let mut prevprev = HashSet::from([start]);
+    let mut prev = apply(&prevprev, &inp, (w, h));
+    let mut state = prev.clone();
+    let mut next = apply_fast(&prevprev, &prev, &inp, (w, h));
+
+    let mut ppl = prevprev.len();
+    let mut pl = prev.len();
+
+
+    println!("      nxt     ");
+    for i in 0..inp.len() {
+        for j in 0..inp[i].len() {
+            if next.contains(&(i as N, j as N)) {
+                print!("O");
+            } else {
+                print!("{}", inp[i][j]);
+            }
         }
+        println!();
+    }
+    println!("================================================");
+    let n = 26501365;
 
-        let s = s + 1;
-
-        if s > STEPS {
-            ans += 1;
-            continue;
+    for i in 1..n {
+        if i % 100 == 0 {
+            println!("{i}");
         }
+        let next = apply_fast(&prevprev, &prev, &inp, (w, h));
 
+        let cp = ppl + next.len();
+        ppl = pl;
+        pl = cp;
+        prevprev = prev;
+        prev = next; 
+    }
+
+    println!("ACT: {:?}", pl);
+}
+
+fn apply(set: &HashSet<(N, N)>, inp: &Vec<Vec<char>>, (h, w): (N, N)) -> HashSet<(N, N)> {
+    let mut next = HashSet::new();
+
+    for (y, x) in set {
         for (r, c) in [(0,1),(1,0),(0,-1),(-1,0)] {
-            let (ny, nx) = (y + r, x + c);
-            let (ay, ax) = (ny.rem_euclid(inp.len() as i64), nx.rem_euclid(inp[0].len() as i64));
+            let (ay, ax) = ((y + r).rem_euclid(h), (x + c).rem_euclid(w));
             let (ay, ax) = (ay as usize, ax as usize);
 
             if inp[ay][ax] != '#' {
-                bfs.push_back(((ny, nx), s));
+                next.insert((y + r, x + c));
             }
         }
     }
 
-    println!("{:?}", ans);
-    */
+    next
+}
+
+fn apply_fast(prevprev: &HashSet<(N, N)>, prev: &HashSet<(N, N)>, inp: &Vec<Vec<char>>, (h,w): (N, N)) -> HashSet<(N, N)> {
+    let mut next = HashSet::new();
+
+    for (y, x) in prev {
+        for (r, c) in [(0,1),(1,0),(0,-1),(-1,0)] {
+            let (ny, nx) = (y + r, x + c);
+            let (ay, ax) = ((ny).rem_euclid(h), (nx).rem_euclid(w));
+            let (ay, ax) = (ay as usize, ax as usize);
+
+            if inp[ay][ax] != '#' && !prevprev.contains(&(ny, nx)) {
+                next.insert((ny, nx));
+            }
+        }
+    }
+    
+    next
 }
