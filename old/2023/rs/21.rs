@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-type N = i128;
+type N = i32;
 
 fn dfs(ms: N, y: N, x: N, s: N, map: &Vec<Vec<char>>, filter: &mut HashSet<(N, N, N)>) -> N {
     if !filter.insert((y, x, s)) {
@@ -44,48 +44,44 @@ fn main() {
         }
     }
 
-    //println!("{}", dfs(5000, start.0, start.1, 0, &inp, &mut HashSet::new()));
+    println!("{}", dfs(500, start.0, start.1, 0, &inp, &mut HashSet::new()));
 
     let (h, w) = (inp.len() as N, inp[0].len() as N);
-
 
     let mut prevprev = HashSet::from([start]);
     let mut prev = apply(&prevprev, &inp, (w, h));
     let mut state = prev.clone();
-    let mut next = apply_fast(&prevprev, &prev, &inp, (w, h));
 
     let mut ppl = prevprev.len();
     let mut pl = prev.len();
 
+    for i in 1..5000 {
+        let next = apply_fast(&prevprev, &prev, &inp, (w, h)); 
 
-    println!("      nxt     ");
-    for i in 0..inp.len() {
-        for j in 0..inp[i].len() {
-            if next.contains(&(i as N, j as N)) {
-                print!("O");
-            } else {
-                print!("{}", inp[i][j]);
+        /*
+        println!("      nxt({})     ", next.len());
+        for i in 0..inp.len() {
+            for j in 0..inp[i].len() {
+                if next.contains(&(i as N, j as N)) {
+                    print!("O");
+                } else {
+                    print!("{}", inp[i][j]);
+                }
             }
+            println!();
         }
-        println!();
-    }
-    println!("================================================");
-    let n = 26501365;
-
-    for i in 1..n {
-        if i % 100 == 0 {
-            println!("{i}");
-        }
-        let next = apply_fast(&prevprev, &prev, &inp, (w, h));
-
+        println!("================================================");
+        */
         let cp = ppl + next.len();
+
         ppl = pl;
         pl = cp;
         prevprev = prev;
-        prev = next; 
+        prev = next;
     }
 
-    println!("ACT: {:?}", pl);
+    println!("{}", pl);
+
 }
 
 fn apply(set: &HashSet<(N, N)>, inp: &Vec<Vec<char>>, (h, w): (N, N)) -> HashSet<(N, N)> {
