@@ -1,33 +1,28 @@
-struct Unit {
-    health: i16,
-    weaknesses: u16,
-    immunities: u16,
-}
+use std::collections::HashSet;
 
-impl Unit {
-    fn new(health: i16, weaknesses: u16, immunities: u16) -> Self {
-        Self {
-            health,
-            weaknesses,
-            immunities,
-        }
-    }
-}
-
+#[derive(Debug)]
 struct Group {
-    attack: i16,
-    attack_type: u16,
+    attack: i32,
+    attack_type: String,
 
-    initiative: u16,
-    units: Vec<Unit>,
+    weaknesses: HashSet<String>,
+    immunities: HashSet<String>,
+
+    initiative: u32,
+
+    hp: i32,
+    units: i32,
 }
 
 impl Group {
-    fn new(attack: i16, attack_type: u16, initiative: u16, units: Vec<Unit>) -> Self {
+    fn new(attack: i32, attack_type: String, weaknesses: HashSet<String>, immunities: HashSet<String>, initiative: u32, hp: i32, units: i32) -> Self {
         Self {
             attack,
             attack_type,
+            weaknesses,
+            immunities,
             initiative,
+            hp,
             units,
         }
     }
@@ -35,27 +30,37 @@ impl Group {
     // 18 units each with 729 hit points (weak to fire; immune to cold, slashing)
     // with an attack that does 8 radiation damage at initiative 10
     fn parse(s: &str) -> Self {
-        println!("{s}");
         let (start, middle) = s.split_once(" (").unwrap();
-
         let start = start.split(' ').collect::<Vec<_>>();
-        let (amount, hp) = (start[0].parse::<usize>().unwrap(), start[4].parse::<i16>().unwrap());
-
+        let (amount, hp) = (start[0].parse::<i32>().unwrap(), start[4].parse::<i32>().unwrap());
         let (effects, end) = middle.split_once(") ").unwrap();
+        let (mut weaknesses, mut immunities) = (HashSet::new(), HashSet::new());
 
-        let (a, b) = effects.split_once("; ").unwrap();
-
-        let (mut weaknesses, mut immunities) = (0, 0);
-
-        if a.starts_with("weak to") {
-            let elements = a[7..].split(", ").collect::<Vec<_>>();
-            println!("{:?}", elements);
+        let (weak, immu) = if let Some((a, b)) = effects.split_once("; ") {
+            if a.starts_with("weak to") {
+                (Some(a[8..].split(", ").collect::<Vec<_>>()), Some(b[10..].split(", ").collect::<Vec<_>>()))
+            } else {
+                (Some(b[8..].split(", ").collect::<Vec<_>>()), Some(a[10..].split(", ").collect::<Vec<_>>()))
+            }
         } else {
+            if effects.starts_with("weak to") {
+                (Some(effects[8..].split(", ").collect::<Vec<_>>()), None)
+            } else {
+                (None, Some(effects[10..].split(", ").collect::<Vec<_>>()))
+            }
+        };
 
-        }
+        if let Some(weak) = weak { weak.into_iter().for_each(|w| { weaknesses.insert(w.to_string()); }); }
+        if let Some(immu) = immu { immu.into_iter().for_each(|i| { immunities.insert(i.to_string()); }); }
 
+        let vals = end.split(' ').collect::<Vec<_>>();
+        let (dmg, attack_type, initiative) = (vals[5].parse::<i32>().unwrap(), vals[6].to_string(), vals[10].parse::<u32>().unwrap());
 
-        Self::new(0, 0, 0, vec![])
+        Self::new(dmg, attack_type, weaknesses, immunities, initiative, hp, amount)
+    }
+
+    fn effective_power(&self) -> i32 {
+        self.units * self.attack
     }
 }
 
@@ -64,5 +69,18 @@ fn main() {
     
     let (immune, infection) = inp.split_once("\n\n").unwrap();
 
-    let immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
+    let mut immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
+    let mut infection_groups = infection.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
+
+    for i in 0..immune_groups.len() {
+        println!("{}", immune_groups[i].effective_power());
+    }
+
+    immune_groups.sort_by(|a, b| a.effective_power().cmp(&b.effective_power()));
+
+    while immune_groups.len() > 0 && infection_groups.len() > 0 {
+
+    }
+
+
 }
