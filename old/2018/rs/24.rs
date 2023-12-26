@@ -23,12 +23,7 @@ impl Ord for Group {
 
 impl PartialOrd for Group {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(match self.effective_power().cmp(&other.effective_power()) {
-            Ordering::Equal => {
-                self.initiative.cmp(&other.initiative)
-            },
-            ord => ord,
-        })
+        Some(self.effective_power().cmp(&other.effective_power()).then(other.initiative.cmp(&self.initiative)))
     }
 }
 
@@ -45,10 +40,7 @@ impl Group {
         }
     }
 
-    // 18 units each with 729 hit points (weak to fire; immune to cold, slashing)
-    // with an attack that does 8 radiation damage at initiative 10
     fn parse(s: &str) -> Self {
-        println!("{:?}", s);
         if let Some((start, middle)) = s.split_once(" (") {
             let start = start.split(' ').collect::<Vec<_>>();
             let (amount, hp) = (start[0].parse::<i32>().unwrap(), start[4].parse::<i32>().unwrap());
@@ -56,11 +48,8 @@ impl Group {
             let (mut weaknesses, mut immunities) = (HashSet::new(), HashSet::new());
 
             let (weak, immu) = if let Some((a, b)) = effects.split_once("; ") {
-                if a.starts_with("weak to") {
-                    (Some(a[8..].split(", ").collect::<Vec<_>>()), Some(b[10..].split(", ").collect::<Vec<_>>()))
-                } else {
-                    (Some(b[8..].split(", ").collect::<Vec<_>>()), Some(a[10..].split(", ").collect::<Vec<_>>()))
-                }
+                let (a, b) = if a.starts_with("weak to") { (a, b) } else { (b, a) };
+                (Some(a[8..].split(", ").collect::<Vec<_>>()), Some(b[10..].split(", ").collect::<Vec<_>>()))
             } else {
                 if effects.starts_with("weak to") {
                     (Some(effects[8..].split(", ").collect::<Vec<_>>()), None)
@@ -73,11 +62,20 @@ impl Group {
             if let Some(immu) = immu { immu.into_iter().for_each(|i| { immunities.insert(i.to_string()); }); }
 
             let vals = end.split(' ').collect::<Vec<_>>();
-            let (dmg, attack_type, initiative) = (vals[5].parse::<i32>().unwrap(), vals[6].to_string(), vals[10].parse::<u32>().unwrap());
-            Self::new(dmg, attack_type, weaknesses, immunities, initiative, hp, amount)
+            let (dmg, a_type, init) = (vals[5].parse().unwrap(), vals[6].to_string(), vals[10].parse().unwrap());
+            Self::new(dmg, a_type, weaknesses, immunities, init, hp, amount)
         } else {
             let vals = s.split(' ').collect::<Vec<_>>();
-            Self::new(vals[12].parse().unwrap(), vals[13].to_string(), HashSet::new(), HashSet::new(), vals[17].parse().unwrap(), vals[4].parse().unwrap(), vals[0].parse().unwrap())
+
+            Self::new(
+                vals[12].parse().unwrap(), 
+                vals[13].to_string(), 
+                HashSet::new(),
+                HashSet::new(),
+                vals[17].parse().unwrap(),
+                vals[4].parse().unwrap(),
+                vals[0].parse().unwrap()
+            )
         }
     }
 
@@ -93,67 +91,48 @@ impl Group {
         self.effective_power() * if other.weaknesses.contains(&self.attack_type) { 2 } else { 1 }
     }
 
-    fn chose(group: &Vec<Self>, other: &Vec<Self>) -> Vec<i16> {
-        let mut taken = Vec::new();
+    fn chose(groups: &Vec<Self>, other: &Vec<Self>) -> Vec<i16> {
+        let mut taken = 0usize;
 
-        for i in 0..group.len() {
-            let mut pos = -1;
-            let mut dmg = 0;
-            let mut eff = 0;
-            let mut ini = 0;
+        groups.iter()
+            .map(|group| {
+                let (mut pos, mut dmg, mut eff, mut ini) = (-1, 0, -1, 0);
 
-            for j in 0..other.len() {
-                match group[i].damage_to(&other[j]).cmp(&dmg) {
-                    Ordering::Equal => {
-                        match other[j].effective_power().cmp(&eff) {
-                            Ordering::Equal => {
-                                if !taken.contains(&(j as i16)) && other[j].initiative > ini {
-                                    ini = other[j].initiative;
-                                    pos = j as i16;
-                                }
-                            }
-                            Ordering::Greater => {
-                                if !taken.contains(&(j as i16)) {
-                                    eff = other[j].effective_power();
-                                    ini = other[j].initiative;
-                                    pos = j as i16;
-                                }
-                            }
-                            _ => (),
-                        }
+                for j in 0..other.len() {
+                    if taken & (1 << j) == 1 {
+                        continue;
                     }
-                    Ordering::Greater => {
-                        if !taken.contains(&(j as i16)) {
-                            dmg = group[i].damage_to(&other[j]);
-                            eff = other[j].effective_power();
-                            ini = other[j].initiative;
-                            pos = j as i16;
-                        }
+
+                    let odmg = group.damage_to(&other[j]);
+                    let oeff = other[j].effective_power();
+                    let oini = other[j].initiative;
+
+                    if odmg.cmp(&dmg).then(oeff.cmp(&eff).then(oini.cmp(&ini))) == Ordering::Greater {
+                        (pos, dmg, eff, ini) = ((j as i16), odmg, oeff, oini)
                     }
-                    _ => (),
                 }
-            }
 
-            taken.push(pos);
-        }
+                if pos != -1 { taken |= 1 << pos as usize; }
 
-        taken
+                pos
+            })
+        .collect()
     }
 
-    fn get_order(group: &Vec<Self>, g: bool, order: &mut Vec<(usize, bool, u32)>) {
-        'lp: for i in 0..group.len() {
+    fn get_order(groups: &Vec<Self>, g: bool, order: &mut Vec<(usize, bool, u32)>) {
+        'lp: for i in 0..groups.len() {
             let mut j = 0;
 
             while j < order.len() {
-                if order[j].2 < group[i].initiative {
-                    order.insert(j, (i, g, group[i].initiative));
+                if order[j].2 < groups[i].initiative {
+                    order.insert(j, (i, g, groups[i].initiative));
                     continue 'lp;
                 }
 
                 j += 1;
             }
 
-            order.push((i, g, group[i].initiative));
+            order.push((i, g, groups[i].initiative));
         }
     }
 }
