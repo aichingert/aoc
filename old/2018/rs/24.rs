@@ -125,7 +125,7 @@ impl Group {
     }
 }
 
-fn part_one(mut immune_groups: Vec<Group>, mut infection_groups: Vec<Group>) -> i32 {
+fn part_one(mut immune_groups: Vec<Group>, mut infection_groups: Vec<Group>) -> (bool, i32) {
     while immune_groups.len() > 0 && infection_groups.len() > 0 {
         immune_groups.sort();
         infection_groups.sort();
@@ -148,7 +148,25 @@ fn part_one(mut immune_groups: Vec<Group>, mut infection_groups: Vec<Group>) -> 
         infection_groups = infection_groups.into_iter().filter(|g| g.units > 0).collect::<Vec<_>>();
     }
 
-    infection_groups.iter().chain(immune_groups.iter()).map(|g| g.units).sum::<i32>()
+    (immune_groups.len() > 0, infection_groups.iter().chain(immune_groups.iter()).map(|g| g.units).sum::<i32>())
+}
+
+fn part_two(immune_groups: &Vec<Group>, infection_groups: &Vec<Group>) -> i32 {
+    // If it gets stuck or is wrong play around with the boost numbers since it can get 
+    // into a deadlock when both remaining groups are immune against each others attacks
+
+    for boost in 35.. {
+        let boosted_immune_groups = immune_groups.iter().map(|g| { let mut n = g.clone(); n.attack += boost; n }).collect::<Vec<_>>();
+        let normy_infection_groups= infection_groups.clone();
+
+        let (team, units) = part_one(boosted_immune_groups, normy_infection_groups);
+
+        if team {
+            return units;
+        }
+    }
+
+    -1
 }
 
 fn main() {
@@ -157,8 +175,7 @@ fn main() {
 
     let immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
     let infection_groups = infection.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
-
     
-    println!("Part one: {}", part_one(immune_groups.clone(), infection_groups.clone()));
-
+    println!("Part one: {}", part_one(immune_groups.clone(), infection_groups.clone()).1);
+    println!("Part two: {}", part_two(&immune_groups, &infection_groups));
 }
