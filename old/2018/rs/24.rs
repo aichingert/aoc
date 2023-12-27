@@ -3,16 +3,14 @@ use std::cmp::Ordering;
 
 #[derive(Debug, Eq, PartialEq)]
 struct Group {
+    hp: i32,
+    units: i32,
     attack: i32,
     attack_type: String,
 
+    initiative: u32,
     weaknesses: HashSet<String>,
     immunities: HashSet<String>,
-
-    initiative: u32,
-
-    hp: i32,
-    units: i32,
 }
 
 impl Ord for Group {
@@ -23,7 +21,7 @@ impl Ord for Group {
 
 impl PartialOrd for Group {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.effective_power().cmp(&other.effective_power()).then(other.initiative.cmp(&self.initiative)))
+        Some(other.effective_power().cmp(&self.effective_power()).then(other.initiative.cmp(&self.initiative)))
     }
 }
 
@@ -96,10 +94,10 @@ impl Group {
 
         groups.iter()
             .map(|group| {
-                let (mut pos, mut dmg, mut eff, mut ini) = (-1, 0, -1, 0);
+                let (mut pos, mut dmg, mut eff, mut ini) = (-1, 1, -1, 0);
 
                 for j in 0..other.len() {
-                    if taken & (1 << j) == 1 {
+                    if taken & (1 << j) > 0 {
                         continue;
                     }
 
@@ -112,7 +110,7 @@ impl Group {
                     }
                 }
 
-                if pos != -1 { taken |= 1 << pos as usize; }
+                if pos != -1 { taken |= 1 << pos; }
 
                 pos
             })
@@ -139,15 +137,14 @@ impl Group {
 
 fn main() {
     let inp = std::fs::read_to_string("../input/24").unwrap().trim().to_string();
-    
     let (immune, infection) = inp.split_once("\n\n").unwrap();
 
     let mut immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
     let mut infection_groups = infection.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
 
-    
-
     while immune_groups.len() > 0 && infection_groups.len() > 0 {
+        immune_groups.sort();
+        infection_groups.sort();
         let imtargets = Group::chose(&immune_groups, &infection_groups);
         let intargets = Group::chose(&infection_groups, &immune_groups);
 
@@ -169,9 +166,6 @@ fn main() {
 
         immune_groups = immune_groups.into_iter().filter(|g| g.units > 0).collect::<Vec<_>>();
         infection_groups = infection_groups.into_iter().filter(|g| g.units > 0).collect::<Vec<_>>();
-
-        immune_groups.sort_by(|a,b| b.cmp(&a));
-        infection_groups.sort_by(|a,b| b.cmp(&a));
     }
 
     let ans = infection_groups.iter().chain(immune_groups.iter()).map(|g| g.units).sum::<i32>();
