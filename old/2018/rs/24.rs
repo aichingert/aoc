@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::cmp::Ordering;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 struct Group {
     hp: i32,
     units: i32,
@@ -117,42 +117,22 @@ impl Group {
         .collect()
     }
 
-    fn get_order(groups: &Vec<Self>, g: bool, order: &mut Vec<(usize, bool, u32)>) {
-        'lp: for i in 0..groups.len() {
-            let mut j = 0;
-
-            while j < order.len() {
-                if order[j].2 < groups[i].initiative {
-                    order.insert(j, (i, g, groups[i].initiative));
-                    continue 'lp;
-                }
-
-                j += 1;
-            }
-
-            order.push((i, g, groups[i].initiative));
-        }
+    fn get_order(groups_imm: &Vec<Self>, groups_inf: &Vec<Self>) -> Vec<(usize, bool, u32)> {
+        let mut order = groups_imm.iter().enumerate().map(|(i, g)| (i, true, g.initiative)).collect::<Vec<_>>();
+        order.extend_from_slice(&groups_inf.iter().enumerate().map(|(i, g)| (i, false, g.initiative)).collect::<Vec<_>>());
+        order.sort_by(|a,b| b.2.cmp(&a.2));
+        order
     }
 }
 
-fn main() {
-    let inp = std::fs::read_to_string("../input/24").unwrap().trim().to_string();
-    let (immune, infection) = inp.split_once("\n\n").unwrap();
-
-    let mut immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
-    let mut infection_groups = infection.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
-
+fn part_one(mut immune_groups: Vec<Group>, mut infection_groups: Vec<Group>) -> i32 {
     while immune_groups.len() > 0 && infection_groups.len() > 0 {
         immune_groups.sort();
         infection_groups.sort();
         let imtargets = Group::chose(&immune_groups, &infection_groups);
         let intargets = Group::chose(&infection_groups, &immune_groups);
 
-        let mut order = Vec::new();
-        Group::get_order(&immune_groups, true, &mut order);
-        Group::get_order(&infection_groups, false, &mut order);
-
-        for (pos, is_immune, _) in order {
+        for (pos, is_immune, _) in Group::get_order(&immune_groups, &infection_groups) {
             let (group, other) = if is_immune {
                 if immune_groups[pos].units <= 0 || imtargets[pos] == - 1 { continue; }
                 (&mut infection_groups[imtargets[pos] as usize], &immune_groups[pos])
@@ -168,8 +148,17 @@ fn main() {
         infection_groups = infection_groups.into_iter().filter(|g| g.units > 0).collect::<Vec<_>>();
     }
 
-    let ans = infection_groups.iter().chain(immune_groups.iter()).map(|g| g.units).sum::<i32>();
+    infection_groups.iter().chain(immune_groups.iter()).map(|g| g.units).sum::<i32>()
+}
 
-    println!("{:?}", ans);
+fn main() {
+    let inp = std::fs::read_to_string("../input/24").unwrap().trim().to_string();
+    let (immune, infection) = inp.split_once("\n\n").unwrap();
+
+    let immune_groups = immune.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
+    let infection_groups = infection.lines().skip(1).map(Group::parse).collect::<Vec<_>>();
+
+    
+    println!("Part one: {}", part_one(immune_groups.clone(), infection_groups.clone()));
 
 }
