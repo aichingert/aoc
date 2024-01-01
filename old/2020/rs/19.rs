@@ -8,7 +8,7 @@ enum Link {
 }
 
 fn m_concat(vec: &Vec<Vec<String>>) -> Vec<String> {
-    h_concat(0, vec).unwrap()
+    h_concat(0, vec).unwrap_or(vec![])
 }
 
 fn h_concat(cur: usize, vec: &Vec<Vec<String>>) -> Option<Vec<String>> {
@@ -31,13 +31,24 @@ fn h_concat(cur: usize, vec: &Vec<Vec<String>>) -> Option<Vec<String>> {
     Some(list)
 }
 
-fn solve(id: &i32, rules: &HashMap<i32, Link>, cur: &String) -> Vec<String> {
+fn solve(d: i32, id: &i32, rules: &HashMap<i32, Link>, cur: &String) -> Vec<String> {
+    println!("{d}");
+    if d > 8 {
+        return vec![];
+    }
+    let d = d + 1;
+
     match &rules[id] {
         Link::Value(c) => vec![format!("{cur}{c}")],
-        Link::Order(o) => m_concat(&o.iter().map(|i| solve(i, rules, cur)).collect::<Vec<_>>()),
+        Link::Order(o) => {
+            println!("Stuck");
+            m_concat(&o.iter().map(|i| solve(d, i, rules, cur)).filter(|v| !v.is_empty()).collect::<Vec<_>>()).into_iter().filter(|v| !v.is_empty()).collect::<Vec<_>>()
+        }
         Link::Optional(opt) => {
+            println!("Here?");
             let res = opt.iter()
-                .map(|o| o.iter().map(|i| solve(i, rules, cur)).collect::<Vec<_>>())
+                .map(|o| o.iter().map(|i| solve(d, i, rules, cur)).collect::<Vec<_>>())
+                .filter(|v| !v.is_empty())
                 .collect::<Vec<_>>();
 
             let mut vec = Vec::new();
@@ -93,13 +104,22 @@ fn main() {
     // aabbab
     // aaabbb
 
+    rules.insert(8, Link::Optional(vec![vec![42], vec![42, 8]]));
+    rules.insert(11, Link::Optional(vec![vec![42, 31], vec![42, 11, 31]]));
 
-    for s in solve(&0, &rules, &String::new()) {
+    let mut m = 0;
+    let mut mi = 0;
+
+    for s in solve(0, &0, &rules, &String::new()) {
+        m = m.max(s.len());
+        mi = mi.min(s.len());
         if good.contains(&s) {
             ans += 1;
         }
     }
 
-    println!("{ans}");
+    println!("LEN: {}", solve(0, &0, &rules, &String::new()).len());
+    println!("MAX: {} : MIN {}", m, mi);
+    println!("Part one: {ans}");
 
 }
