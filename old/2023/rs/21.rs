@@ -44,7 +44,7 @@ fn main() {
         }
     }
 
-    println!("{}", dfs(500, start.0, start.1, 0, &inp, &mut HashSet::new()));
+    //println!("{}", dfs(500, start.0, start.1, 0, &inp, &mut HashSet::new()));
 
     let (h, w) = (inp.len() as N, inp[0].len() as N);
 
@@ -56,6 +56,9 @@ fn main() {
     let mut pl = prev.len();
 
     for i in 1..5000 {
+        if i >= 4997 {
+            println!("{pl}");
+        }
         let next = apply_fast(&prevprev, &prev, &inp, (w, h)); 
 
         /*

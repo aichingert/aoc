@@ -8,6 +8,7 @@ enum Link {
 }
 
 fn m_concat(vec: &Vec<Vec<String>>) -> Vec<String> {
+    println!("{}", vec.len());
     h_concat(0, vec).unwrap_or(vec![])
 }
 
@@ -32,23 +33,16 @@ fn h_concat(cur: usize, vec: &Vec<Vec<String>>) -> Option<Vec<String>> {
 }
 
 fn solve(d: i32, id: &i32, rules: &HashMap<i32, Link>, cur: &String) -> Vec<String> {
-    println!("{d}");
-    if d > 8 {
-        return vec![];
-    }
     let d = d + 1;
 
     match &rules[id] {
         Link::Value(c) => vec![format!("{cur}{c}")],
         Link::Order(o) => {
-            println!("Stuck");
-            m_concat(&o.iter().map(|i| solve(d, i, rules, cur)).filter(|v| !v.is_empty()).collect::<Vec<_>>()).into_iter().filter(|v| !v.is_empty()).collect::<Vec<_>>()
+            m_concat(&o.iter().map(|i| solve(d, i, rules, cur)).collect::<Vec<_>>())
         }
         Link::Optional(opt) => {
-            println!("Here?");
             let res = opt.iter()
                 .map(|o| o.iter().map(|i| solve(d, i, rules, cur)).collect::<Vec<_>>())
-                .filter(|v| !v.is_empty())
                 .collect::<Vec<_>>();
 
             let mut vec = Vec::new();
@@ -93,19 +87,8 @@ fn main() {
 
     let mut ans = 0;
 
-    // ababbb
-    // abbbab
-    // bababa
-    // bababa
-    // aaaabbb
-    //
-    // aaabbb
-    // aabbab
-    // aabbab
-    // aaabbb
-
-    rules.insert(8, Link::Optional(vec![vec![42], vec![42, 8]]));
-    rules.insert(11, Link::Optional(vec![vec![42, 31], vec![42, 11, 31]]));
+    //rules.insert(8, Link::Optional(vec![vec![42], vec![42, 8]]));
+    //rules.insert(11, Link::Optional(vec![vec![42, 31], vec![42, 11, 31]]));
 
     let mut m = 0;
     let mut mi = 0;
@@ -113,6 +96,7 @@ fn main() {
     for s in solve(0, &0, &rules, &String::new()) {
         m = m.max(s.len());
         mi = mi.min(s.len());
+
         if good.contains(&s) {
             ans += 1;
         }
