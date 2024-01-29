@@ -1,5 +1,5 @@
 pub fn solve() {
-    let inp = std::fs::read_to_string("input/2015/01").unwrap().trim().to_string();
+    let inp = std::fs::read_to_string("../input/2015/01").unwrap().trim().to_string();
     let (mut part_one, mut part_two) = (0, 0);
 
     for (i, ch) in inp.chars().enumerate() {
