@@ -1,3 +1,3 @@
-module github.com/aichingert/aoc/2016-go
+module aoc16
 
 go 1.21.6

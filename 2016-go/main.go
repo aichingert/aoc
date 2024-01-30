@@ -2,9 +2,10 @@ package main
 
 import (
     "fmt"
-    "github.com/aichingert/aoc/2016-go/src/day01"
+    "aoc16/src"
 )
 
 func main() {
     fmt.Println("hello, world!")
+    src.PartOne()
 }

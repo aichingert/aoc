@@ -1,4 +1,4 @@
-package dayOne
+package src
 
 import "fmt"
 

@@ -1,0 +1,2 @@
+BEGIN day12
+END;
