@@ -1,32 +1,65 @@
+! The numbers for this day are somewhat hardcoded since I think they are 
+! most likely the same lenght for everyone and I did not figure out how
+! to do this better. So if you run into any problems try to change the numbers
+
 program day10
 implicit none
 
-    integer :: io, skip_size = 0, idx = 1
+    integer :: p1, p2, part_one, part_two
 
-    integer :: len_size = 16
-    integer :: buffer_size = 256
+    p1 = part_one()
+    p2 = part_two()
 
-    integer, dimension(16) :: lengths
+    print *, 'Part one: ', p1
+    print *, 'Part two: ', p2
+end program day10
+
+function part_one() result(ans)
+implicit none
+
+    integer :: io, skip_size = 0, ans
+    integer :: l_size = 16, b_size = 256
+
+    integer, dimension(16)  :: lengths
     integer, dimension(256) :: buffer
 
-    open (newunit=io, file='../input/10', status='old', action='read')
-    read (io, *) lengths
+    open(newunit=io, file='../input/10', status='old', action='read')
+    read(io, *) lengths
     close(io)
 
-    do idx = 1,buffer_size
-        buffer(idx) = idx - 1
+    do skip_size = 1,b_size
+        buffer(skip_size) = skip_size - 1
     end do
+    skip_size = 0
 
-    call shuffle(skip_size, lengths, len_size, buffer, buffer_size)
+    call shuffle(skip_size, lengths, l_size, buffer, b_size)
+
+    ans = buffer(1) * buffer(2)
+end function part_one
+
+function part_two() result(ans)
+implicit none
     
-    print *, "Part one: ", buffer(1) * buffer(2)
-end program day10
+    integer :: io, skip_size = 0, ans
+    integer :: b_size = 256
+
+    integer, dimension(256) :: buffer
+
+    character(len=512)      :: input
+
+    open(newunit=io, file='../input/10', status='old', action='read')
+    read(io, '(A)') input
+    close(io)
+
+    print *, input
+
+    ans = 1
+end function part_two
 
 subroutine shuffle(skip_size, lengths, l_size, buffer, b_size)
 implicit none
     
-integer, intent (in)  :: l_size, b_size
-integer, intent (in)  :: lengths(l_size)
+integer, intent (in)  :: l_size, b_size, lengths(l_size)
 integer, intent (inout) :: skip_size, buffer(b_size)
 
     integer :: i = 1, j = 1
