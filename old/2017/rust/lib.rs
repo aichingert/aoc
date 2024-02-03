@@ -5,11 +5,16 @@ pub const SIZE: usize = 256;
 
 pub fn shuffling(list: &mut Vec<u32>, lengths: &Vec<usize>, skip_size: &mut usize, loc: &mut usize) -> u32 {
     for i in 0..lengths.len() {
-        let mut col = (0..lengths[i]).map(|idx| list[(*loc + idx) % SIZE]).collect::<Vec<u32>>();
-        col = col.iter().rev().map(|n| *n).collect::<Vec<u32>>();
+        let mut src = *loc;
+        let mut dst = (*loc + lengths[i] - 1) % SIZE;
 
-        for j in 0..lengths[i] {
-            list[(*loc + j) % SIZE] = col[j];
+        for _ in 0..lengths[i] / 2 {
+            let tmp = list[src];
+            list[src] = list[dst];
+            list[dst] = tmp;
+
+            src = (src + 1) % SIZE;
+            if dst > 0 { dst -= 1; } else { dst = SIZE - 1; }
         }
 
         *loc = (*loc + lengths[i] + *skip_size) % SIZE;
