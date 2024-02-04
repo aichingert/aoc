@@ -1,6 +1,43 @@
-! The numbers for this day are somewhat hardcoded since I think they are 
+! Some numbers for this day are somewhat hardcoded since I think they are 
 ! most likely the same lenght for everyone and I did not figure out how
 ! to do this better. So if you run into any problems try to change the numbers
+
+function part_two() result(ans)
+implicit none
+    
+    integer :: io, idx = 1, pos = 1, skip_size = 0, ans
+    integer :: l_size = 0, b_size = 256
+
+    integer, dimension(:), allocatable :: lengths
+    integer, dimension(256) :: buffer
+
+    character(len=512) :: input
+
+    open(newunit=io, file='../input/10', status='old', action='read')
+    read(io, '(A)') input
+    close(io)
+
+    l_size = len_trim(input) + 5
+
+    allocate ( lengths(l_size) )
+
+    do idx = 1,l_size - 5
+        lengths(idx) = ichar(input(idx:idx))
+    end do
+
+    lengths(l_size - 4:l_size) = [17,31,73,47,23]
+
+    do idx = 1,64
+        call shuffle(pos, skip_size, lengths, l_size, buffer, b_size)
+    end do
+
+    print *, skip_size
+    print *, pos 
+    print *, 'huh',buffer(1) * buffer(2)
+
+    deallocate (lengths)
+    ans = 1
+end function part_two
 
 program day10
 implicit none
@@ -17,7 +54,7 @@ end program day10
 function part_one() result(ans)
 implicit none
 
-    integer :: io, skip_size = 0, ans
+    integer :: io, skip_size = 0, pos = 1, ans
     integer :: l_size = 16, b_size = 256
 
     integer, dimension(16)  :: lengths
@@ -32,46 +69,28 @@ implicit none
     end do
     skip_size = 0
 
-    call shuffle(skip_size, lengths, l_size, buffer, b_size)
+    call shuffle(pos, skip_size, lengths, l_size, buffer, b_size)
 
     ans = buffer(1) * buffer(2)
 end function part_one
 
-function part_two() result(ans)
-implicit none
-    
-    integer :: io, skip_size = 0, ans
-    integer :: b_size = 256
-
-    integer, dimension(256) :: buffer
-
-    character(len=512)      :: input
-
-    open(newunit=io, file='../input/10', status='old', action='read')
-    read(io, '(A)') input
-    close(io)
-
-    print *, input
-
-    ans = 1
-end function part_two
-
-subroutine shuffle(skip_size, lengths, l_size, buffer, b_size)
+subroutine shuffle(pos, skip_size, lengths, l_size, buffer, b_size)
 implicit none
     
 integer, intent (in)  :: l_size, b_size, lengths(l_size)
-integer, intent (inout) :: skip_size, buffer(b_size)
+integer, intent (out) :: skip_size, pos, buffer(b_size)
 
-    integer :: i = 1, j = 1
+    integer :: i
+    i = 1
 
     do while (i <= l_size)
-        call rev(j, j + lengths(i) - 1, buffer, b_size)
+        call rev(pos, pos + lengths(i) - 1, buffer, b_size)
 
-        j = j + lengths(i) + skip_size
+        pos = pos + lengths(i) + skip_size
         skip_size = skip_size + 1
         i = i + 1
 
-        if (j > b_size) j = modulo(j, b_size + 1) + j / b_size
+        if (pos > b_size) pos = modulo(pos, b_size + 1) + pos / b_size
     end do
 end subroutine shuffle
 
