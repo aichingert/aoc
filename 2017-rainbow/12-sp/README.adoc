@@ -1,0 +1,21 @@
+= PL/SQL
+
+I am using podman to create an oracle database to run my plsql script
+
+first you connect to the container with sqlplus (to create the container run the setup script)
+
+[source,sh]
+----
+podman exec -it oradb sqlplus / as sysdba
+----
+
+within you gotta paste the procedure (I am not sure how to import the file yet)
+
+after that you can
+
+[source,sql]
+----
+set serveroutput on
+
+exec (procedure name)
+----
