@@ -1,0 +1,12 @@
+= Easylang
+
+to run this day you need to clone the github repo and execute the following commands:
+
+[source, sh]
+----
+git clone https://github.com/chkas/easylang.git
+cd easylang/native
+
+mv ../../14.el .
+./runc 14.el
+----
