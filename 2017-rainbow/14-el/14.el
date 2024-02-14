@@ -1,5 +1,10 @@
 in$ = input
+
+board$[][] = [ ]
+len visited[] 128 * 128
+
 part_one = 0
+part_two = 0
 
 for row = 0 to 127
   hr$ = in$ & "-" & row
@@ -63,9 +68,51 @@ for row = 0 to 127
   
     bin$ = bin$ & cur$
   .
+
+  board$[][] &= strchars bin$
+.
+
+for r to 128
+  for c to 128
+    if board$[r][c] = "1" and visited[(r - 1) * 128 + c] = 0
+      toopen[] = [ r c ]
+      idx = 1
+      
+      while idx < len toopen[]
+        cr = toopen[idx]
+        cc = toopen[idx+1]
+
+        vidx = (cr - 1) * 128 + cc
+        if board$[cr][cc] = "1" and visited[vidx] = 0
+          if cr > 1
+            toopen[] &= cr - 1
+            toopen[] &= cc
+          .
+          if cr < 128
+            toopen[] &= cr + 1
+            toopen[] &= cc
+          .
+          if cc > 1
+            toopen[] &= cr
+            toopen[] &= cc - 1
+          .
+          if cc < 128
+            toopen[] &= cr
+            toopen[] &= cc + 1
+          .
+          visited[vidx] = 1
+        .
+
+        idx += 2
+      .
+
+      part_two += 1
+    .
+  .
 .
 
 print "Part one: " & part_one
+print "Part two: " & part_two
 
 input_data
 flqrgnkx
