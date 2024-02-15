@@ -31,15 +31,3 @@ clean:
 	  /lib/libprf.a 			\
  	--end-group 				\
 	>$@.map
-
-spawntest: spawntest.o spawn.o
-	ld -z muldefs -Bstatic -M -o $@		\
-	--oformat=elf32-i386			\
-	-melf_i386                              \
-	-e main  				\
-	 $@.o spawn.o				\
- 	--start-group   			\
-	  ~/pli/dev/lib/libprf.a 		\
- 	--end-group 				\
-	>$@.map
-

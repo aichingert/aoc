@@ -1,5 +1,31 @@
-day17:proc options(main);
+day17: proc options(main);
 
-    put skip List('Day 17');
+    call partone(3, 2017);
+    call parttwo(3, 50000000);
+
+    partone: proc(step, times);
+        dcl (step, times)   fixed bin(31);
+
+        put skip list ( 'Part one: TODO' );
+
+    end partone;
+
+    parttwo: proc(step, times);
+        dcl (step, times, i, loc, ans)  fixed bin(31);
+
+        loc = 0;
+        ans = 0;
+
+        do i = 1 to times;
+            loc = mod( (loc + step + 1), i );
+
+            if loc = 0 then do;
+                ans = i;
+            end;
+        end;
+
+        put skip list ( 'Part two: ' || ans );
+
+    end parttwo;
 
 end day17;
