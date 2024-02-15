@@ -22,7 +22,10 @@ class Point
 	}
 }
 
-
+/******************************************************************************/
+/* I found this conversion on stackexchange and it just works wonderful here: */
+/* https://math.stackexchange.com/questions/163080/on-a-two-dimensional-grid-is-there-a-formula-i-can-use-to-spiral-coordinates-in/163101#163101
+/******************************************************************************/
 Point ulam_spirale(int n) 
 {
 	int k = to!int(ceil((sqrt(to!float(n)) - 1) / 2));
@@ -30,29 +33,20 @@ Point ulam_spirale(int n)
 	int m = t*t;
 	t -= 1;
 
-	if (n >= m-t) {
-		return new Point(k - (m-n), -k);
-	} else {
-		m -= t;
-	}
+	if (n >= m-t)   return new Point(k - (m-n), -k);
+	else            m -= t;
 
-	if (n >= m - t) {
-		return new Point(-k,-k+(m-n));
-	} else {
-		m -= t;
-	}
+	if (n >= m - t) return new Point(-k,-k+(m-n));
+	else            m -= t;
 
-	if (n >= m - t) {
-		return new Point(-k+(m-n),k);
-	} else {
-		return new Point(k,k-(m-n-t));
-	}
+	if (n >= m - t) return new Point(-k+(m-n),k);
+	else            return new Point(k,k-(m-n-t));
 }
 
 int part_one(int n) 
 {
-	Point point = ulam_spirale(n);
-	return abs(point.x) + abs(point.y);
+	Point point = ulam_spirale(n); 
+    return abs(point.x) + abs(point.y);
 }
 
 int part_two(int n) 
@@ -71,11 +65,11 @@ int part_two(int n)
 		foreach (x; vec) {
 			foreach (y; vec) {
 				cur = new Point(p.x + x, p.y + y) in spiral;
-				if (cur !is null) { sum += *cur; } 
+				if (cur !is null) sum += *cur;
 			}
 		}
 
-		if (sum > n) { return sum; }
+		if (sum > n) return sum;
 
 		ptr += 1;
 		spiral[p] = sum;
