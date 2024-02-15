@@ -1,8 +1,9 @@
 set -e
 
-# Maybe I will figure out how to use GNU/marst
+marst 16.alg -o 16.c
+gcc 16.c -lalgol -lm -o 16
 
-gcc 16.c -o 16
+./16
 
+rm 16
 rm 16.c
-

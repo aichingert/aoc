@@ -1,0 +1,30 @@
+= Algol 60
+
+How to run this:
+
+* first you need to install gnu/marst [https://ftp.gnu.org/gnu/marst/](marst)
+
+after installing gnu/marst you can do (you need sudo because it tries to install a library into usr/local/lib)
+
+[source, sh]
+----
+./configure; make; sudo make install
+----
+
+after doing that you should have the marst binary then you can just use it like this:
+
+[source, sh]
+----
+marst hello.alg -o hello.c
+gcc hello.c -lalgol -lm -o hello
+./hello
+----
+
+if this throws an error you can see if you have /usr/local/lib listed in a *.conf file which can be found under /etc/ld.so.conf.d and if you had to add it then run
+
+[source, sh]
+----
+sudo ldconfig
+----
+
+after that it should work
