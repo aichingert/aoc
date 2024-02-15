@@ -1,4 +1,5 @@
-Day17 : Procedure options(main);
-    Put List ( 'Hello world' );
+day17:proc options(main);
 
-End Day17;
+    put skip List('Day 17');
+
+end day17;

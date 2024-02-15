@@ -2,7 +2,7 @@
 
 How to run this:
 
-* first you need to install gnu/marst [https://ftp.gnu.org/gnu/marst/](marst)
+* first you need to install https://ftp.gnu.org/gnu/marst/[gnu/marst]
 
 after installing gnu/marst you can do (you need sudo because it tries to install a library into usr/local/lib)
 

@@ -1,0 +1,18 @@
+= PL/I
+
+This day again requires some special software from the iron spring foundation 
+which can be found http://www.iron-spring.com/download.html[here]
+
+after installing it you can just unpack it and run `sudo make install` then put the lib folder in this folder
+with this the install is done and you can play around with it.
+
+to run this day just do:
+
+[source, sh]
+----
+make
+
+./17
+
+make clean
+----
