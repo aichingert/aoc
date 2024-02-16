@@ -41,9 +41,27 @@ begin
 
     end PART ONE;
 
+    procedure PART TWO (incr, times);
+        integer incr, times;
+    begin
+        integer i, loc, ans;
+
+        for i := 1 step 1 until times do
+            begin
+                loc := MOD ( loc + incr + 1, i );
+
+                if loc = 0 then ans := i
+            end;
+
+        outstring(1, "Part two: ");
+        outinteger(1, ans);
+        outstring(1, "\n")
+    end PART TWO;
+
     procedure MAIN;
     begin
-        PART ONE (3, 2017)
+        PART ONE (3, 2017);
+        PART TWO (3, 50000000)
     end MAIN;
 
     MAIN
