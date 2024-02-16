@@ -11,20 +11,15 @@ procedure Day_04 is
 		 Element_Type => Integer_Array);
 	use Array_Vectors;
 
-
-	F	   : File_Type;
+	F          : File_Type;
 	File_Name  : constant String := "../input/04";
 
-	Answer_One : Integer := 0;
-	Answer_Two : Integer := 0;
+	Answer_One : Integer         := 0;
+	Answer_Two : Integer         := 0;
 
-
-	function Part_One (Line : String) return Integer
-	is
-		fs  	 : Natural := 1;
-		fe 	 : Natural := 1;
-		ss 	 : Natural := 1;
-		se 	 : Natural := 1;
+	function Part_One (Line : String) return Integer 
+    is
+		fs,  fe, ss, se : Natural := 1;
 	begin
 		for I in Line'Range loop
 			if Line (I) = ' ' then
@@ -34,18 +29,12 @@ procedure Day_04 is
 				for J in I + 1 .. Line'Last loop
 					if Line (J) = ' ' then
 						se := J - 1;
-
-						if Line (fs .. fe) = Line (ss .. se) then 
-							return 0;
-						end if;
+						if Line (fs .. fe) = Line (ss .. se) then return 0; end if;
 						ss := J + 1;
 					end if;
 				end loop;
 
-				if fs /= ss and then Line (fs .. fe) = Line(ss .. Line'Last) then
-					return 0;
-				end if;
-
+				if fs /= ss and then Line (fs .. fe) = Line(ss .. Line'Last) then return 0; end if;
 				fs:= I + 1;
 			end if;
 		end loop;
@@ -62,7 +51,7 @@ procedure Day_04 is
 		loop
 			declare 
 				Counter	: Integer_Array := (others => 0);
-				Idx 	: Natural := 1;
+				Idx 	: Natural       := 1;
 			begin
 				for I in Index .. Line'Last loop
 					if Line (I) = ' ' then
@@ -89,8 +78,8 @@ procedure Day_04 is
 				declare 
 					This	: constant Integer_Array := V (I);
 					Other 	: constant Integer_Array := V (J);
-					Index 	: Natural := 1;
-					Test	: Integer := 1;
+					Index 	: Natural                := 1;
+					Test	: Integer                := 1;
 				begin
 					loop 
 						if This (Index) /= Other (Index) then
@@ -102,9 +91,7 @@ procedure Day_04 is
 						exit when Index > This'Last;
 					end loop;
 
-					if Index > This'Last then
-						return 0;
-					end if;
+					if Index > This'Last then return 0; end if;
 				end;
 			end loop;
 		end loop;
@@ -128,4 +115,3 @@ begin
 	Put_Line ("Part two: " & Integer'Image (Answer_Two));
 	Close (F);
 end Day_04;
-
