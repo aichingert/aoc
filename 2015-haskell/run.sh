@@ -1,5 +1,6 @@
 #!/bin/sh
-# (c) aichingert
+
+set -e
 
 file=$(basename $1 .hs)
 
