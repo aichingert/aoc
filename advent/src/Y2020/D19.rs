@@ -30,7 +30,7 @@ fn part_two(xs: &[char], r: u32, rlu: &HashMap<u32, Vec<char>>) -> Vec<i32> {
     let cur = &rlu[&r];
 
     if cur[0] == '"' {
-        if xs.len() > 0 && xs[0] == cur[1] { return vec![1]; }
+        if !xs.is_empty() && xs[0] == cur[1] { return vec![1]; }
         return vec![];
     }
 

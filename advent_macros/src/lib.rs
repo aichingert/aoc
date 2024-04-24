@@ -6,8 +6,8 @@ use std::time::SystemTime;
 mod gen;
 use gen::{imports, functions};
 
-const BASE_DIR: &'static str = "advent/src/";
-const SOLUTION: &'static str = "solve";
+const BASE_DIR: &str = "advent/src/";
+const SOLUTION: &str = "solve";
 
 #[proc_macro]
 pub fn add_modules(item: TokenStream) -> TokenStream {
@@ -32,7 +32,7 @@ pub fn add_fn_pointers(_item: TokenStream) -> TokenStream {
     lines.push(String::from("fn no_solution() { println!(\"Not solved yet\"); }"));
     lines.push(format!("const FN_POINTER: [[fn() -> (); 25]; {}] = [", cur_year - 2015 + 1));
 
-    lines.push((2015..=cur_year).map(|year| functions::add_fns_of_year(year)).collect::<Vec<_>>().join(","));
+    lines.push((2015..=cur_year).map(functions::add_fns_of_year).collect::<Vec<_>>().join(","));
     lines.push(String::from("];"));
 
     lines.join("\n").parse().unwrap()

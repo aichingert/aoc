@@ -2,7 +2,7 @@
 struct Linear {
     k: f64,
     d: f64,
-    x: f64,
+    _x: f64,
 }
 
 impl Linear {
@@ -14,7 +14,7 @@ impl Linear {
         Self {
             k,
             d,
-            x,
+            _x: x,
         }
     }
 
@@ -28,11 +28,6 @@ impl Linear {
 
         Some((x, y))
     }
-
-    fn crossed_in_the_past(&self, y: f64) -> bool {
-        let x = (y - self.d) / self.k;
-        self.k < 0. && self.x < x || self.k > 0. && self.x > x
-    }
 }
 
 pub fn solve() {
@@ -43,8 +38,8 @@ pub fn solve() {
     for line in inp.lines() {
         let (pos, vel) = line.split_once(" @ ").unwrap();
 
-        let pos = pos.split(", ").map(|n| n.parse::<f64>().unwrap()).collect::<Vec<_>>();
-        let vel = vel.split(", ").map(|n| n.parse::<f64>().unwrap()).collect::<Vec<_>>();
+        let pos = pos.split(", ").map(|n| n.trim().parse::<f64>().unwrap()).collect::<Vec<_>>();
+        let vel = vel.split(", ").map(|n| n.trim().parse::<f64>().unwrap()).collect::<Vec<_>>();
 
         functions.push(Linear::new(pos, vel));
     }
@@ -65,10 +60,6 @@ pub fn solve() {
     for i in 0..functions.len() {
         for j in i+1..functions.len() {
             if let Some((x, y)) = functions[i].intersect(&functions[j]) {
-                let cpi = functions[i].crossed_in_the_past(y);
-                let cpj = functions[j].crossed_in_the_past(y);
-
-
                 if x >= lb && x <= ub && y >= lb && y <= ub {
                     inside += 1;
                 }

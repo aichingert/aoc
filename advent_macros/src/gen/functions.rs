@@ -11,7 +11,7 @@ pub fn add_fns_of_year(year: u64) -> String {
         for day in directory {
             let day = day.unwrap().file_name();
 
-            if day.to_string_lossy().starts_with("D") {
+            if day.to_string_lossy().starts_with('D') {
                 let ident: &str = &day.to_string_lossy()[..3];
                 let ptr: usize = &ident[1..].parse::<usize>().unwrap() - 1;
 
@@ -42,7 +42,7 @@ pub fn find_last_edited() -> String {
 
                 let last_edited = std::fs::metadata(&path).unwrap().modified().unwrap();
 
-                if name.starts_with("D") && last_edited > time {
+                if name.starts_with('D') && last_edited > time {
                     time = last_edited;
 
                     let year = format!("{}", dir.display());

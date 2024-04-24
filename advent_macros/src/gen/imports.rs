@@ -12,7 +12,7 @@ pub fn add_days_of_year(tokens: &[TokenTree]) -> Vec<String> {
                 let day = day.unwrap().file_name();
                 let day = day.to_string_lossy();
 
-                if day.starts_with("D") {
+                if day.starts_with('D') {
                     days.push(format!("pub mod {};", &day[..3]));
                 }
             }
@@ -30,8 +30,8 @@ pub fn add_years() -> Vec<String> {
         let file = file.unwrap().file_name();
         let file = file.to_string_lossy();
 
-        if file.starts_with("Y") {
-            modules.push(format!("mod {};", file.to_string()));
+        if file.starts_with('Y') {
+            modules.push(format!("mod {};", file));
         }
     }
 
