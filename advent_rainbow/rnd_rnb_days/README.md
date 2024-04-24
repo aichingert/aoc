@@ -1,4 +1,4 @@
-# Advent of Languages 2017
+# Advent of Languages
 
 | Day | Language |
 | -   | - |
