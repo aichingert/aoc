@@ -1,4 +1,6 @@
-# Advent of Languages
+# Random Rainbow
+
+Here are just a few solution in random languages
 
 | Day | Language |
 | -   | - |
