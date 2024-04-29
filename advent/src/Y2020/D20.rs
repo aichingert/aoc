@@ -3,11 +3,11 @@ use std::collections::HashSet;
 #[derive(Clone)]
 struct Tile {
     id: u64,
-    block: Vec<Vec<char>>,
+    block: Vec<Vec<bool>>,
 }
 
 impl Tile {
-    fn new(id: u64, block: Vec<Vec<char>>) -> Self {
+    fn new(id: u64, block: Vec<Vec<bool>>) -> Self {
         Self { id, block }
     }
 
@@ -50,7 +50,7 @@ impl Tile {
     }
 }
 
-fn part_one(tiles: &Vec<Tile>) {
+fn part_one(tiles: &Vec<Tile>) -> Tile {
     let size = (tiles.len() as f32).sqrt() as usize;
     let mut all = Vec::new();
 
@@ -67,42 +67,24 @@ fn part_one(tiles: &Vec<Tile>) {
     }
 
     let mut grid = vec![vec![Tile::new(0, Vec::new()); size]; size];
-
     search(0, 0, &mut grid, &mut HashSet::new(), &all);
-
-    println!();
-
-    for i in grid.iter() {
-        for j in i.iter() {
-            print!("{} ", j.id);
-        }
-        println!();
-    }
 
     let mut block = Vec::new();
 
     for (i, row) in grid.into_iter().enumerate() {
         for col in row.into_iter() {
-            for j in 0..col.block.len() {
-                if block.len() <= col.block.len() * i + j {
+            for j in 1..col.block.len() - 1 {
+                let ptr = (col.block.len() - 2) * i + j - 1;
+                if block.len() <= ptr {
                     block.push(vec![]);
                 }
 
-                block[col.block.len() * i + j].extend_from_slice(&col.block[j]);
+                block[ptr].extend_from_slice(&col.block[j][1..col.block.len() - 1]);
             }
         }
     }
 
-    let tile = Tile::new(0, block);
-
-    for row in tile.block.iter() {
-        for col in row.iter() {
-            print!("{col}");
-        }
-        println!();
-    }
-
-
+    Tile::new(0, block)
 }
 
 fn search(row: usize, col: usize, grid: &mut Vec<Vec<Tile>>, vis: &mut HashSet<u64>, tiles: &Vec<Tile>) {
@@ -135,6 +117,66 @@ fn search(row: usize, col: usize, grid: &mut Vec<Vec<Tile>>, vis: &mut HashSet<u
     }
 }
 
+fn part_two(mut tile: Tile) {
+    let mut ans = i32::MAX;
+
+    for _ in 0..2 {
+        for _ in 0..4 {
+            let block = &tile.block;
+            let expec = block
+                .iter()
+                .map(|row| row.iter().filter(|&&n| n).count() as i32)
+                .sum::<i32>();
+            let mut solve = 0;
+
+            for i in 0..block.len() - 2 {
+                for j in 0..block.len() - 20 {
+                    /*
+                    "
+                                      # 
+                    #    ##    ##    ###
+                     #  #  #  #  #  #
+                    "
+                    */
+
+                    if block[i + 1][j] 
+                    && block[i + 2][j+1]
+
+                    && block[i + 2][j+4]
+                    && block[i + 1][j+5]
+                    && block[i + 1][j+6]
+                    && block[i + 2][j+7]
+
+                    && block[i + 2][j+10]
+                    && block[i + 1][j+11]
+                    && block[i + 1][j+12]
+                    && block[i + 2][j+13]
+
+                    && block[i + 2][j+17]
+                    && block[i + 1][j+17]
+                    && block[i][j+18]
+                    && block[i + 1][j+18]
+                    && block[i + 1][j+18] {
+                        solve += 15;
+                    }
+                }
+
+                // 2455 too high
+                println!("{expec} - {solve} = {}", expec -solve);
+                if expec - solve != expec {
+                    ans = ans.min(expec - solve);
+                }
+            }
+
+            tile = tile.rotate();
+        }
+
+        tile = tile.flip();
+    }
+
+    println!("{ans}");
+}
+
 pub fn solve() {
     let inp = std::fs::read_to_string("input/2020/20").unwrap().trim().to_string();
     let inp = inp.split("\n\n").collect::<Vec<_>>();
@@ -144,9 +186,10 @@ pub fn solve() {
             let mut lines = tile.lines();
             let id = lines.next().unwrap().split(' ').nth(1).unwrap();
             let id = id[..id.len() - 1].parse::<u64>().unwrap();
-            Tile::new(id, lines.map(|l| l.chars().collect::<Vec<_>>()).collect())
+            Tile::new(id, lines.map(|l| l.chars().map(|c| c == '#').collect::<Vec<_>>()).collect())
         })
         .collect::<Vec<_>>();
 
-    part_one(&tiles);
+    let p1 = part_one(&tiles);
+    part_two(p1);
 }
