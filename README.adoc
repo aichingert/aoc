@@ -1,0 +1,12 @@
+= aoc
+:toc:
+aichingert
+
+== Introduction
+
+I try to write every solution in rust and some are also written in other languages they can be found in the rainbow folder.
+
+== Folders
+
+I wanted to create usefull helpers for the aoc problems so I have an advent_macros folder which contains macros for parsing the input or something similar to that. The Lib folder contains algorithm for dijkstra, math functions like lcm and gcd or stuff like that.
+
