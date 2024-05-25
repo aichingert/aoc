@@ -27,7 +27,7 @@ fn main() {
                 day = Some(n - 1);
             } else {
                 println!("Invalid day: (1-25)");
-                return
+                return;
             }
         }
     }
@@ -54,5 +54,4 @@ fn main() {
         }
         (_, _) => LATEST(),
     }
-
 }

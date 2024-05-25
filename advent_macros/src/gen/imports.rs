@@ -8,7 +8,9 @@ pub fn add_days_of_year(tokens: &[TokenTree]) -> Vec<String> {
             let year = format!("Y{}", lit.to_string().parse::<u32>().unwrap());
             let fold = std::ffi::OsStr::new(year.as_str());
 
-            for day in std::fs::read_dir(format!("{}{}", crate::BASE_DIR, fold.to_str().unwrap())).unwrap() {
+            for day in
+                std::fs::read_dir(format!("{}{}", crate::BASE_DIR, fold.to_str().unwrap())).unwrap()
+            {
                 let day = day.unwrap().file_name();
                 let day = day.to_string_lossy();
 

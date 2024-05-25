@@ -1,5 +1,5 @@
-use std::time::SystemTime;
 use std::fs;
+use std::time::SystemTime;
 
 pub fn add_fns_of_year(year: u64) -> String {
     let mut fns = vec![String::from("no_solution"); 25];
@@ -19,7 +19,7 @@ pub fn add_fns_of_year(year: u64) -> String {
             }
         }
     }
-    
+
     let mut fns = fns.join(",");
     fns.insert(0, '[');
     fns.push(']');
@@ -55,7 +55,11 @@ pub fn find_last_edited() -> String {
     }
 
     if let Some(module) = module {
-        format!("const LATEST: fn() -> () = {}::{};", module, crate::SOLUTION)
+        format!(
+            "const LATEST: fn() -> () = {}::{};",
+            module,
+            crate::SOLUTION
+        )
     } else {
         String::from("const LATEST: fn() -> () = no_solution;")
     }
