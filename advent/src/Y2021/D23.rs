@@ -1,4 +1,7 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
+
+const LEN: usize = 11;
+type Stack = VecDeque<([i32;LEN], Vec<Vec<i32>>, i32)>;
 
 fn is_done(c: &[Vec<i32>]) -> bool {
     c[0][0] == 1    && c[1][0] == 1 &&
@@ -7,11 +10,39 @@ fn is_done(c: &[Vec<i32>]) -> bool {
     c[0][3] == 1000 && c[1][3] == 1000 
 }
 
+fn step_out_of_cave(depth: usize, caves: &Vec<Vec<i32>>, mut hallway: [i32; LEN], cost: i32, stack: &mut Stack) {
+    for (i, &pos) in caves[depth].iter().enumerate() {
+        if pos == 0 { continue; }
+        if depth == 1 && caves[0][i] != 0 { continue; }
+
+        let mut copy = caves.clone();
+        copy[depth][i] = 0;
+
+        // ...........
+        // ##B#C#B#D##
+
+        for j in (0..i * 2 + 1).step_by(2).rev() {
+            if hallway[j] != 0 { break; }
+
+            hallway[j] = pos;
+            stack.push_back((hallway, copy.clone(), cost + ((((i * 2 + 2) - j) + depth) as i32) * pos));
+            hallway[j] = 0;
+        }
+        for j in (i * 2 + 2..hallway.len()).step_by(2) {
+            if hallway[j] != 0 { break; }
+
+            hallway[j] = pos;
+            stack.push_back((hallway, copy.clone(), cost + (((j - i * 2) + depth) as i32) * pos));
+            hallway[j] = 0;
+        }
+    }
+}
+
 pub fn solve() {
     let inp = std::fs::read_to_string("input/2021/23").unwrap().trim().to_string();
 
-    let mut hallway = [0; 9];
-    let mut configs = inp.lines()
+    let hallway = [0; LEN];
+    let configs = inp.lines()
         .skip(2)
         .take(2)
         .map(|l| {
@@ -32,56 +63,21 @@ pub fn solve() {
         })
         .collect::<Vec<_>>();
 
-    let mut vis = HashSet::new();
+    let mut vis = HashMap::new();
     let mut stack = VecDeque::from_iter([(hallway, configs, 0)]);
-    stack.clear();
-    hallway[2] = 10;
-    hallway[4] = 100;
-    stack.push_front((hallway, vec![vec![10,0,0,1000],vec![1,1000,100,1]], 0));
     let mut ans = i32::MAX;
 
     while let Some((hallway, configs, t)) = stack.pop_front() {
         if is_done(&configs) {
-            println!("{t}");
             ans = ans.min(t);
             continue;
         }
 
-        if !vis.insert((hallway, configs.clone())) {
-            continue;
+        let key = (hallway, configs.clone());
+        if let Some(&res) = vis.get(&key) {
+            if res <= t { continue; }
         }
-
-        println!("{t}");
-        print!("[");
-        for i in 0..hallway.len() {
-            match hallway[i] {
-                1 => print!("A, "),
-                10 => print!("B, "),
-                100 => print!("C, "),
-                1000 => print!("D, "),
-                _ => print!("0, "),
-            }
-        }
-        println!("]");
-        print!("    ");
-        for i in 0..configs[0].len() {
-            match configs[0][i] {
-                1 => print!("A"),
-                10 => print!("B"),
-                100 => print!("C"),
-                1000 => print!("D"),
-                _ => print!(" "),
-            }
-            match configs[1][i] {
-                1 => print!("A    "),
-                10 => print!("B    "),
-                100 => print!("C    "),
-                1000 => print!("D    "),
-                _ => print!("    "),
-            }
-        }
-        println!();
-        println!();
+        vis.insert(key, t);
 
         let mut hllw = hallway;
 
@@ -100,8 +96,6 @@ pub fn solve() {
                     if configs[1][room] == pos {
                         let mut copy = configs.clone();
                         copy[0][room] = pos;
-
-
                         stack.push_back((hllw, copy, t + ((r - i + 1) as i32) * pos));
                     }
                     if configs[1][room] == 0 {
@@ -145,73 +139,8 @@ pub fn solve() {
             }
         }
 
-
-
-        for (i, &pos) in configs[0].iter().enumerate() {
-            if pos == 0 { continue; }
-
-            let mut copy = configs.clone();
-            copy[0][i] = 0;
-
-            // 12521 => 12703
-            //
-            // A B  C   D
-            // 1 10 100 1000
-
-            for j in (0..i * 2 + 1).step_by(2).rev() {
-                if hllw[j] != 0 { break; }
-
-                hllw[j] = pos;
-
-                // 012345678
-                // ..B......
-                // #B#C#.#D#
-                //  0 1 2 3
-                //
-                // i: 2, j: 2
-                //
-                // 2 * 2 + 1 - 2 => 3
-                //
-                // i * 2 + 1 - j
-
-                stack.push_back((hllw, copy.clone(), t + (((i * 2 + 2) - j) as i32) * pos));
-                hllw[j] = 0;
-            }
-
-            for j in (i * 2 + 2..hallway.len()).step_by(2) {
-                if hallway[j] != 0 { break; }
-
-                hllw[j] = pos;
-
-                // j - (i * 2 + 1)
-
-                stack.push_back((hllw, copy.clone(), t + ((j - i * 2) as i32) * pos));
-                hllw[j] = 0;
-            }
-        }
-
-        for (i, &pos) in configs[1].iter().enumerate() {
-            if pos == 0 { continue; }
-            if configs[0][i] != 0 { continue; }
-
-            let mut copy = configs.clone();
-            copy[1][i] = 0;
-
-            for j in (0..i * 2 + 1).step_by(2).rev() {
-                if hllw[j] != 0 { break; }
-
-                hllw[j] = pos;
-                stack.push_back((hllw, copy.clone(), t + (((i * 2 + 1) - j) as i32 + 1) * pos));
-                hllw[j] = 0;
-            }
-            for j in (i * 2 + 2..hallway.len()).step_by(2) {
-                if hallway[j] != 0 { break; }
-
-                hllw[j] = pos;
-                stack.push_back((hllw, copy.clone(), t + ((j - i * 2 + 1) as i32 + 1) * pos));
-                hllw[j] = 0;
-            }
-        }
+        step_out_of_cave(0, &configs, hallway, t, &mut stack);
+        step_out_of_cave(1, &configs, hallway, t, &mut stack);
     }
 
     println!("{ans}");
