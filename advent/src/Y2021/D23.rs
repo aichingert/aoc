@@ -1,21 +1,84 @@
 use std::collections::{HashMap, VecDeque};
 
-// ans < 10528 
-
 const LEN: usize = 11;
 type Stack = VecDeque<([i32;LEN], Vec<Vec<i32>>, i32)>;
 
-fn is_done(c: &[Vec<i32>]) -> bool {
+#[inline(always)]
+fn part_one_is_done(c: &[Vec<i32>]) -> bool {
     c[0][0] == 1    && c[1][0] == 1 &&
     c[0][1] == 10   && c[1][1] == 10 &&
     c[0][2] == 100  && c[1][2] == 100 &&
     c[0][3] == 1000 && c[1][3] == 1000 
 }
 
+#[inline(always)]
+fn part_two_is_done(c: &[Vec<i32>]) -> bool {
+    c[0][0] == 1    && c[1][0] == 1    && c[2][0] == 1    && c[3][0] == 1 &&
+    c[0][1] == 10   && c[1][1] == 10   && c[2][1] == 10   && c[3][1] == 10 &&
+    c[0][2] == 100  && c[1][2] == 100  && c[2][2] == 100  && c[3][2] == 100 &&
+    c[0][3] == 1000 && c[1][3] == 1000 && c[2][3] == 1000 && c[3][3] == 1000
+}
+
+fn get_result(is_part_two: bool, mut caves: Vec<Vec<i32>>, hallway: [i32; LEN]) -> i32 {
+    if is_part_two {
+        caves.insert(1, vec![1000, 10, 1, 100]);
+        caves.insert(1, vec![1000, 100, 10, 1]);
+    }
+
+    let mut vis = HashMap::new();
+    let mut stack = VecDeque::from_iter([(hallway, caves, 0)]);
+    let mut ans = i32::MAX;
+
+    while let Some((hallway, caves, cost)) = stack.pop_front() {
+        if !is_part_two && part_one_is_done(&caves) || is_part_two && part_two_is_done(&caves) {
+            ans = ans.min(cost);
+            continue;
+        }
+
+        let key = (hallway, caves.clone());
+        if let Some(&res) = vis.get(&key) {
+            if res <= cost { continue; }
+        }
+        vis.insert(key, cost);
+
+        for depth in 0..caves.len() {
+            step_out_of_cave(depth, &caves, hallway, cost, &mut stack);
+        }
+
+        for (i, &pos) in hallway.iter().enumerate() {
+            if pos == 0 { continue; }
+
+            search_cave(
+                i + 1..hallway.len(), 
+                hallway, 
+                cost, 
+                &mut stack, 
+                &caves, 
+                |ptr: usize, pos: usize, d: i32| {(ptr - pos) as i32 + d },
+                (i, pos)
+            );
+
+            search_cave(
+                (1..i).rev(),
+                hallway, 
+                cost, 
+                &mut stack, 
+                &caves, 
+                |ptr: usize, pos: usize, d: i32| {(pos - ptr) as i32 + d },
+                (i, pos)
+            );
+        } 
+    }
+
+    ans
+}
+
 fn step_out_of_cave(depth: usize, caves: &Vec<Vec<i32>>, mut hallway: [i32; LEN], cost: i32, stack: &mut Stack) {
-    for (i, &pos) in caves[depth].iter().enumerate() {
+    'outer: for (i, &pos) in caves[depth].iter().enumerate() {
         if pos == 0 { continue; }
-        if depth == 1 && caves[0][i] != 0 { continue; }
+        for d in 0..depth {
+            if caves[d][i] != 0 { continue 'outer; }
+        }
 
         let mut copy = caves.clone();
         let cur = i * 2 + 2;
@@ -54,26 +117,30 @@ where
     F: Fn(usize, usize, i32) -> i32,
     I: Iterator<Item = usize> 
 {
-    for ptr in direction {
+    'outer: for ptr in direction {
         if hallway[ptr] != 0 { return; }
         if !matches!(ptr, 2 | 4 | 6 | 8) { continue; }
 
         let room = (ptr >> 1) - 1;
         let indx = (amph as f64).log10() as usize;
 
-        if room != indx || caves[0][room] != 0 { continue; }
-        hallway[pos] = 0;
+        if room != indx { continue; }
 
-        if caves[1][room] == amph {
-            let mut set  = caves.clone();
-            set[0][room] = amph;
-            stack.push_back((hallway, set, cost + steps(ptr, pos, 1) * amph));
+        for depth in 0..caves.len() {
+            if !(caves[depth][room] == amph || caves[depth][room] == 0) {
+                continue 'outer;
+            }
         }
 
-        if caves[1][room] == 0 {
-            let mut set  = caves.clone();
-            set[1][room] = amph;
-            stack.push_back((hallway, set, cost + steps(ptr, pos, 2) * amph));
+        hallway[pos] = 0;
+
+        for depth in (0..caves.len()).rev() {
+            if caves[depth][room] == 0 {
+                let mut set  = caves.clone();
+                set[depth][room] = amph;
+                stack.push_back((hallway, set, cost + steps(ptr, pos, depth as i32 + 1) * amph));
+                break;
+            }
         }
 
         hallway[pos] = amph;
@@ -81,17 +148,13 @@ where
 }
 
 pub fn solve() {
-    let inp = std::fs::read_to_string("input/2021/23").unwrap().trim().to_string();
-
-    let hallway = [0; LEN];
-    let configs = inp.lines()
+    let caves = std::fs::read_to_string("input/2021/23").unwrap().trim().lines()
         .skip(2)
         .take(2)
         .map(|l| {
             l
             .chars()
-            .filter(|c| *c != ' ')
-            .filter(|c| *c != '#')
+            .filter(|&c| c != ' ' && c != '#')
             .map(|c| {
                 match c {
                     'A' => 1,
@@ -105,49 +168,6 @@ pub fn solve() {
         })
         .collect::<Vec<_>>();
 
-    let mut vis = HashMap::new();
-    let mut stack = VecDeque::from_iter([(hallway, configs, 0)]);
-    let mut ans = i32::MAX;
-
-    while let Some((hallway, caves, cost)) = stack.pop_front() {
-        if is_done(&caves) {
-            ans = ans.min(cost);
-            continue;
-        }
-
-        let key = (hallway, caves.clone());
-        if let Some(&res) = vis.get(&key) {
-            if res <= cost { continue; }
-        }
-        vis.insert(key, cost);
-
-        step_out_of_cave(0, &caves, hallway, cost, &mut stack);
-        step_out_of_cave(1, &caves, hallway, cost, &mut stack);
-
-        for (i, &pos) in hallway.iter().enumerate() {
-            if pos == 0 { continue; }
-
-            search_cave(
-                i + 1..hallway.len(), 
-                hallway, 
-                cost, 
-                &mut stack, 
-                &caves, 
-                |ptr: usize, pos: usize, d: i32| {(ptr - pos) as i32 + d },
-                (i, pos)
-            );
-
-            search_cave(
-                (1..i).rev(),
-                hallway, 
-                cost, 
-                &mut stack, 
-                &caves, 
-                |ptr: usize, pos: usize, d: i32| {(pos - ptr) as i32 + d },
-                (i, pos)
-            );
-        } 
-    }
-
-    println!("Part one: {ans}");
+    println!("Part one: {part_one}", part_one = get_result(false, caves.clone(), [0; LEN]));
+    println!("Part two: {part_two}", part_two = get_result(true, caves, [0; LEN]));
 }
