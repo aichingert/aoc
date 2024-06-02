@@ -41,7 +41,43 @@ fn step_out_of_cave(depth: usize, caves: &Vec<Vec<i32>>, mut hallway: [i32; LEN]
     }
 }
 
-fn search_cave_from_hallway(stack: &mut Stack) {
+fn search_cave<I, F>(
+    direction: I, 
+    mut hallway: [i32; LEN], 
+    cost: i32,
+    stack: &mut Stack,
+    caves: &Vec<Vec<i32>>,
+    steps: F,
+    (pos, amph): (usize, i32), 
+)
+where 
+    F: Fn(usize, usize, i32) -> i32,
+    I: Iterator<Item = usize> 
+{
+    for ptr in direction {
+        if hallway[ptr] != 0 { return; }
+        if !matches!(ptr, 2 | 4 | 6 | 8) { continue; }
+
+        let room = (ptr >> 1) - 1;
+        let indx = (amph as f64).log10() as usize;
+
+        if room != indx || caves[0][room] != 0 { continue; }
+        hallway[pos] = 0;
+
+        if caves[1][room] == amph {
+            let mut set  = caves.clone();
+            set[0][room] = amph;
+            stack.push_back((hallway, set, cost + steps(ptr, pos, 1) * amph));
+        }
+
+        if caves[1][room] == 0 {
+            let mut set  = caves.clone();
+            set[1][room] = amph;
+            stack.push_back((hallway, set, cost + steps(ptr, pos, 2) * amph));
+        }
+
+        hallway[pos] = amph;
+    }
 }
 
 pub fn solve() {
@@ -88,62 +124,30 @@ pub fn solve() {
         step_out_of_cave(0, &caves, hallway, cost, &mut stack);
         step_out_of_cave(1, &caves, hallway, cost, &mut stack);
 
-        let mut hllw = hallway;
-
         for (i, &pos) in hallway.iter().enumerate() {
             if pos == 0 { continue; }
 
-            for r in i + 1..hallway.len() {
-                if hallway[r] != 0 { break; }
-                if !matches!(r, 2 | 4 | 6 | 8) { continue; }
+            search_cave(
+                i + 1..hallway.len(), 
+                hallway, 
+                cost, 
+                &mut stack, 
+                &caves, 
+                |ptr: usize, pos: usize, d: i32| {(ptr - pos) as i32 + d },
+                (i, pos)
+            );
 
-                let room = (r >> 1) - 1;
-                let amph = (pos as f64).log10() as usize;
-
-                if room != amph || caves[0][room] != 0 { continue; }
-                hllw[i] = 0;
-
-                if caves[1][room] == pos {
-                    let mut set  = caves.clone();
-                    set[0][room] = pos;
-                    stack.push_back((hllw, set, cost + ((r - i + 1) as i32) * pos));
-                }
-
-                if caves[1][room] == 0 {
-                    let mut set  = caves.clone();
-                    set[1][room] = pos;
-                    stack.push_back((hllw, set, cost + ((r - i + 2) as i32) * pos));
-                }
-
-                hllw[i] = pos;
-            }
-
-            for l in (1..i).rev() {
-                if hallway[l] != 0 { break; }
-                if !matches!(l, 2 | 4 | 6 | 8) { continue };
-
-                let room = (l >> 1) - 1;
-                let amph = (pos as f64).log10() as usize;
-
-                if room != amph || caves[0][room] != 0 { continue; }
-                hllw[i] = 0;
-
-                if caves[1][room] == pos {
-                    let mut set  = caves.clone();
-                    set[0][room] = pos;
-                    stack.push_back((hllw, set, cost + ((i - l + 1) as i32) * pos));
-                }
-
-                if caves[1][room] == 0 {
-                    let mut set  = caves.clone();
-                    set[1][room] = pos;
-                    stack.push_back((hllw, set, cost + ((i - l + 2) as i32) * pos));
-                }
-
-                hllw[i] = pos;
-            }
+            search_cave(
+                (1..i).rev(),
+                hallway, 
+                cost, 
+                &mut stack, 
+                &caves, 
+                |ptr: usize, pos: usize, d: i32| {(pos - ptr) as i32 + d },
+                (i, pos)
+            );
         } 
     }
 
-    println!("{ans}");
+    println!("Part one: {ans}");
 }

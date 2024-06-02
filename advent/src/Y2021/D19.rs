@@ -1,3 +1,6 @@
+pub fn solve() {}
+
+/*
 fn roll(cord: &[i32]) -> Vec<i32> {
     vec![cord[0],cord[2], -cord[1]]
 }
@@ -84,3 +87,4 @@ pub fn solve() {
     }
 
 }
+*/
