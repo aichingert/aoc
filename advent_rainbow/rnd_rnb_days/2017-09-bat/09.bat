@@ -1,3 +1,0 @@
-ECHO OFF
-ECHO Day 11
-PAUSE

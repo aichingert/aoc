@@ -1,0 +1,3 @@
+[submodule "ren_rs/ren"]
+	path = ren_rs/ren
+	url = https://github.com/aichingert/ren
