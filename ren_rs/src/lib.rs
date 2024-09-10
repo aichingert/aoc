@@ -26,6 +26,9 @@ pub struct CRen {
     swap_chain_framebuffers: *mut vk::Framebuffer,
     
     render_pass: vk::RenderPass,
+    descriptor_set_layout: vk::DescriptorSetLayout,
+    descriptor_pool: vk::DescriptorPool,
+    descriptor_sets: *mut vk::DescriptorSet,
     pipeline_layout: vk::PipelineLayout,
     graphics_pipeline: vk::Pipeline,
 
@@ -36,6 +39,10 @@ pub struct CRen {
     vertex_buffer_memory: vk::DeviceMemory,
     index_buffer: vk::Buffer,
     index_buffer_memory: vk::DeviceMemory,
+
+    uniform_buffers: *mut vk::Buffer,
+    uniform_buffers_memory: *mut vk::DeviceMemory,
+    uniform_buffers_mapped: *mut *mut core::ffi::c_void,
 
     in_flight_fences: *mut vk::Fence,
     image_available_semaphores: *mut vk::Semaphore,
