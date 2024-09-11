@@ -30,32 +30,5 @@ fn main() {
         .static_flag(true)
         .compile("ren"); 
 
-    /*
-    let compiler = "zig";
-
-    let dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let path = Path::new(&dir);
-
-    env::set_current_dir(path.join("ren")).unwrap();
-
-    Command::new(compiler)
-        .args(&["build", "-Doptimize=ReleaseSafe"])
-        .status()
-        .expect("Failed to compile zig");
-
-    env::set_current_dir(path).unwrap();
-
-    println!(
-        "cargo:rustc-link-search={}", 
-        Path::new(&dir).join("ren/zig-out/lib/").display()
-    );
-
-    println!("cargo:rustc-link-lib=ren");
-    println!("cargo:rustc-link-lib=dylib=stdc++");
-    println!("cargo:rustc-link-lib=dl");
-    println!("cargo:rustc-link-lib=glfw");
-    */
-
-    println!("cargo:rerun-if-changed=libren.a");
-
+    //println!("cargo:rerun-if-changed=libren.a");
 }
