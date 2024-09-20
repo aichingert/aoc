@@ -1,8 +1,58 @@
 use std::ffi::CString;
 use glfw::ffi::GLFWwindow;
 
+use ash::vk;
+
+#[repr(C)]
+pub struct VertexBuffer {
+    buffer: vk::Buffer,
+    memory: vk::DeviceMemory,
+}
+
+#[repr(C)]
+pub struct FrameData {
+    render_sema: vk::Semaphore,
+    present_sema: vk::Semaphore,
+    render_fence: vk::Fence,
+
+    vb: VertexBuffer,
+
+    command_pool: vk::CommandPool,
+    command_buffer: vk::CommandBuffer,
+}
+
+#[repr(C)]
+pub struct Swapchain {
+    this: vk::SwapchainKHR,
+
+    extent: vk::Extent2D,
+    format: vk::Format,
+
+    images: *mut vk::Image,
+    image_views: *mut vk::ImageView,
+    framebuffers: *mut vk::Framebuffer,
+
+    size: usize,
+}
+
 #[repr(C)]
 pub struct Rulkan {
+    instance: vk::Instance,
+    surface: vk::SurfaceKHR,
+
+    device: vk::Device,
+    physical_device: vk::PhysicalDevice,
+
+    present_queue: vk::Queue,
+    graphics_queue: vk::Queue,
+
+    swapchain: Swapchain,
+    render_pass: vk::RenderPass,
+
+    graphics_pipeline: vk::Pipeline,
+    pipeline_layout: vk::PipelineLayout,
+
+    frames: [FrameData; 2],
 }
 
 #[repr(C)]
@@ -22,15 +72,25 @@ impl Ren {
         Self {
             c_ren: unsafe {
                 let c_str = CString::new(title).expect("CString new failed");
-                ren_init(width, height, c_str.into_raw() as *const u8)
+                ren_init(width, height, c_str.as_ptr())
             },
         }
+    }
+
+    pub fn draw(&mut self) {
+        unsafe { ren_draw(&mut self.c_ren); }
+    }
+}
+
+impl Drop for Ren {
+    fn drop(&mut self) {
+        unsafe { ren_destroy(&mut self.c_ren); }
     }
 }
 
 #[link(name = "ren", kind = "static")]
 extern "C" {
-    fn ren_init(width: u32, height: u32, title: *const u8) -> CRen;
+    fn ren_init(width: u32, height: u32, title: *const core::ffi::c_char) -> CRen;
 
     fn ren_draw(ren: *mut CRen);
 
