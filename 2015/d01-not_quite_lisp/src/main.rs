@@ -1,10 +1,7 @@
 use ren_rs::Ren;
 
+//let _inp = std::fs::read_to_string("../../input/2015/01").unwrap();
 fn main() {
-    let _inp = std::fs::read_to_string("../../input/2015/01").unwrap();
-    let ren = Ren::init(500, 500, "2015 - day 1");
+    let ren = Ren::new(20, 20, "2015 - day 1");
 
-    for _ in 0..500 {
-        ren.draw_frame();
-    }
 }
