@@ -4,6 +4,12 @@ use glfw::ffi::GLFWwindow;
 use ash::vk;
 
 #[repr(C)]
+pub struct Vec2 {
+    pub x: core::ffi::c_float,
+    pub y: core::ffi::c_float,
+}
+
+#[repr(C)]
 pub struct VertexBuffer {
     buffer: vk::Buffer,
     memory: vk::DeviceMemory,
@@ -77,8 +83,12 @@ impl Ren {
         }
     }
 
+    pub fn triangle(&mut self, a: Vec2, b: Vec2, c: Vec2) {
+        unsafe { ren_draw_triangle(&mut self.c_ren, a, b, c); }
+    }
+
     pub fn draw(&mut self) {
-        unsafe { ren_draw(&mut self.c_ren); }
+        unsafe { ren_draw_frame(&mut self.c_ren); }
     }
 }
 
@@ -92,7 +102,8 @@ impl Drop for Ren {
 extern "C" {
     fn ren_init(width: u32, height: u32, title: *const core::ffi::c_char) -> CRen;
 
-    fn ren_draw(ren: *mut CRen);
+    fn ren_draw_triangle(ren: *mut CRen, a: Vec2, b: Vec2, c: Vec2);
+    fn ren_draw_frame(ren: *mut CRen);
 
     fn ren_destroy(ren: *mut CRen);
 
