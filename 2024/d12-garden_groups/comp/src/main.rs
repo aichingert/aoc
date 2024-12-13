@@ -18,10 +18,11 @@ fn main() {
             if s.contains(&(i, j)) {
                 continue;
             }
+            println!("{}", g[i][j]);
 
             let mut a = 0;
             let mut p = 0;
-            let mut cur = HashSet::new();
+            let mut reg = HashSet::new();
             let mut bfs = vec![(i, j)];
 
             while let Some((y, x)) = bfs.pop() {
@@ -29,7 +30,7 @@ fn main() {
                     continue;
                 }
 
-                cur.insert((y, x));
+                reg.insert((y as i32, x as i32));
                 a += 1;
 
                 for (dy, dx) in [(0, 1), (1, 0), (0, -1), (-1, 0)] {
@@ -48,8 +49,44 @@ fn main() {
                 }
             }
 
+            let mut c = 0;
+            let mut ccs = HashSet::new();
+
+            for &(y, x) in &reg {
+                for (cy, cx) in [(-0.5, 0.5), (0.5, 0.5), (0.5, -0.5), (-0.5, -0.5)] {
+                    let cr = y as f32 + cy;
+                    let cc = x as f32 + cx;
+
+                    let mut p = Vec::new();
+
+                    for (dr, dc) in [(-0.5, 0.5), (0.5, 0.5), (0.5, -0.5), (-0.5, -0.5)] {
+                        p.push(((cr + dr) as i32, (cc + dc) as i32));
+                    }
+
+                    ccs.insert(p);
+                }
+            }
+
+            for p in ccs {
+                let mut res = [false; 4];
+                let mut cnt = 0;
+
+                for (i, &(r, c)) in p.iter().enumerate() {
+                    if reg.contains(&(r, c)) {
+                        cnt += 1;
+                        res[i] = true;
+                    }
+                }
+
+                match cnt {
+                    1 | 3 => c += 1,
+                    2 if res == [true, false, true, false] || res == [false, true, false, true] => c += 2,
+                    _ => (),
+                }
+            }
+
             p1 += a * p;
-            p2 += a * 0;
+            p2 += a * c;
         }
     }
 
