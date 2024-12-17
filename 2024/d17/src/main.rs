@@ -109,50 +109,39 @@ fn hacky_magic(expected: u64, a: u64) -> Vec<u64> {
     opts
 }
 
-fn solve(prg: &[u64], pos: usize, cur: u64, i: Vec<u64>) -> Option<u64> {
+fn solve(prg: &[u64], pos: usize, cur: u64, i: Vec<u64>, out: &mut Vec<u64>) {
     let sol = solution(&[cur, 0, 0], &prg);
 
-    if sol.len() >= prg.len() {
-        let sols = find(prg.len(), &i[..10]);
+    if pos > 9 {
+        let sols = find(prg.len(), &i[..9]);
         let ans = brute(prg, &sols);
 
         if ans != u64::MAX {
-            println!("{:?}", sols.len());
-            return Some(ans);
+            out.push(ans);
         }
-        return None;
     }
 
-    //if pos == prg.len() - 1 {
-    //    println!("{i:?}");
-    //    println!("{sol:?}");
-    //    println!("=========");
+    if pos >= prg.len() {
+        return;
+    }
 
-    //    if prg == &sol {
-    //        return Some(cur);
-    //    }
-    //    return None;
-    //}
-
-    println!("{pos} - {}", prg[prg.len() - 1 - pos]);
     for opt in hacky_magic(prg[prg.len() - 1 - pos], cur) {
         let mut cp = i.clone();
         cp.push(opt);
-        let mut a = (cur + opt) * 8;
 
-        if let Some(res) = solve(prg, pos + 1, a, cp) {
-            return Some(res);
-        }
+        solve(prg, pos + 1, (cur + opt) * 8, cp, out);
     }
-
-    None
 }
 
 fn main() {
     let mut a = 0u64;
     let prg = [2u64,4,1,5,7,5,4,3,1,6,0,3,5,5,3,0];
 
-    println!("{:?}", solve(&prg, 0, 0, vec![]));
+    let mut out = Vec::new();
+    solve(&prg, 0, 0, vec![], &mut out);
+
+    println!("{:?}", out);
+    println!("{}", *out.iter().min().unwrap());
 
     //let out = brute(&prg, &f(prg.len(), &prg));
     //println!("{out}");
@@ -164,6 +153,8 @@ fn main() {
     // b3 = (((b ^ 5) ^ (a << (b ^ 5))) ^ 6)
 
     // [7, 7, 5, 6, 5, 7, 5, 4, 3, 1, 3, 2, 3, 5, 5, 3, 0]
+    //                          105734774296321
+    //                          105734774296321
     println!("{:?}", solution(&[105734774296321, 0, 0], &prg));
 
     //Register A: 61156655
