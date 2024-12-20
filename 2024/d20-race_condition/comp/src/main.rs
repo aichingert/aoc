@@ -1,6 +1,6 @@
 use std::collections::{VecDeque, HashSet, HashMap};
 
-const P1: i32 = 100;
+const D: i32 = 100;
 
 fn main() {
     let inp = std::fs::read_to_string("../../../input/2024/20").unwrap();
@@ -12,6 +12,7 @@ fn main() {
     let (mut sy, mut sx) = (0, 0);
     let (mut ey, mut ex) = (0, 0);
     let mut p1 = 0;
+    let mut p2 = 0;
 
     for i in 0..g.len() {
         for j in 0..g[i].len() {
@@ -69,8 +70,11 @@ fn main() {
                         let t = map[&(py as usize, px as usize)];
                         let f = map[&(fy, fx)];
                         
-                        if P1 <= t - f - d {
-                            p1 += 1;
+                        if D <= t - f - d {
+                            if d == 2 {
+                                p1 += 1;
+                            }
+                            p2 += 1;
                         }
                     }
                 }
@@ -80,36 +84,6 @@ fn main() {
         println!("{fy} {fx}");
     }
 
-    /*
-    for ((ty, tx, fy, fx), d) in cts.into_iter() {
-        let t = map[&(ty, tx)];
-        let f = map[&(fy, fx)];
-        
-        if P1 <= t - f - d {
-            p1 += 1;
-        }
-    }
-    */
-
-    /*
-    while let Some((ty, tx, fy, fx)) = cts.pop_front() {
-
-        let t = map[&(ty, tx)];
-        let f = map[&(fy, fx)];
-        
-        if P1 <= t - f - 2 {
-            p1 += 1;
-        }
-        if t > f + 2 {
-            m.entry(t - f - 2).and_modify(|n| *n += 1).or_insert(1);
-            println!("{t} {f} => {}", t - f - 2);
-        }
-    }
-    */
-
-    //let mut v = m.into_iter().collect::<Vec<_>>();
-    //v.sort_unstable();
-
-    //println!("{v:?}");
-    println!("{p1}");
+    println!("p1: {p1}");
+    println!("p2: {p2}");
 }
