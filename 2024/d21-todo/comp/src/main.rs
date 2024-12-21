@@ -83,7 +83,7 @@ const PADS: [[[char; 5]; 6]; 2] = [NUM, DIR];
 //}
 
 fn sol(
-    map: &mut HashMap<(usize, usize, usize), Vec<char>>, 
+    map: &mut HashMap<(usize, usize, usize), usize>, 
     pad: usize,
     code: &[char], 
     (py, px): V2, 
@@ -95,10 +95,10 @@ fn sol(
 
     if code[0] == PADS[pad][py][px] {
         steps.push('A');
-        map.insert((code.len() - 1, py, px), steps.clone());
+        map.insert((code.len() - 1, py, px), steps.len());
         return sol(map, pad, &code[1..], (py, px), steps);
     }
-    map.insert((code.len(), py, px), steps.clone());
+    map.insert((code.len(), py, px), steps.len());
     let mut opts = Vec::new();
 
     for (v, dy, dx) in [('v', 1, 0), ('^', -1, 0), ('<', 0, -1), ('>', 0, 1)] {
@@ -107,12 +107,10 @@ fn sol(
         if PADS[pad][ny][nx] == '#' {
             continue;
         }
-        if let Some(prv) = map.get(&(code.len(), ny, nx)) {
-            if prv.len() < steps.len() + 1 {
+        if let Some(&len) = map.get(&(code.len(), ny, nx)) {
+            if len < steps.len() + 1 {
                 continue;
             }
-
-            //println!('{prv:?} {v}');
         }
 
         let mut cp = steps.clone();
