@@ -16,8 +16,6 @@ use std::collections::HashMap;
 // | < | v | > |
 // +---+---+---+
 
-type V2 = (usize, usize);
-
 const NUM: [[char; 5]; 6] = [
     ['#','#','#','#', '#'],
     ['#', '7', '8', '9', '#'], 
@@ -27,17 +25,10 @@ const NUM: [[char; 5]; 6] = [
     ['#','#','#','#', '#']
 ];
 
-const DIR: [[char; 5]; 4] = [
-    ['#','#','#','#', '#'],
-    ['#', '#', '^', 'A', '#'],
-    ['#', '<', 'v', '>', '#'],
-    ['#','#','#','#', '#'],
-];
-
 fn sol(
     map: &mut HashMap<(usize, usize, usize), usize>, 
     code: &[char], 
-    (py, px): V2, 
+    (py, px): (usize, usize), 
     mut steps: Vec<char>,
 ) -> Vec<Vec<char>> {
     if code.is_empty() {
@@ -75,103 +66,96 @@ fn sol(
     opts
 }
 
+fn find<'a>(
+    cache: &mut HashMap<(&'a [char], u8), usize>,
+    lookup: &'a HashMap<(char, char), Vec<Vec<char>>>,
+    seq: &'a [char],
+    depth: u8,
+) -> usize {
+    if let Some(&ans) = cache.get(&(seq, depth)) {
+        return ans;
+    }
+
+    let mut s = 'A';
+    let mut ans = 0;
+
+    if depth == 1 {
+        for &e in seq {
+            ans += lookup.get(&(s, e)).unwrap()[0].len();
+            s = e;
+        }
+
+        cache.insert((seq, depth), ans);
+        return ans;
+    }
+
+    for &e in seq {
+        let mut min_dis = usize::MAX;
+
+        for subseq in lookup.get(&(s, e)).unwrap() {
+            min_dis = min_dis.min(find(cache, lookup, subseq, depth -1));
+        }
+
+        s = e;
+        ans += min_dis;
+    }
+
+    cache.insert((seq, depth), ans);
+    ans
+}
+
 fn main() {
     let inp = std::fs::read_to_string("../../../input/2024/21").unwrap();
-    let mut a = 0;
+    let lookup = HashMap::from([
+        (('A', '>'), vec![vec!['v', 'A']]),
+        (('A', '^'), vec![vec!['<', 'A']]),
+        (('A', 'v'), vec![vec!['v', '<', 'A'], vec!['<', 'v', 'A']]),
+        (('A', '<'), vec![vec!['v', '<', '<', 'A'], vec!['<', 'v', '<', 'A']]),
+        (('A', 'A'), vec![vec!['A']]),
+        (('^', 'A'), vec![vec!['>', 'A']]),
+        (('^', 'v'), vec![vec!['v', 'A']]),
+        (('^', '<'), vec![vec!['v', '<', 'A']]),
+        (('^', '>'), vec![vec!['v', '>', 'A'], vec!['>', 'v', 'A']]),
+        (('^', '^'), vec![vec!['A']]),
+        (('v', 'A'), vec![vec!['>', '^', 'A'], vec!['^', '>', 'A']]),
+        (('v', '^'), vec![vec!['^', 'A']]),
+        (('v', '<'), vec![vec!['<', 'A']]),
+        (('v', '>'), vec![vec!['>', 'A']]),
+        (('v', 'v'), vec![vec!['A']]),
+        (('>', 'A'), vec![vec!['^', 'A']]),
+        (('>', '^'), vec![vec!['^', '<', 'A'], vec!['<', '^', 'A']]),
+        (('>', '<'), vec![vec!['<', '<', 'A']]),
+        (('>', 'v'), vec![vec!['<', 'A']]),
+        (('>', '>'), vec![vec!['A']]),
+        (('<', 'A'), vec![vec!['>', '>', '^', 'A'], vec!['>', '^', '>', 'A']]),
+        (('<', '^'), vec![vec!['>', '^', 'A']]),
+        (('<', '>'), vec![vec!['>', '>', 'A']]),
+        (('<', 'v'), vec![vec!['>', 'A']]),
+        (('<', '<'), vec![vec!['A']]),
+    ]);
+
+    let (mut p1, mut p2) = (0, 0);
 
     for code in inp.lines().filter(|n| !n.is_empty()) {
         let ch = code.chars().collect::<Vec<_>>(); 
-        let s = ch.iter().filter(|c| c.is_digit(10)).map(|&c| c).collect::<String>();
-        let n = s.parse::<usize>().unwrap();
+        let n = ch.iter().filter(|c| c.is_digit(10)).collect::<String>().parse::<usize>().unwrap();
 
-        let mut dom = Vec::new();
-        let mut min = usize::MAX;
+        let paths = sol(&mut HashMap::new(), &ch, (4, 3), Vec::new());
+        let min_p_len = paths.iter().map(|p| p.len()).min().unwrap();
+        let paths = paths.into_iter().filter(|p| p.len() == min_p_len).collect::<Vec<_>>();
 
-        // ['#','#','#','#', '#'],
-        // ['#', '#', '^', 'A', '#'],
-        // ['#', '<', 'v', '>', '#'],
-        // ['#','#','#','#', '#'],
+        let mut part_one = usize::MAX;
+        let mut part_two = usize::MAX;
 
-        let lookup = HashMap::from([
-            (('A', '>'), vec!['v', 'A']),
-            (('A', '^'), vec!['<', 'A']),
-            (('A', 'v'), vec!['v', '<', 'A']),
-            (('A', '<'), vec!['v', '<', '<', 'A']),
-            (('A', 'A'), vec!['A']),
-
-            (('^', 'A'), vec!['>', 'A']),
-            (('^', 'v'), vec!['v', 'A']),
-            (('^', '<'), vec!['v', '<', 'A']),
-            (('^', '>'), vec!['v', '>', 'A']),
-            (('^', '^'), vec!['A']),
-
-            (('v', 'A'), vec!['>', '^', 'A']),
-            (('v', '^'), vec!['^', 'A']),
-            (('v', '<'), vec!['<', 'A']),
-            (('v', '>'), vec!['>', 'A']),
-            (('v', 'v'), vec!['A']),
-
-            (('>', 'A'), vec!['^', 'A']),
-            (('>', '^'), vec!['^', '<', 'A']),
-            (('>', '<'), vec!['<', '<', 'A']),
-            (('>', 'v'), vec!['<', 'A']),
-            (('>', '>'), vec!['A']),
-
-            (('<', 'A'), vec!['>', '>', '^', 'A']),
-            (('<', '^'), vec!['>', '^', 'A']),
-            (('<', '>'), vec!['>', '>', 'A']),
-            (('<', 'v'), vec!['>', 'A']),
-            (('<', '<'), vec!['A']),
-        ]);
-
-        for dor in sol(&mut HashMap::new(), &ch, (4, 3), Vec::new()) {
-            if min > dor.len() {
-                min = dor.len();
-                dom = vec![dor];
-            } else if min == dor.len() {
-                dom.push(dor);
-            }
+        for path in paths {
+            part_one = part_one.min(find(&mut HashMap::new(), &lookup, &path, 2));
+            part_two = part_two.min(find(&mut HashMap::new(), &lookup, &path, 25));
         }
 
-        min = usize::MAX;
-
-        for mut door in dom {
-            //let size = chain(&lookup, 25, 'A', &door);
-
-            //println!("{code} - {:?}", size);
-            //min = min.min(size);
-
-            let mut b = 'A';
-            let mut hm = HashMap::new();
-
-            for &c in &door {
-                hm.entry((b, c)).and_modify(|n| *n += 1).or_insert(1);
-                b = c;
-            }
-
-            for _ in 0..3 {
-                let mut nx = HashMap::new();
-
-                for (&(b, c), &value) in hm.iter() {
-                    let mut s = 'A';
-
-                    for &seg in lookup.get(&(b, c)).unwrap() {
-                        nx.entry((seg, s)).and_modify(|n| *n += value).or_insert(value);
-                        s = seg;
-                    }
-                }
-
-                hm = nx;
-            }
-            
-            println!("{code} - {}", hm.values().sum::<usize>());
-            min = min.min(hm.values().sum::<usize>());
-        }
-
-        a += min * n;
+        p1 += part_one * n;
+        p2 += part_two * n;
     }
 
-    println!("{inp:?}");
-    println!("{a:?}");
-
+    println!("p1: {p1}");
+    println!("p2: {p2}");
 }
