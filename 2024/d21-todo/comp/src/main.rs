@@ -75,23 +75,6 @@ fn sol(
     opts
 }
 
-fn chain(lookup: &HashMap<(char, char), Vec<char>>, robo: u32, src: char, dst: &[char]) -> usize {
-    if robo == 0 {
-        return lookup.get(&(src, dst[dst.len() - 1])).unwrap().len();
-    }
-
-    let (mut size, mut nxt) = (0, 'A');
-
-    for &cur in dst {
-        let path = lookup.get(&(nxt, cur)).unwrap();
-
-        size += chain(lookup, robo - 1, cur, path);
-        nxt = cur;
-    }
-
-    size
-}
-
 fn main() {
     let inp = std::fs::read_to_string("../../../input/2024/21").unwrap();
     let mut a = 0;
@@ -158,23 +141,31 @@ fn main() {
             //println!("{code} - {:?}", size);
             //min = min.min(size);
 
-            for i in 0..2 {
-                let mut next = Vec::new();
-                let mut start = 'A';
+            let mut b = 'A';
+            let mut hm = HashMap::new();
 
-                for &c in &door {
-                    let path = lookup.get(&(start, c)).unwrap();
-                    start = c;
-
-                    next.extend_from_slice(path);
-                }
-
-                door = next;
-                println!("{}", door.len());
+            for &c in &door {
+                hm.entry((b, c)).and_modify(|n| *n += 1).or_insert(1);
+                b = c;
             }
 
-            println!("{code} - {:?}", door.len());
-            min = min.min(door.len());
+            for _ in 0..3 {
+                let mut nx = HashMap::new();
+
+                for (&(b, c), &value) in hm.iter() {
+                    let mut s = 'A';
+
+                    for &seg in lookup.get(&(b, c)).unwrap() {
+                        nx.entry((seg, s)).and_modify(|n| *n += value).or_insert(value);
+                        s = seg;
+                    }
+                }
+
+                hm = nx;
+            }
+            
+            println!("{code} - {}", hm.values().sum::<usize>());
+            min = min.min(hm.values().sum::<usize>());
         }
 
         a += min * n;
