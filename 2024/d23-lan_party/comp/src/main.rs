@@ -64,10 +64,12 @@ fn main() {
     let mut p2 = Vec::new();
 
     for pair in pairs {
-        for m in &pair {
-            if m.starts_with("t") {
-                p1 += 1;
-                break;
+        if pair.len() == 3 {
+            for m in &pair {
+                if m.starts_with("t") {
+                    p1 += 1;
+                    break;
+                }
             }
         }
 
