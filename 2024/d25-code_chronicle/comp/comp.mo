@@ -1,4 +1,4 @@
-print_u8 :: (n: i32) {
+print_u8 :: fn(n: i32) {
     $asm(
         "mov rax, 1",
         "lea rsi, n",
@@ -8,7 +8,7 @@ print_u8 :: (n: i32) {
     )
 }
 
-print_num :: (num: i64) {
+print_num :: fn(num: i64) {
     n := num
 
     if n < 0 {
@@ -37,18 +37,14 @@ print_num :: (num: i64) {
     }
 
     while i < len {
-        idx := len
-        idx = idx - i
-        idx = idx - 1
-
-        print_u8(out[idx])
+        print_u8(out[len - i - 1])
         i = i + 1
     }
 
     print_u8(10)
 }
 
-main :: () {
+main :: fn() {
     block_size :: 5
     keys  := [5, 0, 2, 1, 3, 4, 3, 4, 0, 2, 3, 0, 2, 0, 1]
     key_len :: 15
