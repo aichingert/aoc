@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if test -f day ; then
+    rm day
+fi
+if test -f day.c ; then
+    rm day.c
+fi
+
+./build/b
+
+if test -f day ; then
+    ./day $@
+else
+    echo "no executable available: check error log"
+fi
