@@ -16,6 +16,7 @@ static const char *FLAGS[] = {
     "-ffreestanding",
     "-Wextra",
     "-Wall",
+    "-Wno-type-limits",
     //"-Wfloat-equal",
     //"-Wundef",
     //"-Wshadow",
@@ -39,7 +40,8 @@ static const char *PATHS[] = {
     "../../mob/std/unix_sys.c",
     "../../mob/std/unix_socket.c",
     "../../mob/std/unix_window.c",
-    "d01.c",
+    //"d01.c",
+    "d02.c",
 };
 static const uint32_t PATH_COUNT = sizeof(PATHS) / sizeof(PATHS[0]);
 
