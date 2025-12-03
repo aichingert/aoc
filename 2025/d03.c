@@ -32,7 +32,6 @@ u64 part_one(String input) {
 }
 
 u64 part_two(String input) {
-    // get biggest num in bank_len - amount
     u64 ans = 0;
     u32 pos = 0;
 
