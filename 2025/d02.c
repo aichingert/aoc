@@ -125,6 +125,6 @@ s32 main(s32 argc, char **argv) {
         ans = part_two(&allocator, input);
     }
 
-    printf("Answer [2025-01-%c]: %lu\n", part.val[0], ans);
+    printf("Answer [2025-02-%c]: %lu\n", part.val[0], ans);
     return 0;
 }

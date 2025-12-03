@@ -41,7 +41,8 @@ static const char *PATHS[] = {
     "../../mob/std/unix_socket.c",
     "../../mob/std/unix_window.c",
     //"d01.c",
-    "d02.c",
+    //"d02.c",
+    "d03.c",
 };
 static const uint32_t PATH_COUNT = sizeof(PATHS) / sizeof(PATHS[0]);
 
