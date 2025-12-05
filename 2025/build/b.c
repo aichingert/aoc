@@ -30,6 +30,7 @@ static const char *FLAGS[] = {
 static const uint32_t FLAG_COUNT = sizeof(FLAGS) / sizeof(FLAGS[0]);
 static const char *PATHS[] = {
     "../../mob/std/mem.c",
+    "../../mob/std/sort.c",
     "../../mob/std/math.c",
     "../../mob/std/file.c",
     "../../mob/std/types.c",
@@ -43,7 +44,8 @@ static const char *PATHS[] = {
     //"d01.c",
     //"d02.c",
     //"d03.c",
-    "d04.c",
+    //"d04.c",
+    "d05.c",
 };
 static const uint32_t PATH_COUNT = sizeof(PATHS) / sizeof(PATHS[0]);
 
@@ -883,6 +885,8 @@ FileContent parse_c_file(Arena *arena, Arena *files, const char *path) {
             } else {
                 *push(&content.globals, arena) = c_range;
             }
+        } else if   (type == TT_SEMICOLON) {
+            pos += 1;
         } else {
             printf("Error: encountered unreachable state - token_type=%d\n", toks.data[pos].type);
             exit(1);
