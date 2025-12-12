@@ -66,9 +66,49 @@ u64 part_two(Arena *allocator, String input) {
     }
 
     for (u32 i = 0; i < array_len(coords); i++) {
-        for (u32 j = i + 1; j < array_len(coords); j++) {
-            ans = MAX(ans, ((1 + ABS(coords[i].x - coords[j].x)) * (1 + ABS(coords[i].y - coords[j].y))));
+        Coord curr = coords[i];
+        s64 top = -1;
+        s64 bot = -1;
+        s64 lhs = -1;
+        s64 rhs = -1;
+
+        printf("X: %lld     Y: %lld\n", curr.x, curr.y);
+
+        for (u32 off = 1; off <= array_len(coords); off++) {
+            Coord next = coords[(i + off) % array_len(coords)];
+
+            if (curr.x == next.x) {
+                // up ? down
+                if (lhs == -1) {
+                    lhs = curr.x;
+                }
+                if (rhs == -1) {
+                    rhs = curr.x;
+                }
+
+                if (curr.y > next.y) {
+                    // SET/TOP
+                    //
+                    //
+                } else {
+
+                }
+            } else {
+                // left ? right
+                if (top == -1) {
+                    top = curr.y;
+                }
+                if (bot == -1) {
+                    bot = curr.y;
+                }
+            }
+
+            printf("X: %lld     Y: %lld\n", next.x, next.y);
         }
+
+        printf("TOP_Y: %lld     BOT_Y: %lld\n", top, bot);
+        printf("LHS_X: %lld     RHS_X: %lld\n", lhs, rhs);
+        printf("==================\n");
     }
 
     return ans;

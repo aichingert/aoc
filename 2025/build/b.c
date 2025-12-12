@@ -49,7 +49,8 @@ static const char *PATHS[] = {
     //"d06.c",
     //"d07.c",
     //"d08.c",
-    "d09.c",
+    //"d09.c",
+    "d10.c",
 };
 static const uint32_t PATH_COUNT = sizeof(PATHS) / sizeof(PATHS[0]);
 
